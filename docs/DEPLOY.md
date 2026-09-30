@@ -70,13 +70,10 @@ To change one later: `select vault.update_secret((select id from vault.secrets w
 
 - **Authentication → Providers → Email**: enabled. Turn **off** "Allow new users to sign up" (staff are invited).
 - **Authentication → URL Configuration**: Site URL = the admin app URL (e.g. `https://growth.staysdirect.co.uk`); add `https://<admin-domain>/**` to Redirect URLs.
-- **Authentication → Emails → Templates**: point the links at the admin app's `/auth/confirm` route, which signs the person in on the server. Without this, invite links land on the app without a session and bounce to the login page. Replace the link in each template:
-  - **Invite user**: `<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/account?welcome=1">Accept the invite</a>`
-  - **Magic link**: `<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=magiclink&next=/">Sign in</a>`
-  - **Reset password**: `<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/account">Reset your password</a>`
-
-  (The app's own magic-link request also works with the default template via `/auth/callback`; the template change is what makes invites work.)
-
+- **Authentication → Emails → Templates**: point the links at the admin app's `/auth/confirm` route, which signs the person in on the server. Without this, invite links land on the app without a session and bounce to the login page. Ready-made templates are in `supabase/templates/` (the local stack and CI use them): paste `invite.html` into **Invite user**, `magic-link.html` into **Magic link** and `recovery.html` into **Reset password**. The link each one uses:
+  - Invite: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/account?welcome=1`
+  - Magic link: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/`
+  - Reset password: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/account`
 - **Authentication → SMTP**: the built-in sender is rate-limited to a few emails an hour. Set a custom SMTP server (e.g. the one the leads app uses) before inviting a team.
 - **Database → Extensions**: `postgis`, `pg_trgm`, `pg_net` and `pg_cron` are created by the first migration. If `db push` fails on an extension, enable it here and re-run.
 

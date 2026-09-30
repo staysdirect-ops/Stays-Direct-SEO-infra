@@ -6,3 +6,5 @@ supabase/functions/_shared/core
 supabase/functions/deno.lock
 supabase/.temp
 tests/fixtures
+playwright-report
+test-results

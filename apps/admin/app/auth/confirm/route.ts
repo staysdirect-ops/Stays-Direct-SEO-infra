@@ -1,6 +1,6 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
-import { safeNext } from "@/lib/redirect";
+import { safeNext, sameHostUrl } from "@/lib/redirect";
 import { createClient } from "@/lib/supabase/server";
 
 // Links from the Supabase email templates in docs/DEPLOY.md (invite, magic link, recovery):
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   if (tokenHash && type) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
-    if (!error) return NextResponse.redirect(new URL(next, request.url));
+    if (!error) return NextResponse.redirect(sameHostUrl(request, next));
   }
-  return NextResponse.redirect(new URL("/login?error=link", request.url));
+  return NextResponse.redirect(sameHostUrl(request, "/login?error=link"));
 }

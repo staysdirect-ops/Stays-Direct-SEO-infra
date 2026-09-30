@@ -22,7 +22,12 @@ wait_for() { # $1 = SQL returning a count, $2 = target, $3 = label
 echo "==> Reset database and vault"
 supabase db reset >/dev/null 2>&1
 "${PSQL[@]}" -c "select vault.create_secret('http://kong:8000','project_url'); select vault.create_secret('${CRON_SECRET:-local-cron-secret}','cron_secret');" >/dev/null
-docker restart "supabase_kong_$(basename "$(pwd)" | tr -c 'a-z0-9\n' '-' | sed 's/-$//')" >/dev/null 2>&1 || true
+PROJECT_ID=$(sed -n 's/^project_id = "\(.*\)"/\1/p' supabase/config.toml)
+docker restart "supabase_kong_${PROJECT_ID}" >/dev/null 2>&1 || true
+for _ in $(seq 1 40); do
+  curl -sf -o /dev/null "$F/public-content?type=index" && break
+  sleep 3
+done
 
 echo "==> Radar (7-day backfill)"
 curl -sf "${H[@]}" -d '{"backfill_days":7}' $F/radar-run >/dev/null
