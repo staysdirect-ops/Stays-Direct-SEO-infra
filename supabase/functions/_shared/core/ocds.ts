@@ -53,8 +53,14 @@ export interface OcdsItem {
   deliveryLocation?: { description?: string | null } | null;
   deliveryLocations?: Array<{ description?: string | null }> | null;
 }
+export interface OcdsDocument {
+  documentType?: string | null;
+  url?: string | null;
+}
 export interface OcdsAward {
   id?: string | null;
+  relatedLots?: string[] | null;
+  documents?: OcdsDocument[] | null;
   title?: string | null;
   description?: string | null;
   status?: string | null;
@@ -75,6 +81,8 @@ export interface OcdsContract {
 export interface OcdsRelease {
   ocid: string;
   id: string;
+  /** Find a Tender puts free-text "additional information" here. */
+  description?: string | null;
   date?: string | null;
   tag?: string[] | null;
   buyer?: OcdsOrgRef | null;
@@ -88,6 +96,7 @@ export interface OcdsRelease {
     items?: OcdsItem[] | null;
     contractPeriod?: OcdsPeriod | null;
     lots?: Array<{ id?: string; title?: string | null; description?: string | null }> | null;
+    documents?: OcdsDocument[] | null;
   } | null;
   awards?: OcdsAward[] | null;
   contracts?: OcdsContract[] | null;
@@ -202,6 +211,36 @@ function cpvCodes(r: OcdsRelease): string[] {
   return [...out];
 }
 
+// NUTS 2016 / ITL 2021 level-1 regions. Find a Tender gives delivery places as codes only
+// (e.g. "UKC11", "TLD3"); we name the level-1 region and keep the code, never guess finer names.
+const UK_REGIONS: Record<string, string> = {
+  C: "North East England",
+  D: "North West England",
+  E: "Yorkshire and the Humber",
+  F: "East Midlands",
+  G: "West Midlands",
+  H: "East of England",
+  I: "London",
+  J: "South East England",
+  K: "South West England",
+  L: "Wales",
+  M: "Scotland",
+  N: "Northern Ireland",
+};
+
+/** "UKD33" → "UKD33 (North West England)"; "UK" → "United Kingdom (nationwide)". Other text unchanged. */
+export function describeRegion(region: string | null | undefined): string | null {
+  const r = region?.trim();
+  if (!r) return null;
+  const code = r.toUpperCase();
+  if (code === "UK" || code === "GB") return "United Kingdom (nationwide)";
+  const m = code.match(/^(?:UK|TL)([C-N])[0-9A-Z]{0,3}$/);
+  if (!m) return r;
+  const name = UK_REGIONS[m[1]!];
+  if (!name) return r;
+  return code.length <= 3 ? name : `${code} (${name})`;
+}
+
 function deliveryInfo(r: OcdsRelease): { text: string | null; postcodes: string[] } {
   const items = [...(r.tender?.items ?? []), ...(r.awards ?? []).flatMap((a) => a.items ?? [])];
   const texts = new Set<string>();
@@ -212,7 +251,7 @@ function deliveryInfo(r: OcdsRelease): { text: string | null; postcodes: string[
       ...(it.deliveryAddress ? [it.deliveryAddress] : []),
     ];
     for (const a of addrs) {
-      const t = formatAddress(a);
+      const t = formatAddress({ ...a, region: describeRegion(a.region) });
       if (t) texts.add(t);
       const pc = normalizePostcode(a.postalCode);
       if (pc) postcodes.add(pc);
@@ -228,18 +267,59 @@ function deliveryInfo(r: OcdsRelease): { text: string | null; postcodes: string[
   return { text: texts.size ? [...texts].join("; ") : null, postcodes: [...postcodes] };
 }
 
+const NOTICE_HOSTS: Record<RadarSource, string> = {
+  contracts_finder: "https://www.contractsfinder.service.gov.uk/Notice/",
+  find_a_tender: "https://www.find-tender.service.gov.uk/Notice/",
+};
+
 export function sourceUrl(source: RadarSource, r: OcdsRelease): string {
+  // Prefer the notice link the source publishes itself (award notice first).
+  const docs = [
+    ...(r.awards ?? []).flatMap((a) => a.documents ?? []),
+    ...(r.tender?.documents ?? []),
+  ];
+  const official = (d: OcdsDocument) => !!d.url?.startsWith(NOTICE_HOSTS[source]);
+  const doc =
+    docs.find((d) => d.documentType === "awardNotice" && official(d)) ??
+    docs.find((d) => official(d) && !d.url!.includes("/Attachment/"));
+  if (doc?.url) return doc.url;
   if (source === "find_a_tender") {
     const noticeId = r.id.match(/\d{6}-\d{4}/)?.[0] ?? r.id;
     return `https://www.find-tender.service.gov.uk/Notice/${encodeURIComponent(noticeId)}`;
   }
-  const guid = r.ocid.replace(/^ocds-[a-z0-9]+-/i, "");
+  // Contracts Finder release ids are "<notice guid>-<number>"; the ocid holds a different guid.
+  const guid =
+    r.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i)?.[0] ??
+    r.ocid.replace(/^ocds-[a-z0-9]+-/i, "");
   return `https://www.contractsfinder.service.gov.uk/Notice/${encodeURIComponent(guid)}`;
 }
 
 export function dedupeKey(title: string, supplier: string | null, value: number | null): string {
   const v = value ? String(Math.round(value / 1000)) : "na";
   return `${normalizeForKey(title)}|${normalizeForKey(supplier)}|${v}`;
+}
+
+/**
+ * Find a Tender award titles are often just the lot ("Lot 1: Mechanical Services"), which is
+ * meaningless on its own, so combine with the tender title when they differ.
+ */
+export function projectTitle(
+  tenderTitle: string | null | undefined,
+  award: Pick<OcdsAward, "title" | "relatedLots">,
+  lots?: Array<{ id?: string; title?: string | null }> | null
+): string {
+  // Contracts Finder buyers often suffix award notices with "- AWARD".
+  const clean = (t: string | null | undefined) =>
+    (t ?? "").replace(/\s*[-–:(]\s*(contract\s+)?award(ed)?\s*\)?\s*$/i, "").trim();
+  const tender = clean(tenderTitle);
+  const lotTitle = award.relatedLots?.length
+    ? lots?.find((l) => l.id === award.relatedLots![0])?.title?.trim()
+    : undefined;
+  const part = clean(award.title) || clean(lotTitle);
+  if (!tender) return part;
+  if (!part || normalizeForKey(tender).includes(normalizeForKey(part))) return tender;
+  if (normalizeForKey(part).includes(normalizeForKey(tender))) return part;
+  return `${tender}: ${part}`;
 }
 
 export function mapRelease(source: RadarSource, r: OcdsRelease): IngestedProject | null {
@@ -259,7 +339,7 @@ export function mapRelease(source: RadarSource, r: OcdsRelease): IngestedProject
     parties.find((p) => p.roles?.includes("supplier") && p.name === supplierRef?.name);
   const contract = (r.contracts ?? []).find((c) => c.awardID === award.id) ?? r.contracts?.[0];
 
-  const title = (award.title || r.tender?.title || "").trim();
+  const title = projectTitle(r.tender?.title, award, r.tender?.lots);
   if (!title) return null;
   const period = contract?.period ?? award.contractPeriod ?? r.tender?.contractPeriod ?? null;
   const start = isoDate(period?.startDate);
@@ -270,7 +350,7 @@ export function mapRelease(source: RadarSource, r: OcdsRelease): IngestedProject
   const value = gbp(award.value) ?? gbp(contract?.value) ?? gbp(r.tender?.value);
   const supplierName = supplierRef?.name?.trim() || supplierParty?.name?.trim() || null;
   const delivery = deliveryInfo(r);
-  const description = [r.tender?.description, award.description]
+  const description = [r.tender?.description, award.description, r.description]
     .filter((d): d is string => !!d?.trim())
     .filter((d, i, arr) => arr.indexOf(d) === i)
     .join("\n\n");

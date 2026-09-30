@@ -1,4 +1,5 @@
 import {
+  blogTitlesFromSitemap,
   buildTopicsPrompt,
   callClaude,
   fetchWithRetry,
@@ -26,11 +27,7 @@ async function existingSiteTitles(): Promise<string[]> {
   try {
     const res = await fetchWithRetry(SITEMAP, {}, { retries: 2 });
     if (!res.ok) return [];
-    const xml = await res.text();
-    return [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)]
-      .map((m) => m[1]!.replace(/\/+$/, "").split("/").pop() ?? "")
-      .filter(Boolean)
-      .map((slug) => slug.replace(/-/g, " "));
+    return blogTitlesFromSitemap(await res.text());
   } catch {
     return [];
   }

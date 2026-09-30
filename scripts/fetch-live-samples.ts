@@ -163,7 +163,7 @@ report.postcodes_io = {
     await bulkLookupPostcodes(["TA5 2LD", "LS1 1UR", "IP16 4UR", "CA20 1PG"]).catch(() => new Map())
   ),
 };
-save("postcodes-io-bulk.json", (await getJson("https://api.postcodes.io/postcodes/LS11UR")).body);
+save("postcodes-io-single.json", (await getJson("https://api.postcodes.io/postcodes/LS11UR")).body);
 
 // Existing blog sitemap (topics must not duplicate it).
 const sm = await fetch("https://staysdirect.co.uk/sitemap-blog.xml", {

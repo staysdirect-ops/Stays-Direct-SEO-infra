@@ -131,3 +131,22 @@ export function pickInternalLinks(args: {
   links.push({ kind: "quote", href: "/quote", label: "Get a same-day quote" });
   return links;
 }
+
+/**
+ * Rough titles of the site's existing blog posts, from its blog sitemap, so topic suggestions
+ * never duplicate them. Only `/blog/<slug>` URLs count (the sitemap also lists the bare `/blog`).
+ */
+export function blogTitlesFromSitemap(xml: string): string[] {
+  const titles: string[] = [];
+  for (const m of xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)) {
+    let path: string;
+    try {
+      path = new URL(m[1]!).pathname;
+    } catch {
+      continue;
+    }
+    const slug = path.match(/^\/blog\/([^/]+)\/?$/)?.[1];
+    if (slug) titles.push(decodeURIComponent(slug).replace(/-/g, " "));
+  }
+  return titles;
+}
