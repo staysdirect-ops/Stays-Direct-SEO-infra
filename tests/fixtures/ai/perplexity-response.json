@@ -1,0 +1,8 @@
+{
+  "id": "pplx-1",
+  "model": "sonar",
+  "choices": [{"index": 0, "message": {"role": "assistant", "content": "Construction crews near HS2 in Birmingham often use serviced accommodation providers such as Contractors Den [1] and Rentastay [2]. Some firms book hotels near Curzon Street."}}],
+  "citations": ["https://www.contractorsden.co.uk/birmingham", "https://www.rentastay.co.uk/hs2"],
+  "search_results": [{"title": "Contractors Den", "url": "https://www.contractorsden.co.uk/birmingham"}, {"title": "HS2 news", "url": "https://www.hs2.org.uk/"}],
+  "usage": {"prompt_tokens": 18, "completion_tokens": 64, "total_tokens": 82, "cost": {"total_cost": 0.0051}}
+}

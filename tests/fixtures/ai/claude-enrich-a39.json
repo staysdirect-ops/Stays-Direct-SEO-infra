@@ -1,0 +1,14 @@
+{
+  "is_relevant": true,
+  "relevance_reason": "14-month highway resurfacing and drainage works on the A39 needing on-site civils crews with night possessions.",
+  "project_type": "road",
+  "site_location_text": "A39 between Bridgwater and Cannington, Somerset",
+  "site_postcode": "TA5 2LD",
+  "site_town": "Cannington",
+  "location_confidence": "high",
+  "est_workers_min": 20,
+  "est_workers_max": 35,
+  "est_workers_away_from_home": 18,
+  "duration_months": 14,
+  "start_date": "2026-11-02"
+}

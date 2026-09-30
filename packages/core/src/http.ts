@@ -1,0 +1,84 @@
+export type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
+export type Sleep = (ms: number) => Promise<void>;
+
+export const realSleep: Sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export interface RetryOptions {
+  retries?: number;
+  baseDelayMs?: number;
+  maxDelayMs?: number;
+  fetchImpl?: FetchLike;
+  sleep?: Sleep;
+  /** Called before every attempt, e.g. a rate limiter. */
+  beforeAttempt?: () => Promise<void>;
+}
+
+export class HttpError extends Error {
+  readonly status: number;
+  readonly url: string;
+  readonly body: string;
+  constructor(status: number, url: string, body: string) {
+    super(`HTTP ${status} from ${url}: ${body.slice(0, 300)}`);
+    this.name = "HttpError";
+    this.status = status;
+    this.url = url;
+    this.body = body;
+  }
+}
+
+function isRetryable(status: number): boolean {
+  return status === 429 || status >= 500;
+}
+
+/** fetch with exponential backoff on 429/5xx and network errors; honours Retry-After. */
+export async function fetchWithRetry(
+  url: string,
+  init: RequestInit = {},
+  opts: RetryOptions = {}
+): Promise<Response> {
+  const retries = opts.retries ?? 5;
+  const base = opts.baseDelayMs ?? 1000;
+  const maxDelay = opts.maxDelayMs ?? 32_000;
+  const doFetch = opts.fetchImpl ?? fetch;
+  const sleep = opts.sleep ?? realSleep;
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    await opts.beforeAttempt?.();
+    try {
+      const res = await doFetch(url, init);
+      if (!isRetryable(res.status) || attempt === retries) return res;
+      const retryAfter = Number(res.headers.get("retry-after"));
+      await res.body?.cancel().catch(() => undefined);
+      const delay = Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1000, maxDelay)
+        : Math.min(base * 2 ** attempt, maxDelay);
+      await sleep(delay);
+    } catch (err) {
+      lastError = err;
+      if (attempt === retries) throw err;
+      await sleep(Math.min(base * 2 ** attempt, maxDelay));
+    }
+  }
+  throw lastError ?? new Error(`fetchWithRetry exhausted for ${url}`);
+}
+
+export async function fetchJson<T>(url: string, init: RequestInit = {}, opts: RetryOptions = {}): Promise<T> {
+  const res = await fetchWithRetry(url, init, opts);
+  const body = await res.text();
+  if (!res.ok) throw new HttpError(res.status, url, body);
+  return JSON.parse(body) as T;
+}
+
+/** Serialises calls so consecutive calls are at least `minIntervalMs` apart. */
+export function createRateLimiter(minIntervalMs: number, now: () => number = Date.now, sleep: Sleep = realSleep) {
+  let next = 0;
+  let chain: Promise<void> = Promise.resolve();
+  return function throttle(): Promise<void> {
+    chain = chain.then(async () => {
+      const wait = next - now();
+      if (wait > 0) await sleep(wait);
+      next = now() + minIntervalMs;
+    });
+    return chain;
+  };
+}

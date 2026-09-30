@@ -1,0 +1,183 @@
+{
+  "uri": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-20T00:00:00&updatedTo=2026-09-23T00:00:00&limit=100",
+  "version": "1.1",
+  "publishedDate": "2026-09-23T05:59:41Z",
+  "publisher": { "name": "Find a Tender", "uri": "https://www.find-tender.service.gov.uk" },
+  "releases": [
+    {
+      "ocid": "ocds-h6vhtk-04a1b2",
+      "id": "031245-2026",
+      "date": "2026-09-21T10:15:32+01:00",
+      "tag": ["tender"],
+      "initiationType": "tender",
+      "buyer": { "id": "GB-PPON-PXYZ-1234-ABCD", "name": "National Highways" },
+      "parties": [
+        { "id": "GB-PPON-PXYZ-1234-ABCD", "name": "National Highways", "roles": ["buyer"], "address": { "locality": "Guildford", "postalCode": "GU1 4LZ" } }
+      ],
+      "tender": {
+        "id": "ocds-h6vhtk-04a1b2",
+        "title": "A66 Northern Trans-Pennine - Temple Sowerby to Appleby Works",
+        "description": "Invitation to tender for dualling works.",
+        "status": "active",
+        "classification": { "scheme": "CPV", "id": "45233120" }
+      }
+    },
+    {
+      "ocid": "ocds-h6vhtk-04c9d8",
+      "id": "031877-2026",
+      "date": "2026-09-22T15:44:10+01:00",
+      "tag": ["award", "contract"],
+      "initiationType": "tender",
+      "buyer": { "id": "GB-PPON-PQRS-5678-EFGH", "name": "Sellafield Ltd" },
+      "parties": [
+        {
+          "id": "GB-PPON-PQRS-5678-EFGH",
+          "name": "Sellafield Ltd",
+          "roles": ["buyer"],
+          "address": { "streetAddress": "Hinton House", "locality": "Warrington", "postalCode": "WA3 6GR", "countryName": "United Kingdom" }
+        },
+        {
+          "id": "GB-COH-04567890",
+          "name": "Morgan Sindall Infrastructure Limited",
+          "roles": ["supplier"],
+          "identifier": { "scheme": "GB-COH", "id": "04567890" },
+          "address": { "streetAddress": "Kent House", "locality": "London", "postalCode": "W1W 8AJ" }
+        }
+      ],
+      "tender": {
+        "id": "ocds-h6vhtk-04c9d8",
+        "title": "Sellafield Site Civils Framework Lot 2 - Remediation Enabling Works",
+        "description": "Civil engineering, groundworks, drainage and temporary works in support of remediation projects at the Sellafield site, Seascale, Cumbria. Call-off framework with continuous on-site teams.",
+        "classification": { "scheme": "CPV", "id": "45220000", "description": "Engineering works and construction works" },
+        "items": [
+          {
+            "id": "1",
+            "deliveryAddresses": [{ "region": "UKD11", "postalCode": "CA20 1PG" }],
+            "classification": { "scheme": "CPV", "id": "45220000" },
+            "additionalClassifications": [{ "scheme": "CPV", "id": "71300000" }]
+          }
+        ],
+        "lots": [{ "id": "2", "title": "Remediation Enabling Works" }]
+      },
+      "awards": [
+        {
+          "id": "031877-2026-2",
+          "status": "active",
+          "date": "2026-09-15",
+          "title": "Sellafield Site Civils Framework Lot 2 - Remediation Enabling Works",
+          "value": { "amountGross": 96000000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-04567890", "name": "Morgan Sindall Infrastructure Limited" }]
+        }
+      ],
+      "contracts": [
+        {
+          "id": "031877-2026-2-C",
+          "awardID": "031877-2026-2",
+          "status": "active",
+          "value": { "amount": 80000000, "currency": "GBP" },
+          "period": { "startDate": "2026-10-05", "endDate": "2030-10-04" },
+          "dateSigned": "2026-09-19"
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-h6vhtk-04c9d8",
+      "id": "030001-2026",
+      "date": "2026-08-01T09:00:00+01:00",
+      "tag": ["award"],
+      "buyer": { "id": "GB-PPON-PQRS-5678-EFGH", "name": "Sellafield Ltd" },
+      "parties": [
+        { "id": "GB-PPON-PQRS-5678-EFGH", "name": "Sellafield Ltd", "roles": ["buyer"] },
+        { "id": "GB-COH-04567890", "name": "Morgan Sindall Infrastructure Limited", "roles": ["supplier"] }
+      ],
+      "tender": {
+        "title": "Sellafield Site Civils Framework Lot 2 - Remediation Enabling Works",
+        "classification": { "scheme": "CPV", "id": "45220000" }
+      },
+      "awards": [
+        {
+          "id": "030001-2026-2",
+          "status": "pending",
+          "date": "2026-07-30",
+          "value": { "amount": 96000000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-04567890", "name": "Morgan Sindall Infrastructure Limited" }]
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-h6vhtk-04dd11",
+      "id": "031990-2026",
+      "date": "2026-09-22T17:02:00+01:00",
+      "tag": ["award"],
+      "buyer": { "id": "GB-PPON-PAAA-1111", "name": "Somerset Council" },
+      "parties": [
+        { "id": "GB-PPON-PAAA-1111", "name": "Somerset Council", "roles": ["buyer"], "address": { "postalCode": "TA1 4DY" } },
+        { "id": "GB-COH-01234567", "name": "Kier Highways Ltd", "roles": ["supplier"], "identifier": { "scheme": "GB-COH", "id": "01234567" } }
+      ],
+      "tender": {
+        "title": "A39 Bridgwater to Cannington Resurfacing and Drainage Improvements",
+        "classification": { "scheme": "CPV", "id": "45233142" }
+      },
+      "awards": [
+        {
+          "id": "031990-2026-1",
+          "status": "active",
+          "date": "2026-09-19",
+          "value": { "amount": 6150000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-01234567", "name": "Kier Highways Ltd" }]
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-h6vhtk-04ee22",
+      "id": "032010-2026",
+      "date": "2026-09-22T12:00:00+01:00",
+      "tag": ["award"],
+      "buyer": { "id": "B-EU", "name": "Northern Ireland Water" },
+      "parties": [
+        { "id": "B-EU", "name": "Northern Ireland Water", "roles": ["buyer"] },
+        { "id": "S-EU", "name": "Euro Pipes GmbH", "roles": ["supplier"] }
+      ],
+      "tender": {
+        "title": "Supply of Ductile Iron Pipes",
+        "classification": { "scheme": "CPV", "id": "44163000" }
+      },
+      "awards": [
+        {
+          "id": "032010-2026-1",
+          "status": "active",
+          "date": "2026-09-20",
+          "value": { "amount": 2400000, "currency": "EUR" },
+          "suppliers": [{ "id": "S-EU", "name": "Euro Pipes GmbH" }]
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-h6vhtk-04ff33",
+      "id": "032111-2026",
+      "date": "2026-09-22T13:30:00+01:00",
+      "tag": ["contract"],
+      "buyer": { "id": "GB-PPON-SZC", "name": "Sizewell C Limited" },
+      "parties": [
+        { "id": "GB-PPON-SZC", "name": "Sizewell C Limited", "roles": ["buyer"], "address": { "locality": "Leiston", "postalCode": "IP16 4UR" } },
+        { "id": "GB-COH-05678901", "name": "Balfour Beatty Civil Engineering Limited", "roles": ["supplier"], "identifier": { "scheme": "GB-COH", "id": "5678901" } }
+      ],
+      "tender": {
+        "title": "Sizewell C Two Village Bypass Maintenance and Drainage Package",
+        "description": "Highway drainage, landscaping and maintenance of the Two Village Bypass (A12) serving the Sizewell C construction site near Farnham and Stratford St Andrew, Suffolk.",
+        "classification": { "scheme": "CPV", "id": "50230000" }
+      },
+      "awards": [
+        {
+          "id": "032111-2026-1",
+          "status": "active",
+          "date": "2026-09-12",
+          "value": { "amount": 3300000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-05678901", "name": "Balfour Beatty Civil Engineering Limited" }],
+          "contractPeriod": { "durationInDays": 730 }
+        }
+      ]
+    }
+  ],
+  "links": { "next": null }
+}

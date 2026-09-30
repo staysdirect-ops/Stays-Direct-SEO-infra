@@ -1,0 +1,87 @@
+import { normalizePostcode } from "./geo.ts";
+
+export interface LeadFormValue {
+  company_name: string | null;
+  contact_name: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  contact_role: string | null;
+  site_town: string | null;
+  site_postcode: string | null;
+  est_workers: number | null;
+  start_date: string | null;
+  notes: string | null;
+  landing_page: string | null;
+  utm: Record<string, string>;
+}
+
+export type LeadFormResult =
+  | { ok: true; spam: boolean; value: LeadFormValue }
+  | { ok: false; errors: string[] };
+
+export const HONEYPOT_FIELD = "website";
+const EMAIL_RE = /^[^\s@<>()]+@[^\s@<>()]+\.[^\s@<>()]{2,}$/;
+const PHONE_RE = /^\+?[\d\s()-]{7,20}$/;
+
+function str(v: unknown, max: number): string | null {
+  if (typeof v !== "string") return null;
+  const t = v.replace(/[\u0000-\u001f\u007f]/g, " ").trim();
+  return t ? t.slice(0, max) : null;
+}
+
+export function validateLeadForm(input: unknown): LeadFormResult {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return { ok: false, errors: ["Body must be a JSON object"] };
+  const o = input as Record<string, unknown>;
+  const errors: string[] = [];
+  const spam = typeof o[HONEYPOT_FIELD] === "string" && (o[HONEYPOT_FIELD] as string).trim() !== "";
+
+  const email = str(o.contact_email ?? o.email, 200);
+  if (email && !EMAIL_RE.test(email)) errors.push("contact_email is not a valid email address");
+  const phone = str(o.contact_phone ?? o.phone, 30);
+  if (phone && !PHONE_RE.test(phone)) errors.push("contact_phone is not a valid phone number");
+  if (!email && !phone) errors.push("Provide contact_email or contact_phone");
+
+  let workers: number | null = null;
+  if (o.est_workers != null && o.est_workers !== "") {
+    const n = Number(o.est_workers);
+    if (!Number.isInteger(n) || n < 1 || n > 1000) errors.push("est_workers must be a whole number between 1 and 1000");
+    else workers = n;
+  }
+  let start: string | null = null;
+  const rawStart = str(o.start_date, 20);
+  if (rawStart) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawStart) || Number.isNaN(Date.parse(rawStart))) errors.push("start_date must be YYYY-MM-DD");
+    else start = rawStart;
+  }
+  const rawPc = str(o.site_postcode, 12);
+  const postcode = rawPc ? normalizePostcode(rawPc) : null;
+  if (rawPc && !postcode) errors.push("site_postcode is not a valid UK postcode");
+
+  const landing = str(o.landing_page, 500);
+  const utm: Record<string, string> = {};
+  const utmIn = o.utm && typeof o.utm === "object" && !Array.isArray(o.utm) ? (o.utm as Record<string, unknown>) : o;
+  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid"]) {
+    const v = str(utmIn[k], 200);
+    if (v) utm[k] = v;
+  }
+
+  if (errors.length) return { ok: false, errors };
+  return {
+    ok: true,
+    spam,
+    value: {
+      company_name: str(o.company_name ?? o.company, 200),
+      contact_name: str(o.contact_name ?? o.name, 200),
+      contact_email: email?.toLowerCase() ?? null,
+      contact_phone: phone,
+      contact_role: str(o.contact_role, 100),
+      site_town: str(o.site_town ?? o.town, 100),
+      site_postcode: postcode,
+      est_workers: workers,
+      start_date: start,
+      notes: str(o.notes ?? o.message, 2000),
+      landing_page: landing && (landing.startsWith("/") || /^https:\/\/(www\.)?staysdirect\.co\.uk\//.test(landing)) ? landing : null,
+      utm,
+    },
+  };
+}

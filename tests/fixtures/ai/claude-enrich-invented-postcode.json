@@ -1,0 +1,16 @@
+```json
+{
+  "is_relevant": true,
+  "relevance_reason": "Water recycling centre upgrade with new tanks and M&E installation over 17 months.",
+  "project_type": "water",
+  "site_location_text": "Lowestoft Water Recycling Centre, Suffolk",
+  "site_postcode": "NR32 1XY",
+  "site_town": "Lowestoft",
+  "location_confidence": "high",
+  "est_workers_min": 40,
+  "est_workers_max": 25,
+  "est_workers_away_from_home": 60,
+  "duration_months": 17,
+  "start_date": "2026-10-19"
+}
+```

@@ -1,0 +1,93 @@
+export const PROJECT_TYPES = [
+  "rail",
+  "road",
+  "energy",
+  "nuclear",
+  "water",
+  "data_centre",
+  "defence",
+  "housing",
+  "commercial",
+  "education",
+  "health",
+  "other",
+] as const;
+export type ProjectType = (typeof PROJECT_TYPES)[number];
+
+export const LOCATION_CONFIDENCES = ["high", "medium", "low"] as const;
+export type LocationConfidence = (typeof LOCATION_CONFIDENCES)[number];
+
+export const RADAR_STATUSES = [
+  "new",
+  "qualified",
+  "rejected",
+  "needs_review",
+  "lead_created",
+] as const;
+export type RadarStatus = (typeof RADAR_STATUSES)[number];
+
+export const LEAD_STATUSES = [
+  "new",
+  "researching",
+  "ready",
+  "contacted",
+  "replied",
+  "quoted",
+  "won",
+  "lost",
+  "do_not_contact",
+] as const;
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
+
+export const LEAD_SOURCES = ["radar", "seo_form", "calculator", "manual"] as const;
+export type LeadSource = (typeof LEAD_SOURCES)[number];
+
+export const PAGE_STATUSES = [
+  "queued",
+  "generating",
+  "draft",
+  "in_review",
+  "approved",
+  "published",
+  "needs_refresh",
+] as const;
+export type PageStatus = (typeof PAGE_STATUSES)[number];
+
+export type RadarSource = "contracts_finder" | "find_a_tender";
+
+export interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+export interface CompanyFacts {
+  name: string;
+  website: string;
+  phone: string;
+  email?: string;
+  property_bedrooms_min: number;
+  property_bedrooms_max: number;
+  credit_terms_days_min: number;
+  credit_terms_days_max: number;
+  hotel_saving_pct_min: number;
+  hotel_saving_pct_max: number;
+  included: string[];
+  usps: string[];
+}
+
+export interface Settings {
+  brand_voice: string;
+  company_facts: CompanyFacts;
+  claude_model: string;
+  claude_cheap_model: string;
+  openai_model: string;
+  perplexity_model: string;
+  radar_min_value_gbp: number;
+  radar_match_radius_miles: number;
+  radar_cpv_prefixes: string[];
+  seo_pages_per_day: number;
+  blog_posts_per_week: number;
+  daily_ai_spend_cap_usd: number;
+  tracked_brand_names: string[];
+  competitor_names: string[];
+}

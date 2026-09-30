@@ -1,76 +1,170 @@
-export interface QualityCheckResult {
-  score: number;
-  issues: string[];
-  passed: boolean;
-}
+import { stripMarkdown, wordCount } from "./text.ts";
 
-const BANNED_PHRASES = [
-  "nestled",
-  "vibrant",
-  "quaint",
-  "charming",
-  "picturesque",
-  "discover",
-  "experience",
-  "unique opportunity",
-  "unparalleled",
-];
+export type ContentKind = "location" | "project" | "blog";
 
-const WORD_COUNT_RANGES: Record<string, [number, number]> = {
+export const WORD_RANGES: Record<ContentKind, [number, number]> = {
   location: [700, 1200],
   project: [700, 1200],
   blog: [1200, 1800],
 };
 
-export function checkContentQuality(content: {
-  type: "location" | "project" | "blog";
+export const MIN_FAQS: Record<ContentKind, number> = { location: 6, project: 6, blog: 5 };
+
+export const BANNED_PHRASES = [
+  "nestled",
+  "vibrant",
+  "bustling",
+  "hidden gem",
+  "look no further",
+  "fast-paced world",
+  "in today's",
+  "unparalleled",
+  "second to none",
+  "world-class",
+  "state-of-the-art",
+  "seamless",
+  "elevate your",
+  "unlock",
+  "delve",
+  "testament to",
+  "rich history",
+  "boasts",
+  "thriving",
+  "picturesque",
+  "charming",
+  "home away from home",
+  "tapestry",
+  "game-changer",
+  "whether you're",
+  "we've got you covered",
+  "perfect for",
+  "stunning",
+];
+
+export const SIMILARITY_THRESHOLD = 0.5;
+
+export interface QualityInput {
+  kind: ContentKind;
   title: string;
-  body: string;
-  dataPackNumbers: number[];
+  metaDescription: string;
+  /** Everything a reader sees: intro, section markdown, FAQ questions and answers. */
+  bodyMarkdown: string;
   faqCount: number;
-}): QualityCheckResult {
-  const issues: string[] = [];
+  allowedNumbers: Set<number>;
+  /** Highest pg_trgm similarity against the most similar existing pages (0..1). */
+  maxSimilarity?: number | null;
+  mostSimilarSlug?: string | null;
+  aiReview?: { score: number; issues: string[] } | null;
+}
 
-  // Word count check
-  const wordCount = content.body.split(/\s+/).length;
-  const [minWords, maxWords] = WORD_COUNT_RANGES[content.type];
-  if (wordCount < minWords || wordCount > maxWords) {
-    issues.push(`Word count ${wordCount} outside range ${minWords}-${maxWords}`);
+export interface QualityResult {
+  score: number;
+  notes: string[];
+  wordCount: number;
+  unverifiedNumbers: string[];
+  bannedPhrases: string[];
+}
+
+export const PASS_SCORE = 70;
+
+/**
+ * Finds numeric tokens a reader would treat as a fact. Ordered-list markers and
+ * heading numbering are ignored; "24/7" and phone numbers are split into parts.
+ */
+export function extractFactNumbers(markdown: string): Array<{ raw: string; value: number }> {
+  const text = markdown
+    .replace(/^\s*\d+[.)]\s+/gm, "")
+    .replace(/\]\([^)]*\)/g, "]")
+    .replace(/https?:\/\/\S+/g, "");
+  const plain = stripMarkdown(text);
+  const out: Array<{ raw: string; value: number }> = [];
+  // Digits glued to letters (A39, M5, HS2) are names, and clock times (5am) are not facts.
+  for (const m of plain.matchAll(/(?<![A-Za-z0-9.,])\d[\d,]*(?:\.\d+)?(?![A-Za-z0-9]|\s?(?:am|pm)\b)/gi)) {
+    const raw = m[0].replace(/[.,]+$/, "");
+    const value = Number(raw.replace(/,/g, ""));
+    if (Number.isFinite(value)) out.push({ raw, value });
+  }
+  return out;
+}
+
+export function findUnverifiedNumbers(markdown: string, allowed: Set<number>): string[] {
+  const bad = new Set<string>();
+  for (const { raw, value } of extractFactNumbers(markdown)) {
+    if (!allowed.has(value)) bad.add(raw);
+  }
+  return [...bad];
+}
+
+export function findBannedPhrases(text: string): string[] {
+  const lower = stripMarkdown(text).toLowerCase().replace(/[’]/g, "'");
+  return BANNED_PHRASES.filter((p) => new RegExp(`\\b${p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}s?\\b`, "i").test(lower));
+}
+
+export function checkQuality(input: QualityInput): QualityResult {
+  const notes: string[] = [];
+  let score = 100;
+
+  const words = wordCount(input.bodyMarkdown);
+  const [minW, maxW] = WORD_RANGES[input.kind];
+  if (words < minW || words > maxW) {
+    score -= 20;
+    notes.push(`Word count ${words} is outside ${minW}-${maxW}.`);
   }
 
-  // Extract numbers from body
-  const bodyNumbers = extractNumbers(content.body);
-  const unmatchedNumbers = bodyNumbers.filter((num) => !content.dataPackNumbers.includes(num));
-  if (unmatchedNumbers.length > 0) {
-    issues.push(`Numbers in body not from data pack: ${unmatchedNumbers.join(", ")}`);
+  const unverified = findUnverifiedNumbers(input.bodyMarkdown, input.allowedNumbers);
+  if (unverified.length) {
+    score -= Math.min(40, 10 * unverified.length);
+    notes.push(`Numbers not found in the data pack: ${unverified.join(", ")}.`);
   }
 
-  // Banned phrases check
-  const foundBannedPhrases = BANNED_PHRASES.filter((phrase) => content.body.toLowerCase().includes(phrase));
-  if (foundBannedPhrases.length > 0) {
-    issues.push(`Contains banned phrases: ${foundBannedPhrases.join(", ")}`);
+  const banned = findBannedPhrases(`${input.title} ${input.metaDescription} ${input.bodyMarkdown}`);
+  if (banned.length) {
+    score -= Math.min(30, 10 * banned.length);
+    notes.push(`Banned phrases: ${banned.join(", ")}.`);
   }
 
-  // FAQ count check
-  if (content.faqCount < 6) {
-    issues.push(`FAQ count ${content.faqCount} below minimum 6`);
+  if (input.faqCount < MIN_FAQS[input.kind]) {
+    score -= 15;
+    notes.push(`Only ${input.faqCount} FAQs (need ${MIN_FAQS[input.kind]}+).`);
+  }
+  if (input.title.length > 60) {
+    score -= 5;
+    notes.push(`Title is ${input.title.length} characters (max 60).`);
+  }
+  if (input.metaDescription.length > 155) {
+    score -= 5;
+    notes.push(`Meta description is ${input.metaDescription.length} characters (max 155).`);
+  }
+  if (!input.metaDescription.trim()) {
+    score -= 5;
+    notes.push("Missing meta description.");
   }
 
-  // Title length check
-  if (content.title.length > 60) {
-    issues.push(`Title length ${content.title.length} exceeds 60 characters`);
+  if (input.maxSimilarity != null && input.maxSimilarity > SIMILARITY_THRESHOLD) {
+    score -= 25;
+    notes.push(
+      `Too similar to ${input.mostSimilarSlug ?? "an existing page"} (similarity ${input.maxSimilarity.toFixed(2)} > ${SIMILARITY_THRESHOLD}).`
+    );
   }
 
-  const score = Math.max(0, 100 - issues.length * 15);
+  if (input.aiReview) {
+    const ai = Math.max(0, Math.min(100, input.aiReview.score));
+    score = Math.round(score * 0.75 + ai * 0.25);
+    for (const issue of input.aiReview.issues.slice(0, 5)) notes.push(`Reviewer: ${issue}`);
+  }
+
+  // Unverifiable numbers are a factual risk, so they block review regardless of other scores.
+  if (unverified.length) score = Math.min(score, PASS_SCORE - 1);
 
   return {
-    score,
-    issues,
-    passed: score >= 70 && issues.length === 0,
+    score: Math.max(0, Math.min(100, Math.round(score))),
+    notes,
+    wordCount: words,
+    unverifiedNumbers: unverified,
+    bannedPhrases: banned,
   };
 }
 
-function extractNumbers(text: string): number[] {
-  const matches = text.match(/\d+/g) || [];
-  return Array.from(new Set(matches.map(Number)));
+export function statusFromQuality(score: number): "draft" | "in_review" {
+  return score >= PASS_SCORE ? "in_review" : "draft";
 }

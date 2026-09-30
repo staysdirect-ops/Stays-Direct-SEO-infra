@@ -1,0 +1,216 @@
+name,county,region,lat,lng
+London,Greater London,London,51.5074,-0.1278
+Birmingham,West Midlands,West Midlands,52.4862,-1.8904
+Manchester,Greater Manchester,North West,53.4808,-2.2426
+Leeds,West Yorkshire,Yorkshire and the Humber,53.8008,-1.5491
+Liverpool,Merseyside,North West,53.4084,-2.9916
+Sheffield,South Yorkshire,Yorkshire and the Humber,53.3811,-1.4701
+Bristol,Bristol,South West,51.4545,-2.5879
+Newcastle upon Tyne,Tyne and Wear,North East,54.9783,-1.6178
+Nottingham,Nottinghamshire,East Midlands,52.9548,-1.1581
+Leicester,Leicestershire,East Midlands,52.6369,-1.1398
+Coventry,West Midlands,West Midlands,52.4068,-1.5197
+Bradford,West Yorkshire,Yorkshire and the Humber,53.7960,-1.7594
+Hull,East Riding of Yorkshire,Yorkshire and the Humber,53.7676,-0.3274
+Stoke-on-Trent,Staffordshire,West Midlands,53.0027,-2.1794
+Wolverhampton,West Midlands,West Midlands,52.5862,-2.1288
+Derby,Derbyshire,East Midlands,52.9225,-1.4746
+Southampton,Hampshire,South East,50.9097,-1.4044
+Portsmouth,Hampshire,South East,50.8198,-1.0880
+Plymouth,Devon,South West,50.3755,-4.1427
+Exeter,Devon,South West,50.7184,-3.5339
+Reading,Berkshire,South East,51.4543,-0.9781
+Oxford,Oxfordshire,South East,51.7520,-1.2577
+Cambridge,Cambridgeshire,East of England,52.2053,0.1218
+Norwich,Norfolk,East of England,52.6309,1.2974
+Ipswich,Suffolk,East of England,52.0567,1.1482
+Milton Keynes,Buckinghamshire,South East,52.0406,-0.7594
+Northampton,Northamptonshire,East Midlands,52.2405,-0.9027
+Peterborough,Cambridgeshire,East of England,52.5695,-0.2405
+Luton,Bedfordshire,East of England,51.8787,-0.4200
+Bedford,Bedfordshire,East of England,52.1360,-0.4667
+Swindon,Wiltshire,South West,51.5558,-1.7797
+Gloucester,Gloucestershire,South West,51.8642,-2.2382
+Cheltenham,Gloucestershire,South West,51.8994,-2.0783
+Bath,Somerset,South West,51.3811,-2.3590
+Bournemouth,Dorset,South West,50.7192,-1.8808
+Poole,Dorset,South West,50.7150,-1.9872
+Brighton,East Sussex,South East,50.8225,-0.1372
+Canterbury,Kent,South East,51.2802,1.0789
+Maidstone,Kent,South East,51.2704,0.5227
+Ashford,Kent,South East,51.1465,0.8750
+Dover,Kent,South East,51.1279,1.3134
+Folkestone,Kent,South East,51.0814,1.1695
+Sittingbourne,Kent,South East,51.3408,0.7323
+Chatham,Kent,South East,51.3781,0.5270
+Dartford,Kent,South East,51.4462,0.2169
+Gravesend,Kent,South East,51.4415,0.3685
+Tilbury,Essex,East of England,51.4623,0.3584
+Grays,Essex,East of England,51.4753,0.3226
+Basildon,Essex,East of England,51.5761,0.4887
+Southend-on-Sea,Essex,East of England,51.5459,0.7077
+Chelmsford,Essex,East of England,51.7356,0.4685
+Colchester,Essex,East of England,51.8959,0.8919
+Braintree,Essex,East of England,51.8781,0.5530
+Harlow,Essex,East of England,51.7727,0.1023
+Bishop's Stortford,Hertfordshire,East of England,51.8720,0.1580
+Stevenage,Hertfordshire,East of England,51.9038,-0.1966
+Watford,Hertfordshire,East of England,51.6565,-0.3903
+St Albans,Hertfordshire,East of England,51.7527,-0.3394
+Hemel Hempstead,Hertfordshire,East of England,51.7526,-0.4692
+Dagenham,Greater London,London,51.5409,0.1480
+Hayes,Greater London,London,51.5127,-0.4210
+Uxbridge,Greater London,London,51.5461,-0.4786
+Slough,Berkshire,South East,51.5105,-0.5950
+Staines-upon-Thames,Surrey,South East,51.4340,-0.5110
+Bracknell,Berkshire,South East,51.4136,-0.7505
+Crawley,West Sussex,South East,51.1091,-0.1872
+Guildford,Surrey,South East,51.2362,-0.5704
+Woking,Surrey,South East,51.3190,-0.5580
+Farnborough,Hampshire,South East,51.2868,-0.7526
+Basingstoke,Hampshire,South East,51.2665,-1.0924
+Andover,Hampshire,South East,51.2111,-1.4919
+Winchester,Hampshire,South East,51.0632,-1.3080
+Fareham,Hampshire,South East,50.8526,-1.1795
+Chichester,West Sussex,South East,50.8376,-0.7749
+Newbury,Berkshire,South East,51.4014,-1.3231
+Didcot,Oxfordshire,South East,51.6080,-1.2448
+Banbury,Oxfordshire,South East,52.0629,-1.3398
+Bicester,Oxfordshire,South East,51.8999,-1.1537
+Aylesbury,Buckinghamshire,South East,51.8168,-0.8124
+Wendover,Buckinghamshire,South East,51.7616,-0.7431
+Amersham,Buckinghamshire,South East,51.6749,-0.6076
+High Wycombe,Buckinghamshire,South East,51.6287,-0.7482
+Rugby,Warwickshire,West Midlands,52.3709,-1.2650
+Leamington Spa,Warwickshire,West Midlands,52.2852,-1.5201
+Warwick,Warwickshire,West Midlands,52.2819,-1.5849
+Nuneaton,Warwickshire,West Midlands,52.5230,-1.4652
+Solihull,West Midlands,West Midlands,52.4118,-1.7776
+Coleshill,Warwickshire,West Midlands,52.4990,-1.7071
+Tamworth,Staffordshire,West Midlands,52.6339,-1.6951
+Lichfield,Staffordshire,West Midlands,52.6817,-1.8266
+Stafford,Staffordshire,West Midlands,52.8067,-2.1170
+Burton upon Trent,Staffordshire,West Midlands,52.8019,-1.6370
+Walsall,West Midlands,West Midlands,52.5860,-1.9829
+Dudley,West Midlands,West Midlands,52.5087,-2.0877
+Telford,Shropshire,West Midlands,52.6766,-2.4469
+Shrewsbury,Shropshire,West Midlands,52.7073,-2.7553
+Worcester,Worcestershire,West Midlands,52.1920,-2.2200
+Hereford,Herefordshire,West Midlands,52.0565,-2.7160
+Crewe,Cheshire,North West,53.0979,-2.4416
+Chester,Cheshire,North West,53.1934,-2.8931
+Warrington,Cheshire,North West,53.3900,-2.5970
+Runcorn,Cheshire,North West,53.3417,-2.7300
+Ellesmere Port,Cheshire,North West,53.2789,-2.9022
+Stockport,Greater Manchester,North West,53.4106,-2.1575
+Salford,Greater Manchester,North West,53.4875,-2.2901
+Wigan,Greater Manchester,North West,53.5450,-2.6325
+Bolton,Greater Manchester,North West,53.5769,-2.4282
+Preston,Lancashire,North West,53.7632,-2.7031
+Blackpool,Lancashire,North West,53.8175,-3.0357
+Lancaster,Lancashire,North West,54.0466,-2.8007
+Heysham,Lancashire,North West,54.0415,-2.8940
+Carlisle,Cumbria,North West,54.8925,-2.9329
+Barrow-in-Furness,Cumbria,North West,54.1108,-3.2261
+Whitehaven,Cumbria,North West,54.5489,-3.5870
+Workington,Cumbria,North West,54.6425,-3.5448
+Seascale,Cumbria,North West,54.3964,-3.4847
+Kendal,Cumbria,North West,54.3280,-2.7463
+Penrith,Cumbria,North West,54.6641,-2.7524
+Appleby-in-Westmorland,Cumbria,North West,54.5776,-2.4890
+Darlington,County Durham,North East,54.5236,-1.5595
+Durham,County Durham,North East,54.7753,-1.5849
+Sunderland,Tyne and Wear,North East,54.9069,-1.3838
+Gateshead,Tyne and Wear,North East,54.9527,-1.6034
+Middlesbrough,North Yorkshire,North East,54.5742,-1.2350
+Stockton-on-Tees,County Durham,North East,54.5705,-1.3182
+Billingham,County Durham,North East,54.6061,-1.2894
+Hartlepool,County Durham,North East,54.6892,-1.2129
+Redcar,North Yorkshire,North East,54.6167,-1.0667
+Blyth,Northumberland,North East,55.1270,-1.5085
+York,North Yorkshire,Yorkshire and the Humber,53.9600,-1.0873
+Harrogate,North Yorkshire,Yorkshire and the Humber,53.9921,-1.5418
+Scarborough,North Yorkshire,Yorkshire and the Humber,54.2831,-0.3998
+Selby,North Yorkshire,Yorkshire and the Humber,53.7837,-1.0672
+Goole,East Riding of Yorkshire,Yorkshire and the Humber,53.7047,-0.8716
+Doncaster,South Yorkshire,Yorkshire and the Humber,53.5228,-1.1285
+Rotherham,South Yorkshire,Yorkshire and the Humber,53.4302,-1.3568
+Barnsley,South Yorkshire,Yorkshire and the Humber,53.5526,-1.4797
+Wakefield,West Yorkshire,Yorkshire and the Humber,53.6833,-1.4977
+Huddersfield,West Yorkshire,Yorkshire and the Humber,53.6458,-1.7850
+Halifax,West Yorkshire,Yorkshire and the Humber,53.7248,-1.8658
+Grimsby,Lincolnshire,Yorkshire and the Humber,53.5675,-0.0801
+Immingham,Lincolnshire,Yorkshire and the Humber,53.6139,-0.2183
+Scunthorpe,Lincolnshire,Yorkshire and the Humber,53.5809,-0.6502
+Lincoln,Lincolnshire,East Midlands,53.2307,-0.5406
+Boston,Lincolnshire,East Midlands,52.9789,-0.0266
+Spalding,Lincolnshire,East Midlands,52.7860,-0.1528
+Grantham,Lincolnshire,East Midlands,52.9119,-0.6420
+Newark-on-Trent,Nottinghamshire,East Midlands,53.0765,-0.8085
+Mansfield,Nottinghamshire,East Midlands,53.1472,-1.1987
+Chesterfield,Derbyshire,East Midlands,53.2350,-1.4210
+Loughborough,Leicestershire,East Midlands,52.7721,-1.2062
+Hinckley,Leicestershire,East Midlands,52.5413,-1.3725
+Daventry,Northamptonshire,East Midlands,52.2565,-1.1610
+Kettering,Northamptonshire,East Midlands,52.3988,-0.7258
+Corby,Northamptonshire,East Midlands,52.4914,-0.6965
+Wellingborough,Northamptonshire,East Midlands,52.3033,-0.6942
+King's Lynn,Norfolk,East of England,52.7517,0.3954
+Thetford,Norfolk,East of England,52.4136,0.7494
+Great Yarmouth,Norfolk,East of England,52.6083,1.7305
+Lowestoft,Suffolk,East of England,52.4811,1.7534
+Leiston,Suffolk,East of England,52.2090,1.5780
+Saxmundham,Suffolk,East of England,52.2150,1.4910
+Felixstowe,Suffolk,East of England,51.9636,1.3515
+Stowmarket,Suffolk,East of England,52.1889,0.9978
+Bury St Edmunds,Suffolk,East of England,52.2474,0.7183
+Huntingdon,Cambridgeshire,East of England,52.3310,-0.1830
+Bridgwater,Somerset,South West,51.1280,-3.0036
+Taunton,Somerset,South West,51.0149,-3.1029
+Burnham-on-Sea,Somerset,South West,51.2383,-2.9969
+Weston-super-Mare,Somerset,South West,51.3461,-2.9771
+Minehead,Somerset,South West,51.2042,-3.4786
+Yeovil,Somerset,South West,50.9421,-2.6336
+Salisbury,Wiltshire,South West,51.0688,-1.7945
+Chippenham,Wiltshire,South West,51.4585,-2.1158
+Truro,Cornwall,South West,50.2632,-5.0510
+Barnstaple,Devon,South West,51.0800,-4.0582
+Torquay,Devon,South West,50.4619,-3.5253
+Weymouth,Dorset,South West,50.6144,-2.4570
+Cardiff,Cardiff,Wales,51.4816,-3.1791
+Swansea,Swansea,Wales,51.6214,-3.9436
+Newport,Newport,Wales,51.5842,-2.9977
+Port Talbot,Neath Port Talbot,Wales,51.5920,-3.7800
+Neath,Neath Port Talbot,Wales,51.6630,-3.8050
+Bridgend,Bridgend,Wales,51.5042,-3.5769
+Llanelli,Carmarthenshire,Wales,51.6840,-4.1630
+Milford Haven,Pembrokeshire,Wales,51.7128,-5.0341
+Pembroke Dock,Pembrokeshire,Wales,51.6934,-4.9458
+Wrexham,Wrexham,Wales,53.0462,-2.9930
+Connah's Quay,Flintshire,Wales,53.2170,-3.0580
+Holyhead,Isle of Anglesey,Wales,53.3094,-4.6330
+Bangor,Gwynedd,Wales,53.2274,-4.1293
+Glasgow,Glasgow City,Scotland,55.8642,-4.2518
+Edinburgh,City of Edinburgh,Scotland,55.9533,-3.1883
+Aberdeen,Aberdeen City,Scotland,57.1497,-2.0943
+Dundee,Dundee City,Scotland,56.4620,-2.9707
+Inverness,Highland,Scotland,57.4778,-4.2247
+Perth,Perth and Kinross,Scotland,56.3950,-3.4308
+Stirling,Stirling,Scotland,56.1165,-3.9369
+Falkirk,Falkirk,Scotland,56.0019,-3.7839
+Grangemouth,Falkirk,Scotland,56.0118,-3.7178
+Livingston,West Lothian,Scotland,55.9016,-3.5226
+Kirkcaldy,Fife,Scotland,56.1107,-3.1674
+Dunfermline,Fife,Scotland,56.0717,-3.4522
+Paisley,Renfrewshire,Scotland,55.8456,-4.4239
+Ayr,South Ayrshire,Scotland,55.4586,-4.6292
+Kilmarnock,East Ayrshire,Scotland,55.6117,-4.4958
+Dumfries,Dumfries and Galloway,Scotland,55.0709,-3.6051
+Peterhead,Aberdeenshire,Scotland,57.5051,-1.7938
+Fort William,Highland,Scotland,56.8198,-5.1052
+Invergordon,Highland,Scotland,57.6893,-4.1663
+Thurso,Highland,Scotland,58.5936,-3.5221
+Belfast,Belfast,Northern Ireland,54.5973,-5.9301
+Derry,Derry and Strabane,Northern Ireland,54.9966,-7.3086
+Lisburn,Lisburn and Castlereagh,Northern Ireland,54.5162,-6.0580
+Newry,Newry Mourne and Down,Northern Ireland,54.1751,-6.3402

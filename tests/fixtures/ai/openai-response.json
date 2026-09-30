@@ -1,0 +1,16 @@
+{
+  "id": "resp_abc123",
+  "object": "response",
+  "model": "gpt-5",
+  "output": [
+    {"type": "web_search_call", "id": "ws_1", "status": "completed"},
+    {"type": "message", "id": "msg_1", "role": "assistant", "content": [
+      {"type": "output_text", "text": "For contractor accommodation in Bridgwater, popular options include Overnightly, which lists houses near Hinkley Point C, and Comfy Workers. StaysDirect also rents whole houses to crews with bills included. Local hotels are another option for short stays.",
+       "annotations": [
+        {"type": "url_citation", "start_index": 76, "end_index": 100, "url": "https://www.overnightly.co.uk/contractor-accommodation/bridgwater?utm_source=chatgpt.com", "title": "Contractor accommodation Bridgwater"},
+        {"type": "url_citation", "start_index": 150, "end_index": 170, "url": "https://staysdirect.co.uk/?utm_source=chatgpt.com", "title": "StaysDirect"}
+      ]}
+    ]}
+  ],
+  "usage": {"input_tokens": 3120, "output_tokens": 210, "total_tokens": 3330}
+}

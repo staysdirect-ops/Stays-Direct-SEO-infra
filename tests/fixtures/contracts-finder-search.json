@@ -1,0 +1,183 @@
+{
+  "uri": "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-20T00:00:00&publishedTo=2026-09-23T00:00:00&stages=award&limit=100",
+  "publishedDate": "2026-09-23T06:00:12Z",
+  "publisher": { "name": "Crown Commercial Service", "scheme": "GB-GOR", "uid": "PC390", "uri": "https://www.gov.uk/ccs" },
+  "releases": [
+    {
+      "ocid": "ocds-b5fd17-7f3c2a1e-4b6d-4c1a-9d2e-1a2b3c4d5e6f",
+      "id": "ocds-b5fd17-7f3c2a1e-4b6d-4c1a-9d2e-1a2b3c4d5e6f-award-1",
+      "date": "2026-09-21T14:03:00Z",
+      "tag": ["award"],
+      "initiationType": "tender",
+      "buyer": { "id": "GB-GOR-SomersetCouncil", "name": "Somerset Council" },
+      "parties": [
+        {
+          "id": "GB-GOR-SomersetCouncil",
+          "name": "Somerset Council",
+          "roles": ["buyer"],
+          "address": { "streetAddress": "County Hall", "locality": "Taunton", "postalCode": "TA1 4DY", "countryName": "England" }
+        },
+        {
+          "id": "GB-COH-01234567",
+          "name": "Kier Highways Limited",
+          "roles": ["supplier"],
+          "identifier": { "scheme": "GB-COH", "id": "01234567", "legalName": "KIER HIGHWAYS LIMITED" },
+          "address": { "streetAddress": "2nd Floor, Optimum House", "locality": "Clippers Quay", "region": "Salford", "postalCode": "M50 3XP", "countryName": "England" }
+        }
+      ],
+      "tender": {
+        "id": "SC-2026-0412",
+        "title": "A39 Bridgwater to Cannington Resurfacing and Drainage Improvements",
+        "description": "Carriageway resurfacing, drainage renewal and kerb replacement on the A39 between Bridgwater and Cannington, including works at the junction with the C182 near Hinkley Point C freight route. Works are planned over approximately 14 months with night and weekend possessions.",
+        "value": { "amount": 6200000, "currency": "GBP" },
+        "classification": { "scheme": "CPV", "id": "45233142", "description": "Road-repair works" },
+        "items": [
+          {
+            "id": "1",
+            "classification": { "scheme": "CPV", "id": "45233142", "description": "Road-repair works" },
+            "additionalClassifications": [{ "scheme": "CPV", "id": "45232452", "description": "Drainage works" }],
+            "deliveryAddresses": [{ "locality": "Cannington", "region": "Somerset", "postalCode": "TA5 2LD", "countryName": "England" }]
+          }
+        ],
+        "contractPeriod": { "startDate": "2026-11-02T00:00:00Z", "endDate": "2027-12-31T23:59:59Z" }
+      },
+      "awards": [
+        {
+          "id": "SC-2026-0412-1",
+          "status": "active",
+          "date": "2026-09-19T00:00:00Z",
+          "value": { "amount": 6150000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-01234567", "name": "Kier Highways Limited" }],
+          "contractPeriod": { "startDate": "2026-11-02T00:00:00Z", "endDate": "2027-12-31T23:59:59Z" }
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-b5fd17-2b9e8d7c-1a2b-4c3d-8e9f-0a1b2c3d4e5f",
+      "id": "ocds-b5fd17-2b9e8d7c-1a2b-4c3d-8e9f-0a1b2c3d4e5f-award-1",
+      "date": "2026-09-22T09:12:00Z",
+      "tag": ["award"],
+      "buyer": { "id": "GB-GOR-NetworkRail", "name": "Network Rail Infrastructure Limited" },
+      "parties": [
+        {
+          "id": "GB-GOR-NetworkRail",
+          "name": "Network Rail Infrastructure Limited",
+          "roles": ["buyer"],
+          "address": { "streetAddress": "Waterloo General Offices", "locality": "London", "postalCode": "SE1 8SW" }
+        },
+        {
+          "id": "GB-COH-SC123456",
+          "name": "Story Contracting Ltd",
+          "roles": ["supplier"],
+          "identifier": { "scheme": "GB-COH", "id": "SC123456" },
+          "address": { "streetAddress": "Burgh Road Industrial Estate", "locality": "Carlisle", "postalCode": "CA2 7NA" }
+        }
+      ],
+      "tender": {
+        "id": "NR-CP7-LNW-0931",
+        "title": "Cumbrian Coast Line Sea Defence and Track Renewal - Whitehaven to Workington",
+        "description": "Renewal of 4.2km of plain line track, sea wall repairs and embankment stabilisation on the Cumbrian Coast Line between Whitehaven and Workington. Programme of weekend and midweek possessions over 20 months. Site compound at Harrington.",
+        "value": { "amount": 18750000, "currency": "GBP" },
+        "items": [
+          {
+            "id": "1",
+            "classification": { "scheme": "CPV", "id": "45234100", "description": "Railway construction works" },
+            "deliveryAddresses": [{ "locality": "Harrington, Workington", "region": "Cumbria", "postalCode": "CA14 5QD" }]
+          }
+        ]
+      },
+      "awards": [
+        {
+          "id": "NR-CP7-LNW-0931-A",
+          "status": "active",
+          "date": "2026-09-18",
+          "value": { "amount": 18750000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-SC123456", "name": "Story Contracting Ltd" }],
+          "contractPeriod": { "startDate": "2027-01-11", "endDate": "2028-09-30" }
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-b5fd17-c0ffee00-1111-2222-3333-444455556666",
+      "id": "ocds-b5fd17-c0ffee00-1111-2222-3333-444455556666-award-1",
+      "date": "2026-09-22T11:40:00Z",
+      "tag": ["award"],
+      "buyer": { "id": "GB-GOR-LeedsCC", "name": "Leeds City Council" },
+      "parties": [
+        { "id": "GB-GOR-LeedsCC", "name": "Leeds City Council", "roles": ["buyer"], "address": { "postalCode": "LS1 1UR" } },
+        { "id": "GB-COH-09876543", "name": "Arup Consulting Ltd", "roles": ["supplier"], "identifier": { "scheme": "GB-COH", "id": "9876543" } }
+      ],
+      "tender": {
+        "title": "Transport Strategy Advisory Services",
+        "description": "Consultancy support to develop the Leeds transport strategy and business cases.",
+        "value": { "amount": 950000, "currency": "GBP" },
+        "items": [{ "classification": { "scheme": "CPV", "id": "79411000", "description": "General management consultancy services" } }]
+      },
+      "awards": [
+        {
+          "id": "LCC-TS-1",
+          "status": "active",
+          "date": "2026-09-20",
+          "value": { "amount": 950000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-09876543", "name": "Arup Consulting Ltd" }]
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-b5fd17-5ma11-0000-0000-000000000001",
+      "id": "ocds-b5fd17-5ma11-0000-0000-000000000001-award-1",
+      "date": "2026-09-21T08:00:00Z",
+      "tag": ["award"],
+      "buyer": { "id": "GB-GOR-Parish", "name": "Harlow Council" },
+      "parties": [
+        { "id": "GB-GOR-Parish", "name": "Harlow Council", "roles": ["buyer"] },
+        { "id": "S1", "name": "Local Roofing Co", "roles": ["supplier"] }
+      ],
+      "tender": {
+        "title": "Depot Roof Repairs",
+        "description": "Repairs to the roof of the Harlow depot, estimated 3 weeks.",
+        "items": [{ "classification": { "scheme": "CPV", "id": "45261900", "description": "Roof repair and maintenance work" } }]
+      },
+      "awards": [
+        {
+          "id": "HC-ROOF-1",
+          "status": "active",
+          "date": "2026-09-19",
+          "value": { "amount": 84000, "currency": "GBP" },
+          "suppliers": [{ "id": "S1", "name": "Local Roofing Co" }]
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-b5fd17-9a8b7c6d-5e4f-3a2b-1c0d-ffeeddccbbaa",
+      "id": "ocds-b5fd17-9a8b7c6d-5e4f-3a2b-1c0d-ffeeddccbbaa-award-1",
+      "date": "2026-09-22T16:20:00Z",
+      "tag": ["award"],
+      "buyer": { "id": "GB-GOR-AnglianWater", "name": "Anglian Water Services Ltd" },
+      "parties": [
+        { "id": "GB-GOR-AnglianWater", "name": "Anglian Water Services Ltd", "roles": ["buyer"], "address": { "locality": "Huntingdon", "postalCode": "PE29 6XU" } },
+        { "id": "GB-COH-02345678", "name": "Barhale Ltd", "roles": ["supplier"], "identifier": { "scheme": "GB-COH", "id": "02345678" } }
+      ],
+      "tender": {
+        "title": "Lowestoft Water Recycling Centre Capacity Upgrade",
+        "description": "Design and build of new storm tanks, inlet works and associated M&E at Lowestoft Water Recycling Centre, Suffolk.",
+        "items": [
+          { "classification": { "scheme": "CPV", "id": "45252127", "description": "Wastewater treatment plant construction work" } },
+          { "classification": { "scheme": "CPV", "id": "51000000", "description": "Installation services" } }
+        ]
+      },
+      "awards": [
+        {
+          "id": "AW-LOW-WRC-1",
+          "status": "active",
+          "date": "2026-09-21",
+          "suppliers": [{ "id": "GB-COH-02345678", "name": "Barhale Ltd" }],
+          "contractPeriod": { "startDate": "2026-10-19", "endDate": "2028-03-31" }
+        }
+      ]
+    }
+  ],
+  "links": {
+    "next": "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-20T00:00:00&publishedTo=2026-09-23T00:00:00&stages=award&limit=100&cursor=MTAw"
+  }
+}

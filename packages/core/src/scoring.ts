@@ -1,59 +1,90 @@
-export interface ScoringInput {
+import type { LocationConfidence } from "./types.ts";
+
+export interface ScoreInput {
   valueGbp: number | null;
-  estimatedWorkersAwayFromHome: number;
-  nearestPropertyDistance: number | null;
+  workersAwayFromHome: number | null;
+  nearestPropertyMiles: number | null;
+  matchRadiusMiles: number;
   startDate: string | null;
-  locationConfidence: "high" | "medium" | "low";
-  hasNearbyStock: boolean;
+  locationConfidence: LocationConfidence | null;
+  today?: Date;
 }
 
-export interface ScoringResult {
+export interface ScoreBreakdown {
+  value: number;
+  workers: number;
+  distance: number;
+  start: number;
+  confidence: number;
+}
+
+export interface ScoreResult {
   score: number;
   flags: string[];
+  breakdown: ScoreBreakdown;
 }
 
-export function scoreProject(input: ScoringInput): ScoringResult {
-  const flags: string[] = [];
-  let score = 0;
+export const NO_STOCK_SCORE_CAP = 40;
+const VALUE_FLOOR = 500_000;
+const VALUE_CEILING = 50_000_000;
+const WORKERS_FOR_MAX = 60;
 
-  // Value: up to 25 points
-  if (input.valueGbp) {
-    const valueScore = Math.min(25, (input.valueGbp / 1000000) * 25);
-    score += valueScore;
-  }
+/** 25 points on a log scale from £500k (0) to £50m+ (25). Unknown value earns a neutral 8. */
+export function valuePoints(valueGbp: number | null): number {
+  if (valueGbp == null) return 8;
+  if (valueGbp <= VALUE_FLOOR) return 0;
+  const t = Math.log10(valueGbp / VALUE_FLOOR) / Math.log10(VALUE_CEILING / VALUE_FLOOR);
+  return 25 * Math.min(1, t);
+}
 
-  // Workers away from home: up to 25 points
-  const workerScore = Math.min(25, (input.estimatedWorkersAwayFromHome / 100) * 25);
-  score += workerScore;
+export function workerPoints(workers: number | null): number {
+  if (!workers || workers <= 0) return 0;
+  return 25 * Math.min(1, Math.sqrt(workers / WORKERS_FOR_MAX));
+}
 
-  // Nearest property distance: up to 25 points
-  if (input.nearestPropertyDistance !== null) {
-    const distanceScore = Math.max(0, 25 - (input.nearestPropertyDistance / 50) * 25);
-    score += distanceScore;
-  } else if (!input.hasNearbyStock) {
-    flags.push("sourcing_opportunity");
-  }
+/** 25 at the site, falling linearly to 5 at the match radius. */
+export function distancePoints(miles: number | null, radius: number): number {
+  if (miles == null || miles > radius) return 0;
+  return 25 - 20 * (Math.max(0, miles) / radius);
+}
 
-  // Start date: up to 15 points
-  if (input.startDate) {
-    const daysUntilStart = Math.floor((new Date(input.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-    if (daysUntilStart >= 0 && daysUntilStart <= 90) {
-      const daysScore = 15 * (1 - daysUntilStart / 90);
-      score += daysScore;
-    }
-  }
+/** 15 if starting within 30 days (or already started within 30 days), tapering to 0 at 90 days. */
+export function startPoints(startDate: string | null, today: Date): number {
+  if (!startDate) return 4;
+  const start = new Date(`${startDate.slice(0, 10)}T00:00:00Z`).getTime();
+  if (!Number.isFinite(start)) return 4;
+  const days = Math.round((start - today.getTime()) / 86_400_000);
+  if (days < -30) return 3;
+  if (days <= 30) return 15;
+  if (days <= 90) return 15 * (1 - (days - 30) / 60);
+  return 0;
+}
 
-  // Location confidence: up to 10 points
-  const confidenceMap = { high: 10, medium: 5, low: 2 };
-  score += confidenceMap[input.locationConfidence];
+export function confidencePoints(c: LocationConfidence | null): number {
+  return c === "high" ? 10 : c === "medium" ? 6 : c === "low" ? 2 : 0;
+}
 
-  // Cap score at 40 if sourcing opportunity (no nearby stock)
-  if (flags.includes("sourcing_opportunity")) {
-    score = Math.min(40, score);
-  }
-
-  return {
-    score: Math.round(score),
-    flags,
+export function scoreOpportunity(input: ScoreInput): ScoreResult {
+  const today = input.today ?? new Date();
+  const breakdown: ScoreBreakdown = {
+    value: valuePoints(input.valueGbp),
+    workers: workerPoints(input.workersAwayFromHome),
+    distance: distancePoints(input.nearestPropertyMiles, input.matchRadiusMiles),
+    start: startPoints(input.startDate, today),
+    confidence: confidencePoints(input.locationConfidence),
   };
+  let score = Object.values(breakdown).reduce((a, b) => a + b, 0);
+  const flags: string[] = [];
+  const hasStock = input.nearestPropertyMiles != null && input.nearestPropertyMiles <= input.matchRadiusMiles;
+  if (!hasStock) {
+    flags.push("sourcing_opportunity");
+    score = Math.min(score, NO_STOCK_SCORE_CAP);
+  }
+  if (input.valueGbp == null) flags.push("value_unknown");
+  if (input.locationConfidence === "low") flags.push("location_uncertain");
+  const rounded = Math.max(0, Math.min(100, Math.round(score)));
+  const roundedBreakdown = Object.fromEntries(
+    Object.entries(breakdown).map(([k, v]) => [k, Math.round(v * 10) / 10])
+  ) as unknown as ScoreBreakdown;
+  return { score: rounded, flags, breakdown: roundedBreakdown };
 }

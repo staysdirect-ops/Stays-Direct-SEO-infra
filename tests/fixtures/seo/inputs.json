@@ -1,0 +1,46 @@
+{
+  "town": {
+    "id": "00000000-0000-0000-0000-00000000b001",
+    "name": "Bridgwater",
+    "slug": "bridgwater",
+    "county": "Somerset",
+    "region": "South West",
+    "population": 41276,
+    "avg_hotel_pppn": 95,
+    "lat": 51.128,
+    "lng": -3.0036
+  },
+  "towns": [
+    { "id": "t-bridgwater", "name": "Bridgwater", "slug": "bridgwater", "county": "Somerset", "region": "South West", "population": 41276, "avg_hotel_pppn": 95, "lat": 51.128, "lng": -3.0036 },
+    { "id": "t-taunton", "name": "Taunton", "slug": "taunton", "county": "Somerset", "region": "South West", "population": 60479, "avg_hotel_pppn": 90, "lat": 51.0149, "lng": -3.1029 },
+    { "id": "t-burnham", "name": "Burnham-on-Sea", "slug": "burnham-on-sea", "county": "Somerset", "region": "South West", "population": 19576, "avg_hotel_pppn": 85, "lat": 51.2383, "lng": -2.9969 },
+    { "id": "t-minehead", "name": "Minehead", "slug": "minehead", "county": "Somerset", "region": "South West", "population": 11981, "avg_hotel_pppn": 85, "lat": 51.2042, "lng": -3.4786 },
+    { "id": "t-weston", "name": "Weston-super-Mare", "slug": "weston-super-mare", "county": "Somerset", "region": "South West", "population": 82418, "avg_hotel_pppn": 90, "lat": 51.3461, "lng": -2.9771 },
+    { "id": "t-bristol", "name": "Bristol", "slug": "bristol", "county": "Bristol", "region": "South West", "population": 472465, "avg_hotel_pppn": 120, "lat": 51.4545, "lng": -2.5879 }
+  ],
+  "properties": [
+    { "id": "p1", "name": "Wembdon Road House", "town": "Bridgwater", "bedrooms": 5, "max_guests": 5, "parking_spaces": 3, "van_parking": true, "pppn_from": 32, "status": "available", "available_from": null, "lat": 51.1352, "lng": -3.0152 },
+    { "id": "p2", "name": "Cannington Farmhouse", "town": "Cannington", "bedrooms": 6, "max_guests": 6, "parking_spaces": 4, "van_parking": true, "pppn_from": 29.5, "status": "available", "available_from": null, "lat": 51.1497, "lng": -3.0647 },
+    { "id": "p3", "name": "North Petherton Villa", "town": "North Petherton", "bedrooms": 4, "max_guests": 4, "parking_spaces": 2, "van_parking": false, "pppn_from": 35, "status": "available", "available_from": null, "lat": 51.0914, "lng": -3.0148 },
+    { "id": "p4", "name": "Taunton Town House", "town": "Taunton", "bedrooms": 8, "max_guests": 8, "parking_spaces": 2, "van_parking": false, "pppn_from": 27, "status": "occupied", "available_from": "2026-12-01", "lat": 51.0149, "lng": -3.1029 },
+    { "id": "p5", "name": "Clifton Crew House", "town": "Bristol", "bedrooms": 6, "max_guests": 6, "parking_spaces": 1, "van_parking": false, "pppn_from": 38, "status": "available", "available_from": null, "lat": 51.4545, "lng": -2.5879 },
+    { "id": "p6", "name": "Offline House", "town": "Bridgwater", "bedrooms": 7, "max_guests": 7, "parking_spaces": 3, "van_parking": true, "pppn_from": 20, "status": "offline", "available_from": null, "lat": 51.128, "lng": -3.0036 }
+  ],
+  "projects": [
+    { "id": "rp1", "title": "A39 Bridgwater to Cannington Resurfacing and Drainage Improvements", "project_type": "road", "value_gbp": 6150000, "est_workers_away_from_home": 18, "start_date": "2026-11-02", "end_date": "2027-12-31", "supplier_name": "Kier Highways Limited", "site_town": "Cannington", "site_location_text": "A39 between Bridgwater and Cannington", "lat": 51.1497, "lng": -3.0647 },
+    { "id": "rp2", "title": "Hinkley Point C Marine Works Support Package", "project_type": "nuclear", "value_gbp": 24000000, "est_workers_away_from_home": 60, "start_date": "2026-10-01", "end_date": "2028-06-30", "supplier_name": "Bylor JV", "site_town": "Stogursey", "site_location_text": "Hinkley Point C, near Stogursey", "lat": 51.2089, "lng": -3.1334 },
+    { "id": "rp3", "title": "Bristol Temple Quarter Enabling Works", "project_type": "commercial", "value_gbp": 30000000, "est_workers_away_from_home": 25, "start_date": "2027-02-01", "end_date": "2028-12-31", "supplier_name": "Galliford Try", "site_town": "Bristol", "site_location_text": "Temple Meads, Bristol", "lat": 51.4491, "lng": -2.5813 }
+  ],
+  "hinkley": {
+    "name": "Hinkley Point C",
+    "location": "Hinkley Point, near Stogursey, Somerset",
+    "nearest_town": "Bridgwater",
+    "point": { "lat": 51.2089, "lng": -3.1334 },
+    "project_type": "nuclear",
+    "value_gbp": null,
+    "workers_away_from_home": null,
+    "start_date": null,
+    "end_date": null,
+    "contractor": null
+  }
+}

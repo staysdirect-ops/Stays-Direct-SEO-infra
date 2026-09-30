@@ -2,21 +2,33 @@
   "name": "staysdirect-growth-engine",
   "version": "0.1.0",
   "private": true,
-  "description": "StaysDirect Growth Engine - Project Radar, SEO Engine, AI Visibility Tracker",
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
+    "typecheck": "tsc -p packages/core --noEmit && pnpm --filter @staysdirect/admin typecheck",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "test:ui": "vitest --ui"
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "sync:core": "node scripts/sync-core.mjs",
+    "check:core-sync": "node scripts/sync-core.mjs --check",
+    "check:functions": "cd supabase/functions && deno check --config deno.json */index.ts",
+    "test:db": "bash scripts/db-test/run.sh",
+    "promote-user": "node scripts/promote-user.mjs",
+    "admin:dev": "pnpm --filter @staysdirect/admin dev",
+    "admin:build": "pnpm --filter @staysdirect/admin build"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.56.0",
-    "prettier": "^3.1.0",
-    "typescript": "^5.3.0",
-    "vitest": "^1.0.0"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.10.0",
+    "eslint": "^10.11.0",
+    "prettier": "^3.9.9",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.3"
   }
 }

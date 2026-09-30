@@ -3,22 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Shared core utilities for OCDS parsing, scoring, and AI integrations",
+  "description": "Pure TypeScript shared by edge functions (Deno), the admin app and tests. No Node-only APIs.",
   "exports": {
-    ".": "./dist/index.js",
-    "./ai": "./dist/ai.js",
-    "./ocds": "./dist/ocds.js",
-    "./scoring": "./dist/scoring.js",
-    "./quality": "./dist/quality.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "test": "vitest"
+    ".": "./src/index.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.20.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.0"
+    "@anthropic-ai/sdk": "^0.129.0"
   }
 }

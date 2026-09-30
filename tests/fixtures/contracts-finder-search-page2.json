@@ -1,0 +1,33 @@
+{
+  "uri": "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?cursor=MTAw",
+  "releases": [
+    {
+      "ocid": "ocds-b5fd17-aaaa1111-bbbb-2222-cccc-3333dddd4444",
+      "id": "ocds-b5fd17-aaaa1111-bbbb-2222-cccc-3333dddd4444-award-1",
+      "date": "2026-09-22T18:00:00Z",
+      "tag": ["award"],
+      "buyer": { "id": "GB-GOR-MOD", "name": "Defence Infrastructure Organisation" },
+      "parties": [
+        { "id": "GB-GOR-MOD", "name": "Defence Infrastructure Organisation", "roles": ["buyer"], "address": { "postalCode": "B75 7RL" } },
+        { "id": "GB-COH-03456789", "name": "VINCI Construction UK Limited", "roles": ["supplier"], "identifier": { "scheme": "GB-COH", "id": "3456789" } }
+      ],
+      "tender": {
+        "title": "Barrow-in-Furness Dock Infrastructure Works",
+        "description": "Quay wall strengthening and utility diversions supporting submarine programme facilities in Barrow-in-Furness.",
+        "value": { "amount": 42000000, "currency": "GBP" },
+        "items": [{ "classification": { "scheme": "CPV", "id": "45241000", "description": "Harbour construction works" } }]
+      },
+      "awards": [
+        {
+          "id": "DIO-BARROW-1",
+          "status": "active",
+          "date": "2026-09-22",
+          "value": { "amount": 42000000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-03456789", "name": "VINCI Construction UK Limited" }],
+          "contractPeriod": { "startDate": "2026-12-01", "endDate": "2029-11-30" }
+        }
+      ]
+    }
+  ],
+  "links": {}
+}
