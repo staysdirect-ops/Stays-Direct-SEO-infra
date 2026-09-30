@@ -1,0 +1,566 @@
+{
+ "fetched_at": "2026-09-30T21:17:53.423Z",
+ "window": {
+  "from": "2026-09-27T21:17:53",
+  "to": "2026-09-30T21:17:53"
+ },
+ "contracts_finder": {
+  "http_statuses": [
+   200,
+   200,
+   200
+  ],
+  "next_links": [
+   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:17:53&publishedTo=2026-09-30T21:17:53&stages=award&limit=100&cursor=…",
+   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:17:53&publishedTo=2026-09-30T21:17:53&stages=award&limit=100&cursor=…",
+   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:17:53&publishedTo=2026-09-30T21:17:53&stages=award&limit=100&cursor=…"
+  ],
+  "releases": 300,
+  "award_releases": 300,
+  "tags": {
+   "award": 287,
+   "awardUpdate": 13
+  },
+  "release_keys": {
+   "ocid": 300,
+   "id": 300,
+   "language": 300,
+   "date": 300,
+   "tag": 300,
+   "initiationType": 300,
+   "tender": 300,
+   "parties": 300,
+   "buyer": 300,
+   "awards": 300
+  },
+  "mapped": 300,
+  "with_value_pct": 96,
+  "with_supplier_pct": 99,
+  "with_companies_house_pct": 28,
+  "with_start_date_pct": 100,
+  "with_end_date_pct": 100,
+  "with_cpv_pct": 100,
+  "with_delivery_postcode_pct": 49,
+  "with_buyer_postcode_pct": 100,
+  "with_description_pct": 100,
+  "passes_filter": 16,
+  "kept_examples": [
+   {
+    "title": "EA and Technical Assurance Services for the Meridian Water SIW",
+    "supplier": "AECOM Limited",
+    "ch": null,
+    "value": 1323652.91,
+    "cpv": [
+     "71541000"
+    ],
+    "start": "2026-09-08",
+    "delivery": "N18 3QQ; London",
+    "postcodes": [
+     "N18 3QQ"
+    ],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/4f6efe02-0dcd-49a6-abf2-f5024a3a71e4"
+   },
+   {
+    "title": "NHG Empty Homes (Voids) Refurbishment Works Framework",
+    "supplier": "Arc Group London Limited",
+    "ch": null,
+    "value": 500000000,
+    "cpv": [
+     "45453100"
+    ],
+    "start": "2026-04-01",
+    "delivery": null,
+    "postcodes": [],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/efc71292-ac7e-4b92-9c72-6c10802d6545"
+   },
+   {
+    "title": "CBC-2032-T-SK - Installation and Maintenance of Doors and Door Entry Systems & maintenance of Assisted Living Equipment - AWARD",
+    "supplier": "OpenView Security Solutions Limited",
+    "ch": null,
+    "value": null,
+    "cpv": [
+     "45421131"
+    ],
+    "start": "2026-10-01",
+    "delivery": "SG17 5TQ",
+    "postcodes": [
+     "SG17 5TQ"
+    ],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/ad534137-9dba-44fd-a9c5-62540b4f06c5"
+   },
+   {
+    "title": "25336 - John Fletcher of Madeley - Modular Building - AWARD",
+    "supplier": "R G Stones (Buildings) Ltd",
+    "ch": null,
+    "value": 527860,
+    "cpv": [
+     "45000000"
+    ],
+    "start": "2026-04-13",
+    "delivery": "TF3 4JG",
+    "postcodes": [
+     "TF3 4JG"
+    ],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/e32363a8-9a63-4815-a2bd-b3093c8bc188"
+   },
+   {
+    "title": "CBC-1949-EXF-FC-SK Rainbows Extension Main Works - AWARD",
+    "supplier": "Spacemaker Developments Ltd",
+    "ch": null,
+    "value": null,
+    "cpv": [
+     "45214200"
+    ],
+    "start": "2026-09-30",
+    "delivery": "SG17 5TQ",
+    "postcodes": [
+     "SG17 5TQ"
+    ],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/4a4ab1bb-f07b-4101-b7dd-8eed148bd160"
+   },
+   {
+    "title": "Carry Out Lightning Protection 2027-2032 - AWARD",
+    "supplier": "Delta Reach (Specialist Services) LTD",
+    "ch": null,
+    "value": null,
+    "cpv": [
+     "45000000"
+    ],
+    "start": "2027-04-01",
+    "delivery": "TF3 4JG",
+    "postcodes": [
+     "TF3 4JG"
+    ],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/f5f2de84-6c77-4e74-816e-9e34bcea7581"
+   },
+   {
+    "title": "PDF Framework - A1 NB Wansford-Wothorpe resurf",
+    "supplier": "Hanson Contracting",
+    "ch": null,
+    "value": 3710855.29,
+    "cpv": [
+     "45233210"
+    ],
+    "start": "2026-08-31",
+    "delivery": null,
+    "postcodes": [],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/4b01f601-39d8-4f5b-b170-16c97f03ea6e"
+   },
+   {
+    "title": "GB-Milton Keynes: Provision of Retrofit and Decarbonisation Works",
+    "supplier": "Lovell Partnerships Limited",
+    "ch": null,
+    "value": 84000000,
+    "cpv": [
+     "45450000"
+    ],
+    "start": "2026-03-09",
+    "delivery": "South East",
+    "postcodes": [],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/540ee866-6aa6-4218-8f4e-61325aa6dda2"
+   },
+   {
+    "title": "City of London Housing Lift Maintenance Contract - SEC Mini - Competition",
+    "supplier": "Guideline Lift Services",
+    "ch": null,
+    "value": 1229066,
+    "cpv": [
+     "50750000"
+    ],
+    "start": "2026-01-05",
+    "delivery": "London",
+    "postcodes": [],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/1441b0b4-ef16-4da2-aad9-df9ae91354c7"
+   },
+   {
+    "title": "Brookfields Accessibility Project Further Competition - AWARD",
+    "supplier": "Etec Contract Services Ltd",
+    "ch": null,
+    "value": null,
+    "cpv": [
+     "45214230"
+    ],
+    "start": "2026-07-27",
+    "delivery": "RG14 5LD",
+    "postcodes": [
+     "RG14 5LD"
+    ],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/5c1fa398-c53d-48c9-a0c6-b62fbc62bef1"
+   },
+   {
+    "title": "Daventry Job Centre Relocation, - AWARD",
+    "supplier": "Steele & Bray Ltd",
+    "ch": null,
+    "value": 1792442.53,
+    "cpv": [
+     "45000000"
+    ],
+    "start": "2025-04-01",
+    "delivery": "NN11 4XG",
+    "postcodes": [
+     "NN11 4XG"
+    ],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/84d6b608-9b11-47b5-ad32-fac3dbd430ca"
+   },
+   {
+    "title": "Cascade Steps Landing Platform Repairs",
+    "supplier": "Walters UK Limited",
+    "ch": "02707042",
+    "value": 900000,
+    "cpv": [
+     "45233000"
+    ],
+    "start": "2026-09-14",
+    "delivery": "South West",
+    "postcodes": [],
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/235fe28e-f45d-4bad-9110-6fc95cb71d86"
+   }
+  ]
+ },
+ "find_a_tender": {
+  "http_statuses": [
+   200,
+   200,
+   200
+  ],
+  "next_links": [
+   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=…",
+   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=…",
+   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=…"
+  ],
+  "releases": 300,
+  "award_releases": 190,
+  "tags": {
+   "award": 185,
+   "contract": 185,
+   "tenderUpdate": 19,
+   "tender": 56,
+   "implementation": 5,
+   "planning": 15,
+   "contractTermination": 2,
+   "tenderCancellation": 6,
+   "planningUpdate": 5,
+   "contractAmendment": 1,
+   "awardUpdate": 6,
+   "contractUpdate": 6
+  },
+  "release_keys": {
+   "ocid": 300,
+   "buyerID": 122,
+   "id": 300,
+   "tag": 300,
+   "date": 300,
+   "initiationType": 300,
+   "parties": 300,
+   "buyer": 287,
+   "tender": 300,
+   "awards": 197,
+   "language": 300,
+   "contracts": 160,
+   "bids": 63,
+   "relatedProcesses": 10,
+   "planning": 28,
+   "description": 46,
+   "links": 13
+  },
+  "mapped": 190,
+  "with_value_pct": 99,
+  "with_supplier_pct": 100,
+  "with_companies_house_pct": 61,
+  "with_start_date_pct": 74,
+  "with_end_date_pct": 74,
+  "with_cpv_pct": 100,
+  "with_delivery_postcode_pct": 0,
+  "with_buyer_postcode_pct": 99,
+  "with_description_pct": 98,
+  "passes_filter": 17,
+  "kept_examples": [
+   {
+    "title": "Lot 1: Mechanical Services",
+    "supplier": "ANELEC GROUP LIMITED",
+    "ch": "09421455",
+    "value": 2800000,
+    "cpv": [
+     "45351000",
+     "45310000",
+     "45260000",
+     "45210000",
+     "45420000",
+     "45200000",
+     "45442000",
+     "45233161",
+     "45232452",
+     "45233293",
+     "45262800",
+     "71221000",
+     "45343100",
+     "45222300",
+     "45261215"
+    ],
+    "start": "2026-11-01",
+    "delivery": "UKC11",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092603-2026"
+   },
+   {
+    "title": "Nuclear Safeguards Programme",
+    "supplier": "United Kingdom National Nuclear Laboratory",
+    "ch": "03857752",
+    "value": 19500000,
+    "cpv": [
+     "09340000",
+     "98113100",
+     "71356000"
+    ],
+    "start": "2026-09-28",
+    "delivery": "UK",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092597-2026"
+   },
+   {
+    "title": "Aids and Adaptations",
+    "supplier": "BUSTON & MAUGHAN LIMITED",
+    "ch": null,
+    "value": 850000,
+    "cpv": [
+     "45211100"
+    ],
+    "start": "2026-10-16",
+    "delivery": "UKC",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092589-2026"
+   },
+   {
+    "title": "Taxi and Private Hire Testing Service",
+    "supplier": "KAR AUTOMOTIVE SERVICES LTD",
+    "ch": "10052179",
+    "value": 800000,
+    "cpv": [
+     "71632000"
+    ],
+    "start": "2026-10-01",
+    "delivery": "UKD3",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092525-2026"
+   },
+   {
+    "title": "Client Side Support Provider (CSSP)",
+    "supplier": "MOTT MACDONALD LIMITED",
+    "ch": "01243967",
+    "value": 1133333,
+    "cpv": [
+     "71200000"
+    ],
+    "start": null,
+    "delivery": "UK",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092499-2026"
+   },
+   {
+    "title": "Service, Maintenance, Calibration and Technical Support Agreement for Instron Mechanical Testing Systems",
+    "supplier": "Instron - Division of ITW Ltd",
+    "ch": "00559693",
+    "value": 7379445,
+    "cpv": [
+     "50410000",
+     "50433000",
+     "71630000"
+    ],
+    "start": "2026-09-04",
+    "delivery": null,
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092484-2026"
+   },
+   {
+    "title": "Green Lane Campus Roofing Works",
+    "supplier": "CWG Group Ltd.",
+    "ch": "06688404",
+    "value": 980226.23,
+    "cpv": [
+     "45260000",
+     "45300000"
+    ],
+    "start": null,
+    "delivery": "UKJ32",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092478-2026"
+   },
+   {
+    "title": "Land Purchase and Works",
+    "supplier": "MILLER HOMES LIMITED",
+    "ch": "SC255429",
+    "value": 26329509,
+    "cpv": [
+     "45210000"
+    ],
+    "start": "2026-10-28",
+    "delivery": null,
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092459-2026"
+   },
+   {
+    "title": "Water Safety: Risk Assessments and Monitoring and Remedials",
+    "supplier": "CHURCHILL CONTRACT SERVICES LIMITED",
+    "ch": "03762020",
+    "value": 840000,
+    "cpv": [
+     "41110000",
+     "44611500",
+     "71315300",
+     "71800000",
+     "45246410",
+     "50700000"
+    ],
+    "start": "2026-08-01",
+    "delivery": "UKC; UKE; UKF; UKH; UKI; UKJ; UKK",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092448-2026"
+   },
+   {
+    "title": "Heating, Ventilation and Air Conditioning Systems (HVAC) PPM, Remedial Repair and Install Works",
+    "supplier": "BTU (Installation and Maintenance) Ltd",
+    "ch": "01561231",
+    "value": 4200000,
+    "cpv": [
+     "71321200",
+     "71314310",
+     "50721000",
+     "50720000",
+     "45331000",
+     "45259300",
+     "45232141",
+     "42500000",
+     "45331200",
+     "45331210",
+     "45259000",
+     "45315000",
+     "50000000",
+     "50500000",
+     "50510000",
+     "50511000",
+     "50511200",
+     "50531100",
+     "50531200",
+     "50700000",
+     "50710000",
+     "50711000",
+     "50712000",
+     "42113130",
+     "45331230"
+    ],
+    "start": "2026-08-01",
+    "delivery": "UKI",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092436-2026"
+   },
+   {
+    "title": "PRE00371_Blast Modelling Consultancy",
+    "supplier": "Stirling Simulation Services Limited",
+    "ch": null,
+    "value": 1440000,
+    "cpv": [
+     "66519310",
+     "71317100"
+    ],
+    "start": "2026-11-02",
+    "delivery": "UK",
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092432-2026"
+   },
+   {
+    "title": "Fire and Intruder Alarm Systems planned preventative maintenance (PPM), minor remedial works, emergency call outs and repairs and installation works.",
+    "supplier": "TP Fire & Security Ltd",
+    "ch": "02476883",
+    "value": 1096000,
+    "cpv": [
+     "31625000",
+     "31625100",
+     "31625200",
+     "45312100",
+     "31625300",
+     "45312200",
+     "50324200",
+     "50324100"
+    ],
+    "start": "2026-08-01",
+    "delivery": null,
+    "postcodes": [],
+    "url": "https://www.find-tender.service.gov.uk/Notice/092419-2026"
+   }
+  ]
+ },
+ "postcodes_io": {
+  "postcode": {
+   "lat": 51.206847,
+   "lng": -3.127658,
+   "method": "postcode",
+   "matched": "TA5 1UD",
+   "postcode": "TA5 1UD",
+   "town": "Somerset"
+  },
+  "terminated_postcode_falls_back": {
+   "lat": 51.14276546918484,
+   "lng": -3.0945751530815113,
+   "method": "outcode",
+   "matched": "TA5"
+  },
+  "place": {
+   "lat": 52.2079145251668,
+   "lng": 1.576569830501522,
+   "method": "town",
+   "matched": "Leiston",
+   "town": "Leiston"
+  },
+  "bulk": {
+   "TA5 2LD": {
+    "postcode": "TA5 2LD",
+    "lat": 51.143521,
+    "lng": -3.057552,
+    "locality": "Cannington"
+   },
+   "LS1 1UR": {
+    "postcode": "LS1 1UR",
+    "lat": 53.802177,
+    "lng": -1.548522,
+    "locality": "Leeds"
+   },
+   "IP16 4UR": {
+    "postcode": "IP16 4UR",
+    "lat": 52.214944,
+    "lng": 1.619894,
+    "locality": "Leiston"
+   },
+   "CA20 1PG": {
+    "postcode": "CA20 1PG",
+    "lat": 54.419213,
+    "lng": -3.500705,
+    "locality": "Beckermet"
+   }
+  }
+ },
+ "site": {
+  "sitemap_blog_status": 200,
+  "blog_urls": [
+   "https://staysdirect.co.uk/blog",
+   "https://staysdirect.co.uk/blog/contractor-accommodation-cost-uk-2026",
+   "https://staysdirect.co.uk/blog/essex-to-london-commute-contractor-accommodation",
+   "https://staysdirect.co.uk/blog/laundry-for-work-crews-a-project-managers-guide",
+   "https://staysdirect.co.uk/blog/how-to-house-contractors-a-2026-guide-for-project-managers",
+   "https://staysdirect.co.uk/blog/short-term-crew-housing-top-solutions-for-project-teams",
+   "https://staysdirect.co.uk/blog/mon-to-fri-lets-providers-3",
+   "https://staysdirect.co.uk/blog/heatwave-proof-contractor-accommodation-uk-digs-hot-weather",
+   "https://staysdirect.co.uk/blog/van-parking-for-contractor-digs-7-questions-to-ask-before-you-book",
+   "https://staysdirect.co.uk/blog/keeping-cool-uk-heatwave-contractor-field-guide",
+   "https://staysdirect.co.uk/blog/contractor-accommodation-hs2-phase-1-birmingham-solihull-2026-guide",
+   "https://staysdirect.co.uk/blog/contractor-accommodation-london-2026-guide",
+   "https://staysdirect.co.uk/blog/where-are-contractors-working-in-the-uk-2026-infrastructure-projects-guide",
+   "https://staysdirect.co.uk/blog/contractor-accommodation-near-me-how-to-find-it",
+   "https://staysdirect.co.uk/blog/what-are-the-best-contractor-accommodation-options-in-the-uk",
+   "https://staysdirect.co.uk/blog/uk-infrastructure-long-term-positive-cashflow-timing-2026",
+   "https://staysdirect.co.uk/blog/uk-defence-spending-contractor-demand-2026",
+   "https://staysdirect.co.uk/blog/hotels-vs-serviced-accommodation-contractors"
+  ],
+  "sitemap_index_status": 200,
+  "sitemap_static_status": 404
+ }
+}
