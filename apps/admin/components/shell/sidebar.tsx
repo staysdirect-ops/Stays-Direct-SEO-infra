@@ -72,6 +72,9 @@ export function Sidebar({
     <div className="border-t border-white/10 px-3 pt-3 text-xs text-white/60">
       <p className="truncate">{email}</p>
       <p className="capitalize">{role}</p>
+      <Link href="/account" className="mt-2 block text-white/80 hover:text-white">
+        Account
+      </Link>
       <form action="/auth/signout" method="post" className="mt-2">
         <button className="inline-flex items-center gap-1.5 text-white/80 hover:text-white">
           <LogOut className="size-3.5" /> Sign out

@@ -19,6 +19,7 @@ export const NAV: NavItem[] = [
   { href: "/properties", label: "Properties", roles: ["sales"] },
   { href: "/towns", label: "Towns", roles: ["editor"] },
   { href: "/settings", label: "Settings", roles: [] },
+  { href: "/team", label: "Team", roles: [] },
   { href: "/jobs", label: "Job Runs", roles: ["sales", "editor"] },
   { href: "/usage", label: "API Usage", roles: [] },
 ];

@@ -49,16 +49,15 @@ All five phases are built, tested and pushed to `main`, and CI is green on GitHu
 3. **Similarity check is coarse.** pg_trgm on whole pages flags pages about the same area (0.61 for Bridgwater vs Hinkley Point C). It's a -25 penalty, not a block, below 0.8. Watch real scores and tune `SIMILARITY_THRESHOLD` in `packages/core/src/quality.ts` if good pages are being held back.
 4. **Webhook delivery is best-effort** (pg_net, one attempt). The leads app should also poll `updated_at` (see LEADS_CONTRACT).
 5. **Admin UI has no automated browser tests in CI.** It was exercised by hand with Playwright (login, all 13 pages as admin, lead editing and save, project drawer and map, approve + publish, CSV import incl. duplicate skip, editor blocked from leads, phone layout with no horizontal overflow).
-6. **No in-app user management.** Roles are granted with `pnpm promote-user` or SQL (docs/DEPLOY.md §4).
-7. **Blog URL assumption:** engine posts are served at `/blog/{slug}`, matching the existing blog sitemap. If the site uses another path, change `publicPath` in `packages/core/src/schema.ts`.
-8. Property photos are stored (`properties.photos`) but not editable in the admin yet.
+6. **Blog URL assumption:** engine posts are served at `/blog/{slug}`, matching the existing blog sitemap. If the site uses another path, change `publicPath` in `packages/core/src/schema.ts`.
+7. Property photos are stored (`properties.photos`) but not editable in the admin yet.
 
 ## Next steps (for a person)
 
 1. **Create a Supabase project** (Pro plan recommended) and gather the secrets listed in `.env.example`.
-2. **Deploy:** `bash scripts/deploy.sh` with those env vars (docs/DEPLOY.md §2). It applies migrations, deploys 17 functions, sets secrets and Vault entries, and runs the 7-day Radar smoke test. Record the smoke-test counts from Admin → Job Runs here.
+2. **Deploy:** `bash scripts/deploy.sh` with those env vars (docs/DEPLOY.md §2). It applies migrations, deploys 18 functions, sets secrets and Vault entries, and runs the 7-day Radar smoke test. Record the smoke-test counts from Admin → Job Runs here.
 3. **Deploy the admin app to Vercel** (root `apps/admin`, two env vars) and set Supabase Auth redirect URLs (docs/DEPLOY.md §3).
-4. **Invite staff and assign roles** with `pnpm promote-user`.
+4. **Create the first admin** with `pnpm promote-user`, set the Supabase email templates (docs/DEPLOY.md §2), then invite everyone else from Admin → Team.
 5. **Follow the first-run checklist** in docs/RUNBOOK.md: import properties → fill hotel rates → 90-day backfill → review 50 projects → generate and review 5 pages → visibility baseline → enable crons.
 6. **Hand `docs/WEBSITE_INTEGRATION_PROMPT.md` to whoever builds staysdirect.co.uk**, then verify with `curl -A GPTBot https://staysdirect.co.uk/contractor-accommodation/<town>`. Fix the 404 `sitemap-static.xml` at the same time.
 7. **Point the Lovable leads app at `leads_export`** per docs/LEADS_CONTRACT.md, and set `LEADS_WEBHOOK_URL` (with a secret token) if it wants push updates.

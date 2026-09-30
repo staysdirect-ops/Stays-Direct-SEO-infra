@@ -12,7 +12,11 @@ export function LoginForm() {
       <Field label="Email" htmlFor="email">
         <Input id="email" name="email" type="email" autoComplete="email" required />
       </Field>
-      <Field label="Password" htmlFor="password" hint="Leave blank to get a sign-in link by email.">
+      <Field
+        label="Password"
+        htmlFor="password"
+        hint="Leave blank to get a sign-in link by email. Forgotten it? Use the link, then set a new password under Account."
+      >
         <Input id="password" name="password" type="password" autoComplete="current-password" />
       </Field>
       {state.error ? <p className="text-sm text-red-700">{state.error}</p> : null}

@@ -18,7 +18,7 @@ packages/core/            Runtime-agnostic TypeScript: OCDS, scoring, prompts, q
 packages/core/test/       Vitest suites (fixtures in tests/fixtures)
 apps/admin/               Next.js 16 admin app (Vercel)
 supabase/migrations/      Schema, RLS, reference data, pg_cron jobs
-supabase/functions/       17 edge functions (Deno); _shared/core is generated from packages/core
+supabase/functions/       18 edge functions (Deno); _shared/core is generated from packages/core
 scripts/                  deploy, promote-user, sync-core, db tests, mock APIs
 docs/                     Deploy, runbook, website integration, leads contract
 ```
