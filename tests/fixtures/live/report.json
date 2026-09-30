@@ -1,8 +1,8 @@
 {
- "fetched_at": "2026-09-30T21:17:53.423Z",
+ "fetched_at": "2026-09-30T21:23:19.095Z",
  "window": {
-  "from": "2026-09-27T21:17:53",
-  "to": "2026-09-30T21:17:53"
+  "from": "2026-09-27T21:23:19",
+  "to": "2026-09-30T21:23:19"
  },
  "contracts_finder": {
   "http_statuses": [
@@ -11,9 +11,9 @@
    200
   ],
   "next_links": [
-   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:17:53&publishedTo=2026-09-30T21:17:53&stages=award&limit=100&cursor=…",
-   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:17:53&publishedTo=2026-09-30T21:17:53&stages=award&limit=100&cursor=…",
-   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:17:53&publishedTo=2026-09-30T21:17:53&stages=award&limit=100&cursor=…"
+   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:23:19&publishedTo=2026-09-30T21:23:19&stages=award&limit=100&cursor=…",
+   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:23:19&publishedTo=2026-09-30T21:23:19&stages=award&limit=100&cursor=…",
+   "https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search?publishedFrom=2026-09-27T21:23:19&publishedTo=2026-09-30T21:23:19&stages=award&limit=100&cursor=…"
   ],
   "releases": 300,
   "award_releases": 300,
@@ -58,7 +58,7 @@
     "postcodes": [
      "N18 3QQ"
     ],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/4f6efe02-0dcd-49a6-abf2-f5024a3a71e4"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/f3f44ff0-99b7-4488-9bca-533fa4d9847e"
    },
    {
     "title": "NHG Empty Homes (Voids) Refurbishment Works Framework",
@@ -71,10 +71,10 @@
     "start": "2026-04-01",
     "delivery": null,
     "postcodes": [],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/efc71292-ac7e-4b92-9c72-6c10802d6545"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/4ea546d9-cc5e-4cd0-8bb9-7ba656eb735c"
    },
    {
-    "title": "CBC-2032-T-SK - Installation and Maintenance of Doors and Door Entry Systems & maintenance of Assisted Living Equipment - AWARD",
+    "title": "CBC-2032-T-SK - Installation and Maintenance of Doors and Door Entry Systems & maintenance of Assisted Living Equipment",
     "supplier": "OpenView Security Solutions Limited",
     "ch": null,
     "value": null,
@@ -86,10 +86,10 @@
     "postcodes": [
      "SG17 5TQ"
     ],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/ad534137-9dba-44fd-a9c5-62540b4f06c5"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/82fd9122-baca-494e-a995-c100c0a2edec"
    },
    {
-    "title": "25336 - John Fletcher of Madeley - Modular Building - AWARD",
+    "title": "25336 - John Fletcher of Madeley - Modular Building",
     "supplier": "R G Stones (Buildings) Ltd",
     "ch": null,
     "value": 527860,
@@ -101,10 +101,10 @@
     "postcodes": [
      "TF3 4JG"
     ],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/e32363a8-9a63-4815-a2bd-b3093c8bc188"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/8d5506bc-ace6-4cab-b503-d7e150cca636"
    },
    {
-    "title": "CBC-1949-EXF-FC-SK Rainbows Extension Main Works - AWARD",
+    "title": "CBC-1949-EXF-FC-SK Rainbows Extension Main Works",
     "supplier": "Spacemaker Developments Ltd",
     "ch": null,
     "value": null,
@@ -116,10 +116,10 @@
     "postcodes": [
      "SG17 5TQ"
     ],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/4a4ab1bb-f07b-4101-b7dd-8eed148bd160"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/d5616d06-abc4-400f-956d-31eb25dd4c0e"
    },
    {
-    "title": "Carry Out Lightning Protection 2027-2032 - AWARD",
+    "title": "Carry Out Lightning Protection 2027-2032",
     "supplier": "Delta Reach (Specialist Services) LTD",
     "ch": null,
     "value": null,
@@ -131,7 +131,7 @@
     "postcodes": [
      "TF3 4JG"
     ],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/f5f2de84-6c77-4e74-816e-9e34bcea7581"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/9f64ee6b-66d0-4d56-8b9a-466d522e3b50"
    },
    {
     "title": "PDF Framework - A1 NB Wansford-Wothorpe resurf",
@@ -144,7 +144,7 @@
     "start": "2026-08-31",
     "delivery": null,
     "postcodes": [],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/4b01f601-39d8-4f5b-b170-16c97f03ea6e"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/660f9944-2e69-4b13-a3e4-1ebb55b6f0b4"
    },
    {
     "title": "GB-Milton Keynes: Provision of Retrofit and Decarbonisation Works",
@@ -157,7 +157,7 @@
     "start": "2026-03-09",
     "delivery": "South East",
     "postcodes": [],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/540ee866-6aa6-4218-8f4e-61325aa6dda2"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/2614c5f2-1013-4f98-8c63-f0c0bc62d585"
    },
    {
     "title": "City of London Housing Lift Maintenance Contract - SEC Mini - Competition",
@@ -170,10 +170,10 @@
     "start": "2026-01-05",
     "delivery": "London",
     "postcodes": [],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/1441b0b4-ef16-4da2-aad9-df9ae91354c7"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/ab442971-6360-472d-b8db-2e797b7d8a2c"
    },
    {
-    "title": "Brookfields Accessibility Project Further Competition - AWARD",
+    "title": "Brookfields Accessibility Project Further Competition",
     "supplier": "Etec Contract Services Ltd",
     "ch": null,
     "value": null,
@@ -185,10 +185,10 @@
     "postcodes": [
      "RG14 5LD"
     ],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/5c1fa398-c53d-48c9-a0c6-b62fbc62bef1"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/e27bfc43-1254-4c95-bd90-d370b2e8e75b"
    },
    {
-    "title": "Daventry Job Centre Relocation, - AWARD",
+    "title": "Daventry Job Centre Relocation,",
     "supplier": "Steele & Bray Ltd",
     "ch": null,
     "value": 1792442.53,
@@ -200,7 +200,7 @@
     "postcodes": [
      "NN11 4XG"
     ],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/84d6b608-9b11-47b5-ad32-fac3dbd430ca"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/f525b226-4f11-4d1d-a9c4-2e503c497478"
    },
    {
     "title": "Cascade Steps Landing Platform Repairs",
@@ -213,7 +213,7 @@
     "start": "2026-09-14",
     "delivery": "South West",
     "postcodes": [],
-    "url": "https://www.contractsfinder.service.gov.uk/Notice/235fe28e-f45d-4bad-9110-6fc95cb71d86"
+    "url": "https://www.contractsfinder.service.gov.uk/Notice/db0f41d9-2a8d-4e12-8bd2-92c75668c10b"
    }
   ]
  },
@@ -224,9 +224,9 @@
    200
   ],
   "next_links": [
-   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=…",
-   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=…",
-   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=…"
+   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:23:19&updatedTo=2026-09-30T21:23:19&limit=100&cursor=…",
+   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:23:19&updatedTo=2026-09-30T21:23:19&limit=100&cursor=…",
+   "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:23:19&updatedTo=2026-09-30T21:23:19&limit=100&cursor=…"
   ],
   "releases": 300,
   "award_releases": 190,
@@ -272,11 +272,11 @@
   "with_cpv_pct": 100,
   "with_delivery_postcode_pct": 0,
   "with_buyer_postcode_pct": 99,
-  "with_description_pct": 98,
+  "with_description_pct": 99,
   "passes_filter": 17,
   "kept_examples": [
    {
-    "title": "Lot 1: Mechanical Services",
+    "title": "SBC Minor Works Framework: Lot 1: Mechanical Services",
     "supplier": "ANELEC GROUP LIMITED",
     "ch": "09421455",
     "value": 2800000,
@@ -298,7 +298,7 @@
      "45261215"
     ],
     "start": "2026-11-01",
-    "delivery": "UKC11",
+    "delivery": "UKC11 (North East England)",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092603-2026"
    },
@@ -313,7 +313,7 @@
      "71356000"
     ],
     "start": "2026-09-28",
-    "delivery": "UK",
+    "delivery": "United Kingdom (nationwide)",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092597-2026"
    },
@@ -326,7 +326,7 @@
      "45211100"
     ],
     "start": "2026-10-16",
-    "delivery": "UKC",
+    "delivery": "North East England",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092589-2026"
    },
@@ -339,7 +339,7 @@
      "71632000"
     ],
     "start": "2026-10-01",
-    "delivery": "UKD3",
+    "delivery": "UKD3 (North West England)",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092525-2026"
    },
@@ -352,7 +352,7 @@
      "71200000"
     ],
     "start": null,
-    "delivery": "UK",
+    "delivery": "United Kingdom (nationwide)",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092499-2026"
    },
@@ -381,12 +381,12 @@
      "45300000"
     ],
     "start": null,
-    "delivery": "UKJ32",
+    "delivery": "UKJ32 (South East England)",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092478-2026"
    },
    {
-    "title": "Land Purchase and Works",
+    "title": "New Build Development: Land Purchase and Works",
     "supplier": "MILLER HOMES LIMITED",
     "ch": "SC255429",
     "value": 26329509,
@@ -412,7 +412,7 @@
      "50700000"
     ],
     "start": "2026-08-01",
-    "delivery": "UKC; UKE; UKF; UKH; UKI; UKJ; UKK",
+    "delivery": "North East England; Yorkshire and the Humber; East Midlands; East of England; London; South East England; South West England",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092448-2026"
    },
@@ -449,7 +449,7 @@
      "45331230"
     ],
     "start": "2026-08-01",
-    "delivery": "UKI",
+    "delivery": "London",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092436-2026"
    },
@@ -463,7 +463,7 @@
      "71317100"
     ],
     "start": "2026-11-02",
-    "delivery": "UK",
+    "delivery": "United Kingdom (nationwide)",
     "postcodes": [],
     "url": "https://www.find-tender.service.gov.uk/Notice/092432-2026"
    },

@@ -12,7 +12,7 @@
    "links"
   ],
   "links": {
-   "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=dXBkYXRlZEZyb209MjAyNi0wOS0yN1QyMToxNzo1M3x1cGRhdGVkVG89MjAyNi0wOS0zMFQyMToxNzo1M3xuZXh0Q3Vyc29yPTc0NTAyMg=="
+   "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:23:19&updatedTo=2026-09-30T21:23:19&limit=100&cursor=dXBkYXRlZEZyb209MjAyNi0wOS0yN1QyMToyMzoxOXx1cGRhdGVkVG89MjAyNi0wOS0zMFQyMToyMzoxOXxuZXh0Q3Vyc29yPTc0NTAyMg=="
   },
   "release_count": 100
  },
@@ -29,7 +29,7 @@
    "links"
   ],
   "links": {
-   "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=dXBkYXRlZEZyb209MjAyNi0wOS0yN1QyMToxNzo1M3x1cGRhdGVkVG89MjAyNi0wOS0zMFQyMToxNzo1M3xuZXh0Q3Vyc29yPTc0NDkyMg=="
+   "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:23:19&updatedTo=2026-09-30T21:23:19&limit=100&cursor=dXBkYXRlZEZyb209MjAyNi0wOS0yN1QyMToyMzoxOXx1cGRhdGVkVG89MjAyNi0wOS0zMFQyMToyMzoxOXxuZXh0Q3Vyc29yPTc0NDkyMg=="
   },
   "release_count": 100
  },
@@ -46,7 +46,7 @@
    "links"
   ],
   "links": {
-   "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:17:53&updatedTo=2026-09-30T21:17:53&limit=100&cursor=dXBkYXRlZEZyb209MjAyNi0wOS0yN1QyMToxNzo1M3x1cGRhdGVkVG89MjAyNi0wOS0zMFQyMToxNzo1M3xuZXh0Q3Vyc29yPTc0NDgyMg=="
+   "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-09-27T21:23:19&updatedTo=2026-09-30T21:23:19&limit=100&cursor=dXBkYXRlZEZyb209MjAyNi0wOS0yN1QyMToyMzoxOXx1cGRhdGVkVG89MjAyNi0wOS0zMFQyMToyMzoxOXxuZXh0Q3Vyc29yPTc0NDgyMg=="
   },
   "release_count": 100
  }
