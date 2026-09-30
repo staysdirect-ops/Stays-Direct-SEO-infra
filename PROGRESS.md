@@ -1,108 +1,69 @@
-# StaysDirect Growth Engine - Build Progress
+# Progress
 
-## Phase 1: Foundation ✓ COMPLETE
+_Last updated: 30 September 2026, end of the build session._
 
-### Completed
+## Summary
 
-- ✅ Monorepo scaffold with pnpm workspace
-- ✅ Root `package.json` with typecheck, lint, test, format scripts
-- ✅ GitHub Actions CI pipeline (`typecheck`, `lint`, `test`)
-- ✅ TypeScript configuration (root + package-specific, strict mode)
-- ✅ ESLint + Prettier setup with shared config
-- ✅ `.env.example` with all required secrets (never commit values)
-- ✅ `.gitignore` excluding node_modules, builds, env files
-- ✅ `packages/core/` with full TypeScript modules:
-  - `ai.ts` - Claude integration with spend cap enforcement, retry logic
-  - `ocds.ts` - OCDS parsing and filtering (Contracts Finder, Find a Tender)
-  - `scoring.ts` - Lead scoring algorithm (25+25+25+15+10 = 100 points)
-  - `quality.ts` - Content quality checker (word count, data pack verification, banned phrases, FAQ count)
-- ✅ Unit tests for all core modules with OCDS fixtures
-  - OCDS parsing (valid releases, missing awards, CPV filtering)
-  - Scoring (high-value projects, sourcing opportunities, future dates)
-  - Quality checks (word count, banned phrases, FAQ count, number verification)
-  - All tests passing with realistic data
-- ✅ Supabase database schema v1:
-  - `admin_users(user_id, role)` - Role-based access control (admin, sales, editor)
-  - `settings` - Single-row configuration with 15 parameters
-  - `properties` - Rental stock with PostGIS location, 8 columns
-  - `towns` - UK contractor hotspots, ready for ~150 seed records
-  - `leads` + `leads_export` view - Stable contract for external APIs
-  - `api_usage` - Per-call cost tracking
-  - `job_runs` - Batch execution logging
-  - All tables have RLS policies enabled, indexes on common filters
-- ✅ Initial migration: `20240115000001_initial_schema.sql`
-- ✅ Documentation: README.md, CLAUDE.md, DECISIONS.md
-- ✅ Commits:
-  - 5e50f16: Phase 1 Foundation scaffold
-  - e7764da: Fix TypeScript types and test data
-  - 479fba1: Add .gitignore and remove node_modules
+All five phases are built, tested and pushed to `main`, and CI is green on GitHub (typecheck, lint, format, unit tests, Deno check and lint, migrations + RLS on real Postgres, admin production build).
 
-### TODO (Next Session)
+**Not deployed yet:** no Supabase or AI credentials were available in the build environment, so nothing has run against the live government APIs, Anthropic, OpenAI or Perplexity. Everything was instead verified end to end on a local Supabase stack with fixture-backed mock APIs (details below). Deployment is one command once secrets exist: see "Next steps".
 
-- ⏳ Create Next.js admin app shell (layout, auth context, sidebar navigation)
-- ⏳ Implement auth pages (login with Supabase)
-- ⏳ Implement Properties admin page (CSV import, list, edit)
-- ⏳ Implement Towns admin page (seed data, list)
-- ⏳ Implement Settings admin page (single form)
-- ⏳ Create seed script for ~150 UK towns with PostGIS locations
-- ⏳ Create user promotion script (email → admin role via CLI)
-- ⏳ Test with `supabase db push` against a Supabase project
-- ⏳ Set up GitHub repository and push main branch
+## Phase status
 
-### Known Issues
+| Phase                       | Status                                | Where                                                                                                                                     |
+| --------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Foundation               | Done                                  | `packages/core`, `supabase/migrations/…100_foundation.sql`, `…500_reference_data.sql`, `apps/admin` shell, `scripts/promote-user.mjs`, CI |
+| 2. Project Radar            | Done                                  | `supabase/functions/radar-*`, `_shared/radar.ts`, `…200_radar.sql`, admin Radar pages                                                     |
+| 3. SEO + AI search engine   | Done                                  | `supabase/functions/seo-*`, `public-*`, `_shared/seo.ts`, `…300_seo.sql`, admin SEO pages                                                 |
+| 4. AI visibility tracker    | Done                                  | `supabase/functions/ai-visibility-run`, `…400_visibility.sql`, admin AI Visibility page                                                   |
+| 5. Integration kit + deploy | Docs done; deploy pending credentials | `docs/`, `scripts/deploy.sh`                                                                                                              |
 
-None currently.
+## Definition of done: evidence
 
-### Next Steps for Phase 2: Project Radar
+| Requirement                                                                                                                     | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Migrations apply cleanly; RLS on every table                                                                                    | Applied on Supabase Postgres 17 (`supabase start` / `db reset`) and plain Postgres 16 in CI. `scripts/db-test/assertions.sql` fails if any table lacks RLS and checks access per role (anon, non-staff, sales, editor, admin).                                                                                                                                                                                                                                                                                         |
+| CI green                                                                                                                        | GitHub Actions run for `2a1fdbc` and later: all four jobs pass.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Unit tests: OCDS parsing (both sources), filtering, dedupe, scoring, data pack, number verification, brand/competitor detection | 109 Vitest tests in `packages/core/test` (also: geocode fallback, retries/timeouts, rate limiter, Claude wrapper incl. spend cap, JSON retry, refusal and web-search citations, outreach validation, markdown XSS, renderer, sitemap, llms.txt, lead-form validation, Companies House lookup).                                                                                                                                                                                                                         |
+| Radar produces qualified projects and leads with drafts from real API data **or fixtures if network is blocked**                | **Fixtures:** the government APIs, postcodes.io and staysdirect.co.uk were blocked by the build environment's network policy. On the local stack, `radar-run` (7-day backfill) paged through 3 Contracts Finder pages and 1 Find a Tender page, dropped 2 cross-source duplicates, enriched 7 projects, matched them to demo houses and created 7 leads with drafts (scores 92/92/77/74/59/51/40; Barrow flagged `sourcing_opportunity`; an invented postcode was discarded; Companies House filled a missing number). |
+| One location page, one project page and one blog post that pass the quality checker, viewable in the admin preview              | Unit tests: Bridgwater page, Hinkley Point C page and a 1,248-word blog post all pass with fixture AI output. End to end (`pnpm e2e:local`): Bridgwater 96, Hinkley Point C 77 (flagged 0.61 similar to Bridgwater, which shares its houses), blog 100. All three were approved, drip-published and viewed in the admin editor preview (screenshots taken with Playwright).                                                                                                                                            |
+| Public endpoints return valid JSON, HTML, XML and llms.txt                                                                      | `public-content` (index + item, 404 for unknown), `public-render` (full standalone HTML with title, canonical, OG, JSON-LD, 8 `<h2>`s; checked with a GPTBot user agent), `public-sitemap` (valid XML with lastmod), `public-llms-txt`, `public-lead` (valid → stored with UTM and landing page; invalid → 400; honeypot → accepted, not stored; 6th request/hour → 429). All send `Cache-Control: public, max-age=3600`.                                                                                              |
+| All docs written                                                                                                                | `docs/DEPLOY.md`, `docs/RUNBOOK.md`, `docs/WEBSITE_INTEGRATION.md`, `docs/WEBSITE_INTEGRATION_PROMPT.md`, `docs/LEADS_CONTRACT.md`, `DECISIONS.md`, `README.md`, `CLAUDE.md`.                                                                                                                                                                                                                                                                                                                                          |
+| Deploy + `radar-run backfill_days=7` smoke test, counts reported here                                                           | **Not done: no `SUPABASE_ACCESS_TOKEN` / `SUPABASE_PROJECT_REF`.** `scripts/deploy.sh` does the whole deploy and ends with that smoke test. The local-stack equivalent is above.                                                                                                                                                                                                                                                                                                                                       |
 
-1. Implement edge functions for contract ingestion
-2. Create Claude enrichment logic
-3. Build PostGIS matching
-4. Implement lead scoring and generation
+## Not completed / known risks
 
----
+1. **Nothing has run against live external APIs.**
+   - The OCDS mappers follow the published OCDS 1.1 shapes and both APIs' documented pagination (`links.next`), but fixtures are hand-written. After the first live backfill, open Job Runs and a few projects' raw JSON to confirm fields map as expected (value, supplier, contract period, delivery addresses). Adjust `packages/core/src/ocds.ts` and add a real response to `tests/fixtures` if not.
+   - Notice links (`source_url`) are built from the OCID (Contracts Finder) and notice ID (Find a Tender). Check one of each.
+   - Visibility: OpenAI uses the Responses API with `tools: [{type: "web_search"}]` and model `gpt-5`, and Perplexity uses `sonar`. Both are editable in Settings if names have changed. Confirm the first run shows answers, not errors (the heatmap shows "Error" cells with the message).
+2. **Town hotel rates and populations are empty by design** (they appear in public copy). Location pages omit the hotel-vs-house table until an editor enters real hotel rates in Towns.
+3. **Similarity check is coarse.** pg_trgm on whole pages flags pages about the same area (0.61 for Bridgwater vs Hinkley Point C). It's a -25 penalty, not a block, below 0.8. Watch real scores and tune `SIMILARITY_THRESHOLD` in `packages/core/src/quality.ts` if good pages are being held back.
+4. **Webhook delivery is best-effort** (pg_net, one attempt). The leads app should also poll `updated_at` (see LEADS_CONTRACT).
+5. **Admin UI has no automated browser tests in CI.** It was exercised by hand with Playwright (login, all 13 pages as admin, lead editing and save, project drawer and map, approve + publish, CSV import incl. duplicate skip, editor blocked from leads, phone layout with no horizontal overflow).
+6. **No in-app user management.** Roles are granted with `pnpm promote-user` or SQL (docs/DEPLOY.md §4).
+7. **Blog URL assumption:** engine posts are served at `/blog/{slug}`, matching the existing blog sitemap. If the site uses another path, change `publicPath` in `packages/core/src/schema.ts`.
+8. Property photos are stored (`properties.photos`) but not editable in the admin yet.
 
-## Phase 2: Project Radar
+## Next steps (for a person)
 
-Not started. Will implement:
+1. **Create a Supabase project** (Pro plan recommended) and gather the secrets listed in `.env.example`.
+2. **Deploy:** `bash scripts/deploy.sh` with those env vars (docs/DEPLOY.md §2). It applies migrations, deploys 17 functions, sets secrets and Vault entries, and runs the 7-day Radar smoke test. Record the smoke-test counts from Admin → Job Runs here.
+3. **Deploy the admin app to Vercel** (root `apps/admin`, two env vars) and set Supabase Auth redirect URLs (docs/DEPLOY.md §3).
+4. **Invite staff and assign roles** with `pnpm promote-user`.
+5. **Follow the first-run checklist** in docs/RUNBOOK.md: import properties → fill hotel rates → 90-day backfill → review 50 projects → generate and review 5 pages → visibility baseline → enable crons.
+6. **Hand `docs/WEBSITE_INTEGRATION_PROMPT.md` to whoever builds staysdirect.co.uk**, then verify with `curl -A GPTBot https://staysdirect.co.uk/contractor-accommodation/<town>`. Fix the 404 `sitemap-static.xml` at the same time.
+7. **Point the Lovable leads app at `leads_export`** per docs/LEADS_CONTRACT.md, and set `LEADS_WEBHOOK_URL` (with a secret token) if it wants push updates.
 
-- Contract ingestion from Contracts Finder and Find a Tender
-- Claude enrichment (location, worker count, relevance)
-- PostGIS matching against properties
-- Lead scoring and generation
-- Cron orchestration
+## How to resume development
 
-## Phase 3: SEO + AI Search Engine
+`CLAUDE.md` has the conventions. Before committing, run `pnpm check:core-sync && pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm check:functions`, plus `pnpm test:db` for schema changes. `pnpm e2e:local` re-runs the full local pipeline against the mock APIs.
 
-Not started. Will implement:
+## Commit history (this build)
 
-- Location and project page generation
-- Blog post generation
-- Quality checking with drip-publishing
-- Public content API and HTML renderer
-
-## Phase 4: AI Visibility Tracker
-
-Not started. Will implement:
-
-- Weekly searches across ChatGPT, Claude, Perplexity
-- Mention and citation detection
-- Competitor tracking
-
-## Phase 5: Website Integration
-
-Not started. Will produce:
-
-- WEBSITE_INTEGRATION.md
-- DEPLOY.md and RUNBOOK.md
-- Deployment to Supabase + Vercel
-
----
-
-## Build Notes
-
-- Environment: Cloud session, outbound internet allowed
-- All code follows TypeScript strict mode
-- Tests use Vitest with fixture-based mocking
-- Database uses Postgres 15+ (PostGIS, pg_trgm, pg_cron via Supabase)
-- All external API calls have retry logic and spend caps
+- `971b643` initial scaffold (earlier session)
+- `0ecf307` runtime-agnostic core, schema, fixtures, tests, migration harness
+- `d9ab01a` edge functions for Radar, SEO engine, AI visibility, public endpoints
+- `5cc4dc6` admin dashboard, CI, lint, formatting
+- `2a1fdbc` CI database job fix, deploy script, DEPLOY and RUNBOOK
+- final commit: website integration docs, leads contract, decisions, progress, e2e script

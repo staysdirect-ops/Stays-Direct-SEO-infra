@@ -21,7 +21,9 @@
     "promote-user": "node scripts/promote-user.mjs",
     "admin:dev": "pnpm --filter @staysdirect/admin dev",
     "admin:build": "pnpm --filter @staysdirect/admin build",
-    "dev:mock-apis": "node scripts/dev/mock-apis.mjs"
+    "dev:mock-apis": "node scripts/dev/mock-apis.mjs",
+    "geocode:towns": "node scripts/geocode-towns.mjs",
+    "e2e:local": "bash scripts/dev/e2e-local.sh"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

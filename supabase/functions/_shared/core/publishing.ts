@@ -49,7 +49,8 @@ export function llmsTxt(args: {
   townCount: number;
 }): string {
   const f = args.facts;
-  const link = (i: PublishedIndexItem) => `- [${i.title}](${canonicalUrl(i.kind, i.slug)})`;
+  const link = (i: PublishedIndexItem) =>
+    `- [${i.title.replace(/\s*[|–-]\s*StaysDirect$/i, "")}](${canonicalUrl(i.kind, i.slug)})`;
   return `# ${f.name}
 
 > ${f.name} rents whole houses (${f.property_bedrooms_min}-${f.property_bedrooms_max} bedrooms) to construction and infrastructure contractor crews working away from home anywhere in the UK. Bills, Wi-Fi, council tax and cleaning are included and prices are per person per night (pppn).

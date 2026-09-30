@@ -1,103 +1,32 @@
-# StaysDirect Growth Engine - Session Conventions
+# StaysDirect Growth Engine: conventions
 
-## Repository Structure
+Read PROGRESS.md first (status, what's left), then DECISIONS.md (why things are the way they are).
 
-This is a pnpm monorepo with:
+## Layout
 
-- `packages/core/` - Shared TypeScript utilities (OCDS parsing, scoring, quality checks, AI integration)
-- `apps/admin/` - Next.js (App Router) admin dashboard with Tailwind + shadcn/ui
-- `supabase/migrations/` - SQL migrations (applied via `supabase db push`)
-- `tests/fixtures/` - Sample API responses and test data
+- `packages/core/src`: all business logic, pure TypeScript. No Node-only APIs, erasable syntax only (no enums, no constructor parameter properties). Relative imports use `.ts` extensions.
+- `packages/core/test`: Vitest. Fixtures in `tests/fixtures`. Mock every external call (`fakeClaude`, `jsonResponse` in `test/helpers.ts`).
+- `supabase/functions`: Deno edge functions. `_shared/core` is GENERATED. Edit `packages/core/src` and run `pnpm sync:core`; CI fails if it's stale. `_shared/runtime.ts` has the db client, auth (`authorize`), jobs, chaining (`invokeFunction`) and the Claude context.
+- `supabase/migrations`: all schema changes as new timestamped SQL files. Enable RLS on every new table and add policies via `has_role()` / `is_staff()`. Add assertions to `scripts/db-test/assertions.sql`.
+- `apps/admin`: Next.js 16 (App Router, `proxy.ts` not middleware, async `params`/`searchParams`/`cookies`). Server actions call `requireRole()` first and use the user's Supabase session (RLS). Never use the service-role key in the app.
 
-## Key Files
+## Rules that matter
 
-- `.env.example` - Environment variables template (never commit actual secrets)
-- `DECISIONS.md` - Architectural decisions and trade-offs
-- `PROGRESS.md` - Build status and phase completion tracking
-- `docs/DEPLOY.md` - Deployment and production runbook
+- Outreach is drafts only. Never add automatic sending.
+- Generated copy may only state numbers from the data pack or company facts; the quality checker enforces it. Don't loosen `allowedNumbers` to make a page pass. Fix the pack or the prompt.
+- Public endpoints serve `published_snapshot` only. Never serve working copy.
+- Every AI call goes through `callClaude` (spend cap and usage logging) or records usage via `usageStore`.
+- Government APIs: at most 1 request/second, backoff on 429/5xx, 5 retries (`fetchWithRetry` + `createRateLimiter`). Find a Tender without `stages`.
+- Keep `leads_export` column names stable (docs/LEADS_CONTRACT.md).
+- Never print or commit secret values. `.env.example` lists names only.
 
-## Development Practices
+## Commands
 
-### TypeScript & Testing
+```bash
+pnpm test | pnpm typecheck | pnpm lint | pnpm format:check | pnpm check:core-sync
+pnpm check:functions                     # Deno check + lint
+PGHOST=... PGPORT=... PGUSER=postgres pnpm test:db   # see scripts/db-test/start-postgres.sh
+pnpm admin:build
+```
 
-- All code is strict TypeScript (`strict: true`)
-- Unit tests in Vitest cover:
-  - OCDS parsing (both Contracts Finder and Find a Tender sources)
-  - Filtering logic (by CPV and value)
-  - Deduplication across sources
-  - Project scoring
-  - Content quality checking
-- Mock all external API calls in tests (use fixtures for real data)
-- Test files colocated with source (`*.test.ts`)
-
-### Database
-
-- All schema changes go in `supabase/migrations/` as SQL files
-- Row-Level Security (RLS) enabled on every table
-- Admin users table controls role-based access (admin, sales, editor)
-- Settings is a single-row configuration table
-- Leads and leads_export view have stable column names for external APIs
-
-### Secrets Management
-
-- Environment variables in `.env.local` (not committed)
-- Use `.env.example` as template
-- Never print secret values in logs or commits
-- Supabase secrets for functions set via `supabase secrets set`
-
-### Code Style
-
-- Format with Prettier (100 char line width)
-- Lint with ESLint + TypeScript plugin
-- No comments unless WHY is non-obvious
-- Keep abstractions minimal - three similar lines better than premature abstraction
-
-## Phases
-
-1. **Foundation** (in progress) - Monorepo, CI, schemas, admin shell
-2. **Project Radar** - Contract ingestion, enrichment, matching, lead generation
-3. **SEO + AI Search Engine** - Content generation with quality checks
-4. **AI Visibility Tracker** - Weekly monitoring across AI engines
-5. **Website Integration** - Public endpoints, sitemap, llms.txt
-
-## External APIs
-
-### Government Contracts
-
-- Contracts Finder: `https://www.contractsfinder.service.gov.uk/Published/Notices/OCDS/Search`
-- Find a Tender: `https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages`
-- Rate limit: ≤1 req/sec, exponential backoff on 429/5xx, max 5 retries
-
-### Enrichment
-
-- Companies House: Basic auth, key as username
-- postcodes.io: No key required
-
-### AI Services
-
-- Anthropic: `https://api.anthropic.com/v1/messages` (Claude)
-- OpenAI: Responses API with web search
-- Perplexity: sonar model with web search
-
-## Deployment
-
-- Supabase Edge Functions: TypeScript/Deno, deployed via `supabase functions deploy`
-- Admin app: Next.js on Vercel (from `apps/admin`)
-- Environment variables and secrets set before first deploy
-- First run includes 90-day backfill of contracts and manual review
-
-## Resuming Work
-
-Check `PROGRESS.md` for:
-
-- Current phase and what's completed
-- Known issues and blockers
-- Exact next steps
-- Any manual setup required (e.g., adding properties, backfilling)
-
-When interrupted, always:
-
-1. Run tests
-2. Commit with clear message
-3. Push to main
-4. Update PROGRESS.md with status
+Before committing: run the checks above, update PROGRESS.md, commit, push.
