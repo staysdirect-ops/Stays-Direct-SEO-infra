@@ -62,10 +62,19 @@ Choices made while building, with the reason for each. The stack itself (Supabas
 
 **Charts:** engine colours are slots 1–3 of a validated categorical palette (blue, orange, aqua; passes the CVD separation check). Aqua is under 3:1 contrast, so the chart has a legend and the prompt×engine grid doubles as the text view. Heatmap cells carry text labels (`#2 cited`, `Rivals only`), not just colour.
 
+**Team management through an edge function.** Inviting users and listing them needs the Auth admin API, i.e. the service-role key, which the app must never hold. `admin-users` checks the caller is an admin and does the privileged work. An admin can't remove their own admin role, so the last admin can't lock everyone out by accident. Invite, magic-link and recovery emails use `token_hash` links to the app's `/auth/confirm` (server-side `verifyOtp`), because the default links put tokens in the URL fragment, which a server-rendered app can't read.
+
+**Property photos in a public bucket.** Sales staff paste photo links into outreach drafts, so the links must open without signing in. Paths are `<property id>/<random uuid>.jpg`, so they can't be guessed. Only sales and admin can write. Photos are downscaled to 1600px in the browser before upload (phone photos are 5–10 MB). The order in `properties.photos` is the display order, and the first photo is the cover.
+
 **CSV import** geocodes postcodes in bulk (100 per request) and takes the town from the parish/ward, because the specified CSV has no town column but properties need one. Rows with the same name and postcode as an existing property are skipped, so re-importing a sheet is safe.
 
 ## Testing
 
-- 109 Vitest tests against hand-written fixtures that follow the published OCDS shapes. The government APIs were unreachable from the build environment, so no live samples were fetched; fixtures include tricky cases (tender-only releases, `amountGross`, EUR values, `durationInDays`, cross-source duplicates, invented postcodes).
+- Vitest tests against hand-written fixtures that follow the published OCDS shapes, with tricky cases (tender-only releases, `amountGross`, EUR values, `durationInDays`, cross-source duplicates, invented postcodes).
+- **Live samples:** the build sandbox couldn't reach the government APIs, so the `Live API samples` GitHub Actions workflow fetches real responses into `tests/fixtures/live/` and `live-samples.test.ts` maps every award release in them. Assertions check shape, not exact values, so a refresh never breaks the suite. The real data changed four things:
+  - Contracts Finder notice links are built from the release id.
+  - Find a Tender lot-only titles are prefixed with the tender title.
+  - NUTS/ITL region codes are named, but only at level 1: finer names would be a guess.
+  - The bare `/blog` sitemap entry is ignored.
 - `scripts/db-test` builds a database from the migrations on plain Postgres + PostGIS + pg_cron (with small Supabase stubs) and asserts RLS per role, matching, webhook firing, suppression, rate limiting, similarity and the cron guard. It runs in CI.
-- Edge functions were run end to end on a local Supabase stack with `scripts/dev/mock-apis.mjs` standing in for every external API (enabled only by `DEV_EXTERNAL_API_PROXY`, never set in production).
+- Edge functions were run end to end on a local Supabase stack with `scripts/dev/mock-apis.mjs` standing in for every external API (enabled only by `DEV_EXTERNAL_API_PROXY`, never set in production). The CI `e2e` job does this on every push, then runs Playwright against the admin app built for that stack. The invite test reads the real invite email from the local mail catcher (Mailpit) and follows its link.
