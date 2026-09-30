@@ -8,13 +8,13 @@ PORT="${PGPORT:-54329}"
 BIN="/usr/lib/postgresql/${PGVER}/bin"
 
 if ! ls /usr/share/postgresql/${PGVER}/extension/postgis.control >/dev/null 2>&1 || ! ls /usr/share/postgresql/${PGVER}/extension/pg_cron.control >/dev/null 2>&1; then
-  sudo apt-get update -q
-  sudo apt-get install -y -q "postgresql-${PGVER}" "postgresql-${PGVER}-postgis-3" "postgresql-${PGVER}-cron"
+  sudo apt-get update -q >&2
+  sudo apt-get install -y -q "postgresql-${PGVER}" "postgresql-${PGVER}-postgis-3" "postgresql-${PGVER}-cron" >&2
 fi
 
 rm -rf "$DATA"
 mkdir -p "$DATA"
-"$BIN/initdb" -D "$DATA/data" -A trust -U postgres >/dev/null
+"$BIN/initdb" -D "$DATA/data" -A trust -U postgres >&2
 cat >> "$DATA/data/postgresql.conf" <<CONF
 shared_preload_libraries = 'pg_cron'
 cron.database_name = 'staysdirect_test'
@@ -22,6 +22,9 @@ listen_addresses = ''
 unix_socket_directories = '$DATA'
 port = $PORT
 CONF
-"$BIN/pg_ctl" -D "$DATA/data" -l "$DATA/log" -w start >/dev/null
+if ! "$BIN/pg_ctl" -D "$DATA/data" -l "$DATA/log" -w start >/dev/null; then
+  cat "$DATA/log" >&2
+  exit 1
+fi
 echo "PGHOST=$DATA"
 echo "PGPORT=$PORT"

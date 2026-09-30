@@ -47,9 +47,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Start Postgres with PostGIS and pg_cron
-        run: |
-          sudo chown -R "$(whoami)" /tmp
-          scripts/db-test/start-postgres.sh >> "$GITHUB_ENV"
+        run: bash scripts/db-test/start-postgres.sh >> "$GITHUB_ENV"
+        env:
+          PGDATA_DIR: ${{ runner.temp }}/sd-pg
       - name: Apply migrations and run assertions
         run: bash scripts/db-test/run.sh
         env:
