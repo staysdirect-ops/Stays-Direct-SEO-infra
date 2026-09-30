@@ -1,0 +1,168 @@
+{
+  "releases": [
+    {
+      "ocid": "ocds-b5fd17-123456",
+      "id": "1",
+      "date": "2024-01-15T10:30:00Z",
+      "tag": ["award"],
+      "initiationType": "tender",
+      "parties": [
+        {
+          "id": "org-buyer-1",
+          "name": "Department for Transport",
+          "roles": ["buyer"],
+          "address": {
+            "streetAddress": "33 Horseferry Road",
+            "locality": "London",
+            "postalCode": "SW1A 2AY",
+            "countryName": "GB"
+          },
+          "identifier": {
+            "scheme": "GB-COH",
+            "id": "12345678"
+          }
+        },
+        {
+          "id": "org-supplier-1",
+          "name": "BuildCorp Solutions Ltd",
+          "roles": ["supplier"],
+          "address": {
+            "streetAddress": "1 Construction Way",
+            "locality": "Manchester",
+            "postalCode": "M1 1AD",
+            "countryName": "GB"
+          },
+          "identifier": {
+            "scheme": "GB-COH",
+            "id": "87654321"
+          }
+        }
+      ],
+      "tender": {
+        "id": "tender-123456",
+        "title": "M6 Motorway Resurfacing Programme",
+        "description": "Resurfacing and maintenance works on the M6 motorway between junctions 8 and 15 in the Midlands. Duration: 18 months. Estimated 150+ workers on site.",
+        "value": {
+          "amount": 8500000,
+          "currency": "GBP"
+        },
+        "contractPeriod": {
+          "startDate": "2024-03-01",
+          "endDate": "2025-08-31"
+        },
+        "items": [
+          {
+            "description": "Road works",
+            "classification": {
+              "scheme": "CPV",
+              "id": "45210000",
+              "description": "Asphalting works"
+            }
+          }
+        ]
+      },
+      "awards": [
+        {
+          "id": "award-123456-1",
+          "status": "active",
+          "date": "2024-01-15",
+          "value": {
+            "amount": 8500000,
+            "currency": "GBP"
+          },
+          "suppliers": [
+            {
+              "id": "org-supplier-1",
+              "name": "BuildCorp Solutions Ltd"
+            }
+          ],
+          "contractPeriod": {
+            "startDate": "2024-03-01",
+            "endDate": "2025-08-31"
+          }
+        }
+      ]
+    },
+    {
+      "ocid": "ocds-b5fd17-654321",
+      "id": "2",
+      "date": "2024-01-14T14:20:00Z",
+      "tag": ["award"],
+      "initiationType": "tender",
+      "parties": [
+        {
+          "id": "org-buyer-2",
+          "name": "Network Rail Infrastructure",
+          "roles": ["buyer"],
+          "address": {
+            "streetAddress": "1 Eversholt Street",
+            "locality": "London",
+            "postalCode": "NW1 2RA",
+            "countryName": "GB"
+          }
+        },
+        {
+          "id": "org-supplier-2",
+          "name": "RailWorks Engineering Ltd",
+          "roles": ["supplier"],
+          "address": {
+            "streetAddress": "42 Industrial Park",
+            "locality": "Leeds",
+            "postalCode": "LS10 1AA",
+            "countryName": "GB"
+          },
+          "identifier": {
+            "scheme": "GB-COH",
+            "id": "11223344"
+          }
+        }
+      ],
+      "tender": {
+        "id": "tender-654321",
+        "title": "East Coast Mainline Track Renewal",
+        "description": "Track renewal works on the East Coast Mainline between Newcastle and York. 48-month contract with significant site workforce.",
+        "value": {
+          "amount": 45000000,
+          "currency": "GBP"
+        },
+        "contractPeriod": {
+          "startDate": "2024-06-01",
+          "endDate": "2028-05-31"
+        },
+        "items": [
+          {
+            "classification": {
+              "scheme": "CPV",
+              "id": "45110000",
+              "description": "Demolition works and site preparation"
+            }
+          }
+        ]
+      },
+      "awards": [
+        {
+          "id": "award-654321-1",
+          "status": "active",
+          "date": "2024-01-14",
+          "value": {
+            "amount": 45000000,
+            "currency": "GBP"
+          },
+          "suppliers": [
+            {
+              "id": "org-supplier-2",
+              "name": "RailWorks Engineering Ltd"
+            }
+          ],
+          "contractPeriod": {
+            "startDate": "2024-06-01",
+            "endDate": "2028-05-31"
+          }
+        }
+      ]
+    }
+  ],
+  "links": {
+    "next": null
+  }
+}
