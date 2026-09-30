@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0b1f3a;
+  --color-navy-700: #16325c;
+  --color-navy-50: #eef2f8;
+  --color-orange: #f26b1d;
+  --color-orange-600: #d95a10;
+  --color-orange-50: #fff3eb;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-orange;
+  }
+}
+
+.leaflet-container {
+  font: inherit;
+}

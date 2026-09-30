@@ -75,7 +75,12 @@ export function buildEnrichPrompt(p: EnrichmentInput): string {
 /** Validates model output. Postcodes not present in the notice are discarded. */
 export function validateEnrichment(raw: unknown, source: EnrichmentInput): Enrichment {
   const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  const sourceText = [source.title, source.description, source.delivery_text, ...source.delivery_postcodes].join(" ");
+  const sourceText = [
+    source.title,
+    source.description,
+    source.delivery_text,
+    ...source.delivery_postcodes,
+  ].join(" ");
   const knownPostcodes = new Set([...extractPostcodes(sourceText), ...source.delivery_postcodes]);
   let postcode = normalizePostcode(asString(o.site_postcode));
   let confidence = asEnum(o.location_confidence, LOCATION_CONFIDENCES, "low");
@@ -105,7 +110,9 @@ export function validateEnrichment(raw: unknown, source: EnrichmentInput): Enric
   };
 }
 
-export function statusFromEnrichment(e: Pick<Enrichment, "is_relevant" | "location_confidence">): RadarStatus {
+export function statusFromEnrichment(
+  e: Pick<Enrichment, "is_relevant" | "location_confidence">
+): RadarStatus {
   if (!e.is_relevant) return "rejected";
   return e.location_confidence === "low" ? "needs_review" : "qualified";
 }

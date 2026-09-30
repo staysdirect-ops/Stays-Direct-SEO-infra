@@ -82,7 +82,9 @@ export function extractFactNumbers(markdown: string): Array<{ raw: string; value
   const plain = stripMarkdown(text);
   const out: Array<{ raw: string; value: number }> = [];
   // Digits glued to letters (A39, M5, HS2) are names, and clock times (5am) are not facts.
-  for (const m of plain.matchAll(/(?<![A-Za-z0-9.,])\d[\d,]*(?:\.\d+)?(?![A-Za-z0-9]|\s?(?:am|pm)\b)/gi)) {
+  for (const m of plain.matchAll(
+    /(?<![A-Za-z0-9.,])\d[\d,]*(?:\.\d+)?(?![A-Za-z0-9]|\s?(?:am|pm)\b)/gi
+  )) {
     const raw = m[0].replace(/[.,]+$/, "");
     const value = Number(raw.replace(/,/g, ""));
     if (Number.isFinite(value)) out.push({ raw, value });
@@ -100,7 +102,9 @@ export function findUnverifiedNumbers(markdown: string, allowed: Set<number>): s
 
 export function findBannedPhrases(text: string): string[] {
   const lower = stripMarkdown(text).toLowerCase().replace(/[’]/g, "'");
-  return BANNED_PHRASES.filter((p) => new RegExp(`\\b${p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}s?\\b`, "i").test(lower));
+  return BANNED_PHRASES.filter((p) =>
+    new RegExp(`\\b${p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}s?\\b`, "i").test(lower)
+  );
 }
 
 export function checkQuality(input: QualityInput): QualityResult {
@@ -158,7 +162,8 @@ export function checkQuality(input: QualityInput): QualityResult {
 
   // Unverifiable numbers and near-copies block review regardless of other scores.
   if (unverified.length) score = Math.min(score, PASS_SCORE - 1);
-  if (input.maxSimilarity != null && input.maxSimilarity > DUPLICATE_BLOCK_THRESHOLD) score = Math.min(score, PASS_SCORE - 1);
+  if (input.maxSimilarity != null && input.maxSimilarity > DUPLICATE_BLOCK_THRESHOLD)
+    score = Math.min(score, PASS_SCORE - 1);
 
   return {
     score: Math.max(0, Math.min(100, Math.round(score))),

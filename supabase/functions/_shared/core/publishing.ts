@@ -28,9 +28,17 @@ export interface PublishedIndexItem {
 }
 
 export function sitemapEntries(items: PublishedIndexItem[]): SitemapEntry[] {
-  const latest = items.reduce<string | null>((m, i) => (i.updated_at && (!m || i.updated_at > m) ? i.updated_at : m), null);
-  const hub: SitemapEntry[] = items.some((i) => i.kind !== "blog") ? [{ loc: `${SITE_URL}${HUB_PATH}`, lastmod: latest }] : [];
-  return [...hub, ...items.map((i) => ({ loc: canonicalUrl(i.kind, i.slug), lastmod: i.updated_at }))];
+  const latest = items.reduce<string | null>(
+    (m, i) => (i.updated_at && (!m || i.updated_at > m) ? i.updated_at : m),
+    null
+  );
+  const hub: SitemapEntry[] = items.some((i) => i.kind !== "blog")
+    ? [{ loc: `${SITE_URL}${HUB_PATH}`, lastmod: latest }]
+    : [];
+  return [
+    ...hub,
+    ...items.map((i) => ({ loc: canonicalUrl(i.kind, i.slug), lastmod: i.updated_at })),
+  ];
 }
 
 export function llmsTxt(args: {
@@ -93,17 +101,29 @@ export function pickInternalLinks(args: {
   const self = args.selfPath;
   const from = args.from;
   const byDistance = <T extends LatLng>(xs: T[]) =>
-    from ? [...xs].map((x) => ({ x, d: haversineMiles(from, x) })).sort((a, b) => a.d - b.d) : xs.map((x) => ({ x, d: 0 }));
+    from
+      ? [...xs].map((x) => ({ x, d: haversineMiles(from, x) })).sort((a, b) => a.d - b.d)
+      : xs.map((x) => ({ x, d: 0 }));
 
   for (const { x } of byDistance(args.towns)
     .filter(({ x }) => publicPath("location", x.slug) !== self)
     .slice(0, 5)) {
-    links.push({ kind: "town", href: publicPath("location", x.slug), label: `Contractor accommodation in ${x.name}` });
+    links.push({
+      kind: "town",
+      href: publicPath("location", x.slug),
+      label: `Contractor accommodation in ${x.name}`,
+    });
   }
   for (const { x } of byDistance(args.projects)
-    .filter(({ x, d }) => publicPath("project", x.slug) !== self && d <= (args.maxProjectMiles ?? 40))
+    .filter(
+      ({ x, d }) => publicPath("project", x.slug) !== self && d <= (args.maxProjectMiles ?? 40)
+    )
     .slice(0, 3)) {
-    links.push({ kind: "project", href: publicPath("project", x.slug), label: `Accommodation near ${x.name}` });
+    links.push({
+      kind: "project",
+      href: publicPath("project", x.slug),
+      label: `Accommodation near ${x.name}`,
+    });
   }
   for (const b of args.blog.slice(0, 2)) {
     links.push({ kind: "blog", href: publicPath("blog", b.slug), label: b.title });

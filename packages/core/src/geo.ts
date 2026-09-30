@@ -1,8 +1,10 @@
 import { fetchWithRetry, type FetchLike, type RetryOptions } from "./http.ts";
 import type { LatLng } from "./types.ts";
 
-const POSTCODE_RE = /\b(GIR ?0AA|[A-PR-UWYZ](?:[0-9]{1,2}|[A-HK-Y][0-9]{1,2}|[0-9][A-HJKPSTUW]|[A-HK-Y][0-9][ABEHMNPRVWXY])) ?([0-9][ABD-HJLNP-UW-Z]{2})\b/gi;
-const OUTCODE_RE = /^[A-PR-UWYZ](?:[0-9]{1,2}|[A-HK-Y][0-9]{1,2}|[0-9][A-HJKPSTUW]|[A-HK-Y][0-9][ABEHMNPRVWXY])$/i;
+const POSTCODE_RE =
+  /\b(GIR ?0AA|[A-PR-UWYZ](?:[0-9]{1,2}|[A-HK-Y][0-9]{1,2}|[0-9][A-HJKPSTUW]|[A-HK-Y][0-9][ABEHMNPRVWXY])) ?([0-9][ABD-HJLNP-UW-Z]{2})\b/gi;
+const OUTCODE_RE =
+  /^[A-PR-UWYZ](?:[0-9]{1,2}|[A-HK-Y][0-9]{1,2}|[0-9][A-HJKPSTUW]|[A-HK-Y][0-9][ABEHMNPRVWXY])$/i;
 
 export function normalizePostcode(raw: string | null | undefined): string | null {
   if (!raw) return null;
@@ -37,7 +39,9 @@ export function haversineMiles(a: LatLng, b: LatLng): number {
   const toRad = (d: number) => (d * Math.PI) / 180;
   const dLat = toRad(b.lat - a.lat);
   const dLng = toRad(b.lng - a.lng);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
   return 2 * EARTH_RADIUS_MILES * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
@@ -65,25 +69,43 @@ export interface GeocodeDeps {
 }
 
 async function getJson<T>(url: string, deps: GeocodeDeps): Promise<T | null> {
-  const res = await fetchWithRetry(url, {}, { retries: 3, ...deps.retry, fetchImpl: deps.fetchImpl });
+  const res = await fetchWithRetry(
+    url,
+    {},
+    { retries: 3, timeoutMs: 10_000, ...deps.retry, fetchImpl: deps.fetchImpl }
+  );
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`postcodes.io ${res.status} for ${url}`);
   const body = (await res.json()) as PostcodesIoResponse<T>;
   return body.result;
 }
 
-export async function geocodePostcode(postcode: string, deps: GeocodeDeps = {}): Promise<GeocodeResult | null> {
+export async function geocodePostcode(
+  postcode: string,
+  deps: GeocodeDeps = {}
+): Promise<GeocodeResult | null> {
   const pc = normalizePostcode(postcode);
   if (!pc) return null;
-  const r = await getJson<{ latitude: number | null; longitude: number | null; admin_district?: string }>(
-    `${POSTCODES_IO}/postcodes/${encodeURIComponent(pc)}`,
-    deps
-  );
+  const r = await getJson<{
+    latitude: number | null;
+    longitude: number | null;
+    admin_district?: string;
+  }>(`${POSTCODES_IO}/postcodes/${encodeURIComponent(pc)}`, deps);
   if (!r || r.latitude == null || r.longitude == null) return null;
-  return { lat: r.latitude, lng: r.longitude, method: "postcode", matched: pc, postcode: pc, town: r.admin_district };
+  return {
+    lat: r.latitude,
+    lng: r.longitude,
+    method: "postcode",
+    matched: pc,
+    postcode: pc,
+    town: r.admin_district,
+  };
 }
 
-export async function geocodeOutcode(outcode: string, deps: GeocodeDeps = {}): Promise<GeocodeResult | null> {
+export async function geocodeOutcode(
+  outcode: string,
+  deps: GeocodeDeps = {}
+): Promise<GeocodeResult | null> {
   const oc = outcodeOf(outcode);
   if (!oc) return null;
   const r = await getJson<{ latitude: number | null; longitude: number | null }>(
@@ -94,7 +116,10 @@ export async function geocodeOutcode(outcode: string, deps: GeocodeDeps = {}): P
   return { lat: r.latitude, lng: r.longitude, method: "outcode", matched: oc };
 }
 
-export async function geocodeTown(town: string, deps: GeocodeDeps = {}): Promise<GeocodeResult | null> {
+export async function geocodeTown(
+  town: string,
+  deps: GeocodeDeps = {}
+): Promise<GeocodeResult | null> {
   const q = town.trim();
   if (!q) return null;
   const r = await getJson<Array<{ latitude: number; longitude: number; name_1: string }>>(
@@ -103,7 +128,13 @@ export async function geocodeTown(town: string, deps: GeocodeDeps = {}): Promise
   );
   const first = r?.[0];
   if (!first) return null;
-  return { lat: first.latitude, lng: first.longitude, method: "town", matched: first.name_1, town: first.name_1 };
+  return {
+    lat: first.latitude,
+    lng: first.longitude,
+    method: "town",
+    matched: first.name_1,
+    town: first.name_1,
+  };
 }
 
 /** Postcode first, then its outcode (for terminated postcodes), then town. */
@@ -124,4 +155,68 @@ export async function geocode(
 /** EWKT accepted by PostgREST for geography columns. */
 export function toWktPoint(p: LatLng): string {
   return `SRID=4326;POINT(${p.lng} ${p.lat})`;
+}
+
+export interface PostcodeInfo extends LatLng {
+  postcode: string;
+  locality: string | null;
+}
+
+interface BulkResponse {
+  result?: Array<{
+    query: string;
+    result: {
+      postcode: string;
+      latitude: number | null;
+      longitude: number | null;
+      parish?: string | null;
+      admin_ward?: string | null;
+      admin_district?: string | null;
+    } | null;
+  }>;
+}
+
+function cleanLocality(s: string | null | undefined): string | null {
+  if (!s) return null;
+  const t = s.replace(/,?\s*unparished area$/i, "").trim();
+  return t || null;
+}
+
+/** postcodes.io bulk lookup (100 per request): coordinates plus the best locality name. */
+export async function bulkLookupPostcodes(
+  postcodes: string[],
+  deps: GeocodeDeps = {}
+): Promise<Map<string, PostcodeInfo>> {
+  const out = new Map<string, PostcodeInfo>();
+  const valid = [
+    ...new Set(postcodes.map((p) => normalizePostcode(p)).filter((p): p is string => !!p)),
+  ];
+  for (let i = 0; i < valid.length; i += 100) {
+    const batch = valid.slice(i, i + 100);
+    const res = await fetchWithRetry(
+      `${POSTCODES_IO}/postcodes`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ postcodes: batch }),
+      },
+      { retries: 2, timeoutMs: 10_000, ...deps.retry, fetchImpl: deps.fetchImpl }
+    );
+    if (!res.ok) throw new Error(`postcodes.io bulk lookup failed: ${res.status}`);
+    const body = (await res.json()) as BulkResponse;
+    for (const r of body.result ?? []) {
+      const pc = normalizePostcode(r.query);
+      if (!pc || !r.result || r.result.latitude == null || r.result.longitude == null) continue;
+      out.set(pc, {
+        postcode: pc,
+        lat: r.result.latitude,
+        lng: r.result.longitude,
+        locality:
+          cleanLocality(r.result.parish) ??
+          cleanLocality(r.result.admin_ward) ??
+          cleanLocality(r.result.admin_district),
+      });
+    }
+  }
+  return out;
 }

@@ -45,13 +45,16 @@ import {
   type Settings,
   type TownRow,
 } from "./core/index.ts";
+import { toRenderable, type ContentRow } from "./core/index.ts";
 import { claudeContext, db, errorMessage, must } from "./runtime.ts";
 
 export async function loadProperties(): Promise<PropertyRow[]> {
   const rows = must(
     await db()
       .from("properties")
-      .select("id,name,town,bedrooms,max_guests,parking_spaces,van_parking,pppn_from,status,available_from,lat,lng")
+      .select(
+        "id,name,town,bedrooms,max_guests,parking_spaces,van_parking,pppn_from,status,available_from,lat,lng"
+      )
       .not("lat", "is", null),
     "load properties"
   ) as Array<PropertyRow & { pppn_from: number | string }>;
@@ -60,23 +63,44 @@ export async function loadProperties(): Promise<PropertyRow[]> {
 
 export async function loadTowns(): Promise<TownRow[]> {
   const rows = must(
-    await db().from("towns").select("id,name,slug,county,region,population,avg_hotel_pppn,lat,lng").eq("is_active", true).not("lat", "is", null).limit(2000),
+    await db()
+      .from("towns")
+      .select("id,name,slug,county,region,population,avg_hotel_pppn,lat,lng")
+      .eq("is_active", true)
+      .not("lat", "is", null)
+      .limit(2000),
     "load towns"
   ) as Array<TownRow & { avg_hotel_pppn: number | string | null }>;
-  return rows.map((r) => ({ ...r, avg_hotel_pppn: r.avg_hotel_pppn == null ? null : Number(r.avg_hotel_pppn) }));
+  return rows.map((r) => ({
+    ...r,
+    avg_hotel_pppn: r.avg_hotel_pppn == null ? null : Number(r.avg_hotel_pppn),
+  }));
 }
 
 export async function loadQualifiedProjects(): Promise<ProjectRow[]> {
   const rows = must(
     await db()
       .from("radar_projects")
-      .select("id,title,project_type,value_gbp,est_workers_away_from_home,start_date,end_date,supplier_name,site_town,site_location_text,site_lat,site_lng")
+      .select(
+        "id,title,project_type,value_gbp,est_workers_away_from_home,start_date,end_date,supplier_name,site_town,site_location_text,site_lat,site_lng"
+      )
       .in("status", ["qualified", "lead_created"])
       .not("site_lat", "is", null)
       .limit(2000),
     "load projects"
-  ) as Array<Omit<ProjectRow, "lat" | "lng"> & { site_lat: number; site_lng: number; value_gbp: number | string | null }>;
-  return rows.map(({ site_lat, site_lng, ...r }) => ({ ...r, value_gbp: r.value_gbp == null ? null : Number(r.value_gbp), lat: site_lat, lng: site_lng }));
+  ) as Array<
+    Omit<ProjectRow, "lat" | "lng"> & {
+      site_lat: number;
+      site_lng: number;
+      value_gbp: number | string | null;
+    }
+  >;
+  return rows.map(({ site_lat, site_lng, ...r }) => ({
+    ...r,
+    value_gbp: r.value_gbp == null ? null : Number(r.value_gbp),
+    lat: site_lat,
+    lng: site_lng,
+  }));
 }
 
 interface LiveItem extends Partial<LatLng> {
@@ -88,7 +112,10 @@ interface LiveItem extends Partial<LatLng> {
 }
 
 export async function loadLive(): Promise<LiveItem[]> {
-  return must(await db().from("published_content").select("kind,slug,title,name,updated_at,lat,lng"), "load published") as LiveItem[];
+  return must(
+    await db().from("published_content").select("kind,slug,title,name,updated_at,lat,lng"),
+    "load published"
+  ) as LiveItem[];
 }
 
 function linksFor(from: LatLng | null, selfPath: string, live: LiveItem[]): InternalLink[] {
@@ -96,8 +123,14 @@ function linksFor(from: LatLng | null, selfPath: string, live: LiveItem[]): Inte
   return pickInternalLinks({
     from,
     selfPath,
-    towns: live.filter((i) => i.kind === "location").filter(withPoint).map((i) => ({ slug: i.slug, name: i.name ?? i.title, lat: i.lat, lng: i.lng })),
-    projects: live.filter((i) => i.kind === "project").filter(withPoint).map((i) => ({ slug: i.slug, name: i.name ?? i.title, lat: i.lat, lng: i.lng })),
+    towns: live
+      .filter((i) => i.kind === "location")
+      .filter(withPoint)
+      .map((i) => ({ slug: i.slug, name: i.name ?? i.title, lat: i.lat, lng: i.lng })),
+    projects: live
+      .filter((i) => i.kind === "project")
+      .filter(withPoint)
+      .map((i) => ({ slug: i.slug, name: i.name ?? i.title, lat: i.lat, lng: i.lng })),
     blog: live
       .filter((i) => i.kind === "blog")
       .sort((a, b) => (b.updated_at ?? "").localeCompare(a.updated_at ?? ""))
@@ -125,7 +158,10 @@ const PAGE_COLUMNS =
   "id,page_type,slug,status,town_id,project_id,project_name,project_location_text,project_town,project_lat,project_lng,published_snapshot,data_pack_hash";
 
 export async function loadPage(id: string): Promise<PageRow> {
-  return must(await db().from("seo_pages").select(PAGE_COLUMNS).eq("id", id).single(), "load page") as PageRow;
+  return must(
+    await db().from("seo_pages").select(PAGE_COLUMNS).eq("id", id).single(),
+    "load page"
+  ) as PageRow;
 }
 
 export interface PackInputs {
@@ -135,21 +171,37 @@ export interface PackInputs {
 }
 
 export async function loadPackInputs(): Promise<PackInputs> {
-  const [properties, towns, projects] = await Promise.all([loadProperties(), loadTowns(), loadQualifiedProjects()]);
+  const [properties, towns, projects] = await Promise.all([
+    loadProperties(),
+    loadTowns(),
+    loadQualifiedProjects(),
+  ]);
   return { properties, towns, projects };
 }
 
-export async function buildPack(page: PageRow, inputs: PackInputs, settings: Settings): Promise<{ pack: LocationDataPack | ProjectDataPack; point: LatLng; name: string }> {
+export function buildPack(
+  page: PageRow,
+  inputs: PackInputs,
+  settings: Settings
+): { pack: LocationDataPack | ProjectDataPack; point: LatLng; name: string } {
   if (page.page_type === "location") {
     const town = inputs.towns.find((t) => t.id === page.town_id);
     if (!town) throw new Error("Town is missing, inactive or not geocoded");
     return {
-      pack: buildLocationDataPack({ town, properties: inputs.properties, projects: inputs.projects, facts: settings.company_facts }),
+      pack: buildLocationDataPack({
+        town,
+        properties: inputs.properties,
+        projects: inputs.projects,
+        facts: settings.company_facts,
+      }),
       point: town,
       name: town.name,
     };
   }
-  let point: LatLng | null = page.project_lat != null && page.project_lng != null ? { lat: page.project_lat, lng: page.project_lng } : null;
+  let point: LatLng | null =
+    page.project_lat != null && page.project_lng != null
+      ? { lat: page.project_lat, lng: page.project_lng }
+      : null;
   let details = {
     project_type: null as ProjectType | null,
     value_gbp: null as number | null,
@@ -176,7 +228,13 @@ export async function buildPack(page: PageRow, inputs: PackInputs, settings: Set
   const name = page.project_name ?? page.slug;
   return {
     pack: buildProjectDataPack({
-      project: { name, location: page.project_location_text, nearest_town: page.project_town, point, ...details },
+      project: {
+        name,
+        location: page.project_location_text,
+        nearest_town: page.project_town,
+        point,
+        ...details,
+      },
       properties: inputs.properties,
       towns: inputs.towns,
       facts: settings.company_facts,
@@ -186,34 +244,78 @@ export async function buildPack(page: PageRow, inputs: PackInputs, settings: Set
   };
 }
 
-function keyFacts(pack: LocationDataPack | ProjectDataPack): Array<{ label: string; value: string }> {
+function keyFacts(
+  pack: LocationDataPack | ProjectDataPack
+): Array<{ label: string; value: string }> {
   const out: Array<{ label: string; value: string }> = [];
   if (pack.kind === "location") {
     const p = pack.properties;
-    if (p.count) out.push({ label: `Houses within ${p.radius_miles} miles`, value: String(p.count) });
-    if (p.from_pppn != null) out.push({ label: "Per person per night, bills included", value: `From ${formatGbp(p.from_pppn)}` });
-    if (p.nearest[0]) out.push({ label: `Nearest house to ${pack.town.name}`, value: `${p.nearest[0].distance_miles} miles` });
-    if (pack.projects.items.length) out.push({ label: `Major projects within ${pack.projects.radius_miles} miles`, value: String(pack.projects.items.length) });
+    if (p.count)
+      out.push({ label: `Houses within ${p.radius_miles} miles`, value: String(p.count) });
+    if (p.from_pppn != null)
+      out.push({
+        label: "Per person per night, bills included",
+        value: `From ${formatGbp(p.from_pppn)}`,
+      });
+    if (p.nearest[0])
+      out.push({
+        label: `Nearest house to ${pack.town.name}`,
+        value: `${p.nearest[0].distance_miles} miles`,
+      });
+    if (pack.projects.items.length)
+      out.push({
+        label: `Major projects within ${pack.projects.radius_miles} miles`,
+        value: String(pack.projects.items.length),
+      });
   } else {
     const houses = pack.towns.reduce((s, t) => s + t.our_houses, 0);
     if (houses) out.push({ label: "Our houses near the site", value: String(houses) });
-    if (pack.towns[0]) out.push({ label: `Nearest, in ${pack.towns[0].name}`, value: `${pack.towns[0].distance_miles} miles` });
-    const from = pack.towns.length ? Math.min(...pack.towns.map((t) => t.from_pppn ?? Infinity)) : null;
-    if (from != null && Number.isFinite(from)) out.push({ label: "Per person per night, bills included", value: `From ${formatGbp(from)}` });
+    if (pack.towns[0])
+      out.push({
+        label: `Nearest, in ${pack.towns[0].name}`,
+        value: `${pack.towns[0].distance_miles} miles`,
+      });
+    const from = pack.towns.length
+      ? Math.min(...pack.towns.map((t) => t.from_pppn ?? Infinity))
+      : null;
+    if (from != null && Number.isFinite(from))
+      out.push({ label: "Per person per night, bills included", value: `From ${formatGbp(from)}` });
   }
   out.push({ label: "Quotes", value: "Same day" });
   return out;
 }
 
-async function similarity(text: string, excludeId: string | null, kind: "page" | "blog"): Promise<{ max: number | null; slug: string | null }> {
-  const rows = must(await db().rpc("seo_similar_pages", { p_text: text, p_exclude_id: excludeId, p_limit: 20, p_kind: kind }), "similar pages") as Array<{ slug: string; similarity: number }>;
+async function similarity(
+  text: string,
+  excludeId: string | null,
+  kind: "page" | "blog"
+): Promise<{ max: number | null; slug: string | null }> {
+  const rows = must(
+    await db().rpc("seo_similar_pages", {
+      p_text: text,
+      p_exclude_id: excludeId,
+      p_limit: 20,
+      p_kind: kind,
+    }),
+    "similar pages"
+  ) as Array<{ slug: string; similarity: number }>;
   const top = rows[0];
   return { max: top ? Number(top.similarity) : null, slug: top?.slug ?? null };
 }
 
-async function aiReview(ctx: ClaudeContext, md: string, pack: unknown): Promise<{ score: number; issues: string[] } | null> {
+async function aiReview(
+  ctx: ClaudeContext,
+  md: string,
+  pack: unknown
+): Promise<{ score: number; issues: string[] } | null> {
   try {
-    const r = await callClaude(ctx, { system: REVIEW_SYSTEM, user: buildReviewPrompt(md, pack), json: true, maxTokens: 1500, effort: "low" });
+    const r = await callClaude(ctx, {
+      system: REVIEW_SYSTEM,
+      user: buildReviewPrompt(md, pack),
+      json: true,
+      maxTokens: 1500,
+      effort: "low",
+    });
     return validateReview(r.data);
   } catch (e) {
     if (e instanceof SpendCapExceededError) throw e;
@@ -223,21 +325,41 @@ async function aiReview(ctx: ClaudeContext, md: string, pack: unknown): Promise<
 }
 
 /** Generates a location or project page into the review queue. Live copy (published_snapshot) is untouched. */
-export async function generatePage(pageId: string, settings: Settings, inputs?: PackInputs): Promise<{ status: string; score: number }> {
+export async function generatePage(
+  pageId: string,
+  settings: Settings,
+  inputs?: PackInputs
+): Promise<{ status: string; score: number }> {
   const page = await loadPage(pageId);
   const previousStatus = page.status;
-  must(await db().from("seo_pages").update({ status: "generating", generation_error: null }).eq("id", pageId), "mark generating");
+  must(
+    await db()
+      .from("seo_pages")
+      .update({ status: "generating", generation_error: null })
+      .eq("id", pageId),
+    "mark generating"
+  );
   try {
     const packInputs = inputs ?? (await loadPackInputs());
-    const { pack, point, name } = await buildPack(page, packInputs, settings);
+    const { pack, point, name } = buildPack(page, packInputs, settings);
     const live = await loadLive();
     const kind = page.page_type;
-    const links = [...linksFor(point, publicPath(kind, page.slug), live), { kind: "hub" as const, href: HUB_PATH, label: "All contractor accommodation locations" }];
+    const links = [
+      ...linksFor(point, publicPath(kind, page.slug), live),
+      { kind: "hub" as const, href: HUB_PATH, label: "All contractor accommodation locations" },
+    ];
     const ctx = claudeContext("seo-generate-page", settings);
-    const expectedH1 = kind === "location" ? `Contractor Accommodation in ${name}` : `Accommodation near ${name}`;
+    const expectedH1 =
+      kind === "location" ? `Contractor Accommodation in ${name}` : `Accommodation near ${name}`;
     const r = await callClaude(ctx, {
-      system: kind === "location" ? buildLocationPageSystem(settings.brand_voice, settings.company_facts) : buildProjectPageSystem(settings.brand_voice, settings.company_facts),
-      user: kind === "location" ? buildLocationPagePrompt(pack as LocationDataPack, links) : buildProjectPagePrompt(pack as ProjectDataPack, links),
+      system:
+        kind === "location"
+          ? buildLocationPageSystem(settings.brand_voice, settings.company_facts)
+          : buildProjectPageSystem(settings.brand_voice, settings.company_facts),
+      user:
+        kind === "location"
+          ? buildLocationPagePrompt(pack as LocationDataPack, links)
+          : buildProjectPagePrompt(pack as ProjectDataPack, links),
       json: true,
       maxTokens: 12_000,
       effort: "medium",
@@ -270,7 +392,14 @@ export async function generatePage(pageId: string, settings: Settings, inputs?: 
             fromPppn: (pack as LocationDataPack).properties.from_pppn,
             facts: settings.company_facts,
           })
-        : projectSchema({ projectName: name, slug: page.slug, description: draft.meta_description, faqs: draft.faqs, nearestTown: page.project_town, facts: settings.company_facts });
+        : projectSchema({
+            projectName: name,
+            slug: page.slug,
+            description: draft.meta_description,
+            faqs: draft.faqs,
+            nearestTown: page.project_town,
+            facts: settings.company_facts,
+          });
     const status = statusFromQuality(q.score);
     must(
       await db()
@@ -302,14 +431,20 @@ export async function generatePage(pageId: string, settings: Settings, inputs?: 
   } catch (e) {
     await db()
       .from("seo_pages")
-      .update({ status: previousStatus === "generating" ? "queued" : previousStatus, generation_error: errorMessage(e).slice(0, 1000) })
+      .update({
+        status: previousStatus === "generating" ? "queued" : previousStatus,
+        generation_error: errorMessage(e).slice(0, 1000),
+      })
       .eq("id", pageId);
     throw e;
   }
 }
 
 /** Towns worth a page: our stock within 15 miles or qualified projects within 20 miles, ranked by both. */
-export function rankTowns(inputs: PackInputs, exclude: Set<string>): Array<{ town: TownRow; priority: number }> {
+export function rankTowns(
+  inputs: PackInputs,
+  exclude: Set<string>
+): Array<{ town: TownRow; priority: number }> {
   return inputs.towns
     .filter((t) => !exclude.has(t.id))
     .map((town) => ({ town, priority: pagePriority(town, inputs, LOCATION_PROPERTY_RADIUS) }))
@@ -319,17 +454,31 @@ export function rankTowns(inputs: PackInputs, exclude: Set<string>): Array<{ tow
 
 /** Queue order: local stock matters most, then nearby qualified projects. */
 export function pagePriority(point: LatLng, inputs: PackInputs, stockRadius: number): number {
-  const props = inputs.properties.filter((p) => p.status !== "offline" && haversineMiles(point, p) <= stockRadius).length;
-  const projects = inputs.projects.filter((p) => haversineMiles(point, p) <= LOCATION_PROJECT_RADIUS).length;
+  const props = inputs.properties.filter(
+    (p) => p.status !== "offline" && haversineMiles(point, p) <= stockRadius
+  ).length;
+  const projects = inputs.projects.filter(
+    (p) => haversineMiles(point, p) <= LOCATION_PROJECT_RADIUS
+  ).length;
   return Math.min(props, 5) * 10 + Math.min(projects, 4) * 5;
 }
 
 /** Adds up to `target` new pages (best towns, big Radar projects) and re-ranks everything waiting. */
 export async function ensurePageQueue(target: number, inputs: PackInputs): Promise<number> {
   const existing = must(
-    await db().from("seo_pages").select("id,page_type,town_id,project_id,status,project_lat,project_lng"),
+    await db()
+      .from("seo_pages")
+      .select("id,page_type,town_id,project_id,status,project_lat,project_lng"),
     "load pages"
-  ) as Array<{ id: string; page_type: string; town_id: string | null; project_id: string | null; status: string; project_lat: number | null; project_lng: number | null }>;
+  ) as Array<{
+    id: string;
+    page_type: string;
+    town_id: string | null;
+    project_id: string | null;
+    status: string;
+    project_lat: number | null;
+    project_lng: number | null;
+  }>;
   let created = 0;
 
   // Radar projects big enough for their own page: >= £20m or >= 30 workers away from home.
@@ -345,17 +494,19 @@ export async function ensurePageQueue(target: number, inputs: PackInputs): Promi
       !projectPoints.some((pt) => haversineMiles(pt, p) <= 5)
   );
   for (const p of big.slice(0, target)) {
-    const { error } = await db().from("seo_pages").insert({
-      page_type: "project",
-      slug: `projects/${slugify(p.title)}`,
-      project_id: p.id,
-      project_name: p.title,
-      project_location_text: p.site_location_text,
-      project_town: p.site_town,
-      project_location: `SRID=4326;POINT(${p.lng} ${p.lat})`,
-      priority: pagePriority(p, inputs, PROJECT_STOCK_RADIUS),
-      status: "queued",
-    });
+    const { error } = await db()
+      .from("seo_pages")
+      .insert({
+        page_type: "project",
+        slug: `projects/${slugify(p.title)}`,
+        project_id: p.id,
+        project_name: p.title,
+        project_location_text: p.site_location_text,
+        project_town: p.site_town,
+        project_location: `SRID=4326;POINT(${p.lng} ${p.lat})`,
+        priority: pagePriority(p, inputs, PROJECT_STOCK_RADIUS),
+        status: "queued",
+      });
     if (!error) {
       created++;
       projectPoints.push(p);
@@ -364,19 +515,32 @@ export async function ensurePageQueue(target: number, inputs: PackInputs): Promi
 
   const haveTowns = new Set(existing.map((p) => p.town_id).filter((x): x is string => !!x));
   for (const { town, priority } of rankTowns(inputs, haveTowns).slice(0, target)) {
-    const { error } = await db().from("seo_pages").insert({ page_type: "location", slug: town.slug, town_id: town.id, priority, status: "queued" });
+    const { error } = await db().from("seo_pages").insert({
+      page_type: "location",
+      slug: town.slug,
+      town_id: town.id,
+      priority,
+      status: "queued",
+    });
     if (!error) created++;
   }
 
   const townsById = new Map(inputs.towns.map((t) => [t.id, t]));
-  for (const page of existing.filter((p) => p.status === "queued" || p.status === "needs_refresh")) {
-    const point = page.page_type === "location"
-      ? townsById.get(page.town_id ?? "")
-      : page.project_lat != null && page.project_lng != null
-        ? { lat: page.project_lat, lng: page.project_lng }
-        : undefined;
+  for (const page of existing.filter(
+    (p) => p.status === "queued" || p.status === "needs_refresh"
+  )) {
+    const point =
+      page.page_type === "location"
+        ? townsById.get(page.town_id ?? "")
+        : page.project_lat != null && page.project_lng != null
+          ? { lat: page.project_lat, lng: page.project_lng }
+          : undefined;
     if (!point) continue;
-    const priority = pagePriority(point, inputs, page.page_type === "location" ? LOCATION_PROPERTY_RADIUS : PROJECT_STOCK_RADIUS);
+    const priority = pagePriority(
+      point,
+      inputs,
+      page.page_type === "location" ? LOCATION_PROPERTY_RADIUS : PROJECT_STOCK_RADIUS
+    );
     await db().from("seo_pages").update({ priority }).eq("id", page.id);
   }
   return created;
@@ -393,22 +557,34 @@ export async function nextPagesToGenerate(limit: number): Promise<string[]> {
       .limit(limit * 3),
     "next pages"
   ) as Array<{ id: string; status: string }>;
-  return [...rows.filter((r) => r.status === "needs_refresh"), ...rows.filter((r) => r.status === "queued")].slice(0, limit).map((r) => r.id);
+  return [
+    ...rows.filter((r) => r.status === "needs_refresh"),
+    ...rows.filter((r) => r.status === "queued"),
+  ]
+    .slice(0, limit)
+    .map((r) => r.id);
 }
 
 /** Live pages whose data pack changed since generation are flagged needs_refresh. */
 export async function flagStalePages(settings: Settings, inputs: PackInputs): Promise<string[]> {
-  const rows = must(await db().from("seo_pages").select(PAGE_COLUMNS).not("published_snapshot", "is", null), "live pages") as PageRow[];
+  const rows = must(
+    await db().from("seo_pages").select(PAGE_COLUMNS).not("published_snapshot", "is", null),
+    "live pages"
+  ) as PageRow[];
   const stale: string[] = [];
   for (const page of rows) {
     try {
-      const { pack } = await buildPack(page, inputs, settings);
+      const { pack } = buildPack(page, inputs, settings);
       if (dataPackHash(pack) !== page.data_pack_hash) stale.push(page.id);
     } catch (e) {
       console.error("refresh check failed", page.slug, errorMessage(e));
     }
   }
-  if (stale.length) must(await db().from("seo_pages").update({ status: "needs_refresh" }).in("id", stale), "flag stale");
+  if (stale.length)
+    must(
+      await db().from("seo_pages").update({ status: "needs_refresh" }).in("id", stale),
+      "flag stale"
+    );
   return stale;
 }
 
@@ -417,28 +593,48 @@ export async function flagStalePages(settings: Settings, inputs: PackInputs): Pr
 // ---------------------------------------------------------------------------
 async function uniqueBlogSlug(title: string): Promise<string> {
   const base = slugify(title) || "post";
-  const rows = must(await db().from("blog_posts").select("slug").like("slug", `${base}%`), "slugs") as Array<{ slug: string }>;
+  const rows = must(
+    await db().from("blog_posts").select("slug").like("slug", `${base}%`),
+    "slugs"
+  ) as Array<{ slug: string }>;
   const taken = new Set(rows.map((r) => r.slug));
   if (!taken.has(base)) return base;
   for (let i = 2; ; i++) if (!taken.has(`${base}-${i}`)) return `${base}-${i}`;
 }
 
-export async function generateBlog(topicId: string, settings: Settings): Promise<{ status: string; score: number; post_id: string }> {
-  const topic = must(await db().from("blog_topics").select("id,keyword,working_title,intent,status").eq("id", topicId).single(), "load topic") as {
+export async function generateBlog(
+  topicId: string,
+  settings: Settings
+): Promise<{ status: string; score: number; post_id: string }> {
+  const topic = must(
+    await db()
+      .from("blog_topics")
+      .select("id,keyword,working_title,intent,status")
+      .eq("id", topicId)
+      .single(),
+    "load topic"
+  ) as {
     id: string;
     keyword: string;
     working_title: string;
     intent: string | null;
     status: string;
   };
-  must(await db().from("blog_topics").update({ status: "generating" }).eq("id", topicId), "mark topic");
+  must(
+    await db().from("blog_topics").update({ status: "generating" }).eq("id", topicId),
+    "mark topic"
+  );
   try {
     const live = await loadLive();
     const links: InternalLink[] = [
       ...live
         .filter((i) => i.kind === "location")
         .slice(0, 3)
-        .map((i) => ({ kind: "town" as const, href: publicPath("location", i.slug), label: `Contractor accommodation in ${i.name ?? i.title}` })),
+        .map((i) => ({
+          kind: "town" as const,
+          href: publicPath("location", i.slug),
+          label: `Contractor accommodation in ${i.name ?? i.title}`,
+        })),
       { kind: "hub", href: HUB_PATH, label: "Contractor accommodation locations" },
       { kind: "quote", href: "/quote", label: "Get a same-day quote" },
     ];
@@ -453,7 +649,8 @@ export async function generateBlog(topicId: string, settings: Settings): Promise
     const draft = validateBlogDraft(r.data, topic.working_title);
     const md = blogMarkdown(draft);
     const searchText = stripMarkdown(md);
-    const topicNumbers = `${topic.keyword} ${topic.working_title}`.match(/\d+(?:\.\d+)?/g)?.map(Number) ?? [];
+    const topicNumbers =
+      `${topic.keyword} ${topic.working_title}`.match(/\d+(?:\.\d+)?/g)?.map(Number) ?? [];
     const allowed = new Set([...factNumbers(settings.company_facts), ...topicNumbers]);
     const sim = await similarity(searchText, null, "blog");
     const q = checkQuality({
@@ -479,7 +676,15 @@ export async function generateBlog(topicId: string, settings: Settings): Promise
           excerpt: draft.excerpt,
           body_markdown: draft.body_markdown,
           faqs: draft.faqs,
-          schema_jsonld: blogSchema({ title: draft.title, slug, description: draft.meta_description, faqs: draft.faqs, publishedAt: null, updatedAt: null, facts: settings.company_facts }),
+          schema_jsonld: blogSchema({
+            title: draft.title,
+            slug,
+            description: draft.meta_description,
+            faqs: draft.faqs,
+            publishedAt: null,
+            updatedAt: null,
+            facts: settings.company_facts,
+          }),
           internal_links: links,
           word_count: q.wordCount,
           quality_score: q.score,
@@ -491,10 +696,91 @@ export async function generateBlog(topicId: string, settings: Settings): Promise
         .single(),
       "insert post"
     ) as { id: string };
-    must(await db().from("blog_topics").update({ status: "written" }).eq("id", topicId), "topic written");
+    must(
+      await db().from("blog_topics").update({ status: "written" }).eq("id", topicId),
+      "topic written"
+    );
     return { status, score: q.score, post_id: post.id };
   } catch (e) {
-    await db().from("blog_topics").update({ status: topic.status === "generating" ? "queued" : topic.status, notes: `Generation failed: ${errorMessage(e).slice(0, 500)}` }).eq("id", topicId);
+    await db()
+      .from("blog_topics")
+      .update({
+        status: topic.status === "generating" ? "queued" : topic.status,
+        notes: `Generation failed: ${errorMessage(e).slice(0, 500)}`,
+      })
+      .eq("id", topicId);
     throw e;
   }
+}
+
+/** Drip-publishing: the oldest approved pages and posts go live, up to `limit` per run. */
+export async function publishApproved(limit: number): Promise<{ pages: number; posts: number }> {
+  const now = new Date().toISOString();
+  const pages = must(
+    await db()
+      .from("seo_pages")
+      .select("*")
+      .eq("status", "approved")
+      .order("updated_at")
+      .limit(limit),
+    "approved pages"
+  ) as Array<
+    Record<string, unknown> & {
+      id: string;
+      page_type: "location" | "project";
+      published_snapshot: unknown;
+      published_at: string | null;
+    }
+  >;
+  for (const row of pages) {
+    const republish = row.published_snapshot != null;
+    const snapshot = toRenderable(row.page_type, {
+      ...(row as unknown as ContentRow),
+      updated_at: now,
+      published_at: row.published_at ?? now,
+    });
+    must(
+      await db()
+        .from("seo_pages")
+        .update({
+          published_snapshot: snapshot,
+          status: "published",
+          published_at: row.published_at ?? now,
+          ...(republish ? { last_refreshed_at: now } : {}),
+        })
+        .eq("id", row.id),
+      "publish page"
+    );
+  }
+  const left = Math.max(0, limit - pages.length);
+  const posts = left
+    ? (must(
+        await db()
+          .from("blog_posts")
+          .select("*")
+          .eq("status", "approved")
+          .order("updated_at")
+          .limit(left),
+        "approved posts"
+      ) as Array<Record<string, unknown> & { id: string; published_at: string | null }>)
+    : [];
+  for (const row of posts) {
+    const snapshot = toRenderable("blog", {
+      ...(row as unknown as ContentRow),
+      updated_at: now,
+      published_at: row.published_at ?? now,
+    });
+    must(
+      await db()
+        .from("blog_posts")
+        .update({
+          published_snapshot: snapshot,
+          status: "published",
+          published_at: row.published_at ?? now,
+        })
+        .eq("id", row.id),
+      "publish post"
+    );
+  }
+  return { pages: pages.length, posts: posts.length };
 }

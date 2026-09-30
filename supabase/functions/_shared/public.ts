@@ -21,7 +21,10 @@ export function parsePath(path: string): { kind: PublicKind | "hub"; slug: strin
 }
 
 export function normalizeSlug(kind: PublicKind, slug: string): string {
-  const s = slug.trim().toLowerCase().replace(/^\/+|\/+$/g, "");
+  const s = slug
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+|\/+$/g, "");
   if (kind === "project") return s.startsWith("projects/") ? s : `projects/${s}`;
   return s;
 }
@@ -39,10 +42,27 @@ export async function findLive(kind: PublicKind, slug: string): Promise<LiveCont
   if (!/^(projects\/)?[a-z0-9-]{1,120}$/.test(s)) return null;
   if (kind === "blog") {
     const row = must(
-      await db().from("blog_posts").select("slug,published_snapshot,published_at").eq("slug", s).not("published_snapshot", "is", null).maybeSingle(),
+      await db()
+        .from("blog_posts")
+        .select("slug,published_snapshot,published_at")
+        .eq("slug", s)
+        .not("published_snapshot", "is", null)
+        .maybeSingle(),
       "load post"
-    ) as { slug: string; published_snapshot: Record<string, unknown>; published_at: string | null } | null;
-    return row ? { kind, slug: row.slug, snapshot: row.published_snapshot, published_at: row.published_at, updated_at: row.published_at } : null;
+    ) as {
+      slug: string;
+      published_snapshot: Record<string, unknown>;
+      published_at: string | null;
+    } | null;
+    return row
+      ? {
+          kind,
+          slug: row.slug,
+          snapshot: row.published_snapshot,
+          published_at: row.published_at,
+          updated_at: row.published_at,
+        }
+      : null;
   }
   const row = must(
     await db()
@@ -53,8 +73,21 @@ export async function findLive(kind: PublicKind, slug: string): Promise<LiveCont
       .not("published_snapshot", "is", null)
       .maybeSingle(),
     "load page"
-  ) as { slug: string; published_snapshot: Record<string, unknown>; published_at: string | null; last_refreshed_at: string | null } | null;
-  return row ? { kind, slug: row.slug, snapshot: row.published_snapshot, published_at: row.published_at, updated_at: row.last_refreshed_at ?? row.published_at } : null;
+  ) as {
+    slug: string;
+    published_snapshot: Record<string, unknown>;
+    published_at: string | null;
+    last_refreshed_at: string | null;
+  } | null;
+  return row
+    ? {
+        kind,
+        slug: row.slug,
+        snapshot: row.published_snapshot,
+        published_at: row.published_at,
+        updated_at: row.last_refreshed_at ?? row.published_at,
+      }
+    : null;
 }
 
 export interface IndexRow {
@@ -67,5 +100,12 @@ export interface IndexRow {
 }
 
 export async function liveIndex(): Promise<IndexRow[]> {
-  return must(await db().from("published_content").select("kind,slug,title,meta_description,name,updated_at").order("kind").order("slug"), "index") as IndexRow[];
+  return must(
+    await db()
+      .from("published_content")
+      .select("kind,slug,title,meta_description,name,updated_at")
+      .order("kind")
+      .order("slug"),
+    "index"
+  ) as IndexRow[];
 }

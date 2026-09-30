@@ -129,7 +129,11 @@ describe("relevance filter", () => {
 describe("dedupe", () => {
   const cfProjects = mapAll("contracts_finder", cf);
   const ftsProjects = mapAll("find_a_tender", fts);
-  const empty = { ocids: new Set<string>(), dedupeKeys: new Set<string>(), sourceIds: new Set<string>() };
+  const empty = {
+    ocids: new Set<string>(),
+    dedupeKeys: new Set<string>(),
+    sourceIds: new Set<string>(),
+  };
 
   it("normalises title, supplier and value into the key", () => {
     expect(dedupeKey("A39 Resurfacing", "Kier Highways Limited", 6_150_000)).toBe(
@@ -162,14 +166,20 @@ describe("dedupe", () => {
 
   it("lets same-source updates through so they upsert", () => {
     const a39 = cfProjects.find((p) => p.title.startsWith("A39"))!;
-    const existing = { ocids: new Set([a39.ocid]), dedupeKeys: new Set([a39.dedupe_key]), sourceIds: new Set([a39.source_id]) };
+    const existing = {
+      ocids: new Set([a39.ocid]),
+      dedupeKeys: new Set([a39.dedupe_key]),
+      sourceIds: new Set([a39.source_id]),
+    };
     expect(dedupeProjects([a39], existing)).toHaveLength(1);
   });
 });
 
 describe("search URLs and windows", () => {
   it("builds the Contracts Finder award search with a cursor", () => {
-    const u = new URL(contractsFinderSearchUrl("2026-09-20T00:00:00", "2026-09-23T00:00:00", "MTAw"));
+    const u = new URL(
+      contractsFinderSearchUrl("2026-09-20T00:00:00", "2026-09-23T00:00:00", "MTAw")
+    );
     expect(u.searchParams.get("stages")).toBe("award");
     expect(u.searchParams.get("limit")).toBe("100");
     expect(u.searchParams.get("cursor")).toBe("MTAw");
@@ -184,8 +194,12 @@ describe("search URLs and windows", () => {
   it("uses 3 days on first run, last success with overlap after, and backfill when asked", () => {
     const now = new Date("2026-09-30T06:00:00Z");
     expect(ingestWindow(now, null).from.toISOString()).toBe("2026-09-27T06:00:00.000Z");
-    expect(ingestWindow(now, new Date("2026-09-29T06:00:00Z")).from.toISOString()).toBe("2026-09-29T05:00:00.000Z");
-    expect(ingestWindow(now, new Date("2026-09-29T06:00:00Z"), 90).from.toISOString()).toBe("2026-07-02T06:00:00.000Z");
+    expect(ingestWindow(now, new Date("2026-09-29T06:00:00Z")).from.toISOString()).toBe(
+      "2026-09-29T05:00:00.000Z"
+    );
+    expect(ingestWindow(now, new Date("2026-09-29T06:00:00Z"), 90).from.toISOString()).toBe(
+      "2026-07-02T06:00:00.000Z"
+    );
     expect(ocdsDate(now)).toBe("2026-09-30T06:00:00");
   });
 });

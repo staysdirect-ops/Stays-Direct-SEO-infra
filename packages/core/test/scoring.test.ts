@@ -23,7 +23,12 @@ describe("scoreOpportunity", () => {
   });
 
   it("stays within 0-100 and each component within its maximum", () => {
-    const r = scoreOpportunity({ ...base, valueGbp: 5_000_000_000, workersAwayFromHome: 900, nearestPropertyMiles: 0 });
+    const r = scoreOpportunity({
+      ...base,
+      valueGbp: 5_000_000_000,
+      workersAwayFromHome: 900,
+      nearestPropertyMiles: 0,
+    });
     expect(r.score).toBe(100);
     expect(r.breakdown.value).toBe(25);
     expect(r.breakdown.distance).toBe(25);
@@ -39,7 +44,14 @@ describe("scoreOpportunity", () => {
   });
 
   it("does not raise weak projects to the cap", () => {
-    const r = scoreOpportunity({ ...base, valueGbp: 600_000, workersAwayFromHome: 2, nearestPropertyMiles: null, startDate: "2027-06-01", locationConfidence: "low" });
+    const r = scoreOpportunity({
+      ...base,
+      valueGbp: 600_000,
+      workersAwayFromHome: 2,
+      nearestPropertyMiles: null,
+      startDate: "2027-06-01",
+      locationConfidence: "low",
+    });
     expect(r.score).toBeLessThan(NO_STOCK_SCORE_CAP);
     expect(r.flags).toEqual(expect.arrayContaining(["sourcing_opportunity", "location_uncertain"]));
   });

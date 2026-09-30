@@ -223,7 +223,9 @@ set search_path = ''
 as $$
 begin
   if tg_op = 'INSERT' and new.location is not null then
-    new.geocode_status := 'manual';
+    if new.geocode_status = 'pending' then
+      new.geocode_status := 'manual';
+    end if;
   elsif tg_op = 'UPDATE' and new.location is distinct from old.location then
     -- The geocoder sets its own status alongside the location; anything else is a manual edit.
     if new.geocode_status is not distinct from old.geocode_status then

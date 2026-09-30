@@ -2,49 +2,72 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  typecheck:
-    runs-on: ubuntu-latest
+  checks:
+    name: Typecheck, lint, format, unit tests
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Edge functions use the current core
+        run: pnpm check:core-sync
       - run: pnpm typecheck
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install
       - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test
 
-  test:
-    runs-on: ubuntu-latest
+  functions:
+    name: Edge functions (Deno)
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - uses: denoland/setup-deno@v2
         with:
-          version: 8
+          deno-version: v2.x
+      - run: deno check --config deno.json */index.ts
+        working-directory: supabase/functions
+      - run: deno lint --config deno.json
+        working-directory: supabase/functions
+
+  database:
+    name: Migrations and RLS
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start Postgres with PostGIS and pg_cron
+        run: |
+          sudo chown -R "$(whoami)" /tmp
+          scripts/db-test/start-postgres.sh >> "$GITHUB_ENV"
+      - name: Apply migrations and run assertions
+        run: bash scripts/db-test/run.sh
+        env:
+          PGUSER: postgres
+
+  admin:
+    name: Admin app build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-      - run: pnpm install
-      - run: pnpm test
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm admin:build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+          NEXT_TELEMETRY_DISABLED: "1"

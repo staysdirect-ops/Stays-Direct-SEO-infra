@@ -3,6 +3,7 @@
 ## Phase 1: Foundation ✓ COMPLETE
 
 ### Completed
+
 - ✅ Monorepo scaffold with pnpm workspace
 - ✅ Root `package.json` with typecheck, lint, test, format scripts
 - ✅ GitHub Actions CI pipeline (`typecheck`, `lint`, `test`)
@@ -37,6 +38,7 @@
   - 479fba1: Add .gitignore and remove node_modules
 
 ### TODO (Next Session)
+
 - ⏳ Create Next.js admin app shell (layout, auth context, sidebar navigation)
 - ⏳ Implement auth pages (login with Supabase)
 - ⏳ Implement Properties admin page (CSV import, list, edit)
@@ -48,9 +50,11 @@
 - ⏳ Set up GitHub repository and push main branch
 
 ### Known Issues
+
 None currently.
 
 ### Next Steps for Phase 2: Project Radar
+
 1. Implement edge functions for contract ingestion
 2. Create Claude enrichment logic
 3. Build PostGIS matching
@@ -59,7 +63,9 @@ None currently.
 ---
 
 ## Phase 2: Project Radar
+
 Not started. Will implement:
+
 - Contract ingestion from Contracts Finder and Find a Tender
 - Claude enrichment (location, worker count, relevance)
 - PostGIS matching against properties
@@ -67,20 +73,26 @@ Not started. Will implement:
 - Cron orchestration
 
 ## Phase 3: SEO + AI Search Engine
+
 Not started. Will implement:
+
 - Location and project page generation
 - Blog post generation
 - Quality checking with drip-publishing
 - Public content API and HTML renderer
 
 ## Phase 4: AI Visibility Tracker
+
 Not started. Will implement:
+
 - Weekly searches across ChatGPT, Claude, Perplexity
 - Mention and citation detection
 - Competitor tracking
 
 ## Phase 5: Website Integration
+
 Not started. Will produce:
+
 - WEBSITE_INTEGRATION.md
 - DEPLOY.md and RUNBOOK.md
 - Deployment to Supabase + Vercel
@@ -88,6 +100,7 @@ Not started. Will produce:
 ---
 
 ## Build Notes
+
 - Environment: Cloud session, outbound internet allowed
 - All code follows TypeScript strict mode
 - Tests use Vitest with fixture-based mocking

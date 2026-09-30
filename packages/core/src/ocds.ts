@@ -156,17 +156,26 @@ function monthsBetween(start: string | null, end: string | null): number | null 
 
 function formatAddress(a: OcdsAddress | null | undefined): string | null {
   if (!a) return null;
-  const parts = [a.streetAddress, a.locality, a.region, a.postalCode].filter((p): p is string => !!p?.trim());
+  const parts = [a.streetAddress, a.locality, a.region, a.postalCode].filter(
+    (p): p is string => !!p?.trim()
+  );
   return parts.length ? parts.join(", ") : null;
 }
 
 function companiesHouseNumber(p: OcdsParty | undefined): string | null {
   if (!p) return null;
-  const ids = [p.identifier, ...(p.additionalIdentifiers ?? [])].filter(Boolean) as OcdsIdentifier[];
+  const ids = [p.identifier, ...(p.additionalIdentifiers ?? [])].filter(
+    Boolean
+  ) as OcdsIdentifier[];
   for (const id of ids) {
     const scheme = (id.scheme ?? "").toUpperCase();
-    const raw = String(id.id ?? "").toUpperCase().replace(/\s/g, "");
-    if ((scheme === "GB-COH" || scheme === "GB-CH") && /^([A-Z]{2}\d{6}|\d{8}|\d{6,7})$/.test(raw)) {
+    const raw = String(id.id ?? "")
+      .toUpperCase()
+      .replace(/\s/g, "");
+    if (
+      (scheme === "GB-COH" || scheme === "GB-CH") &&
+      /^([A-Z]{2}\d{6}|\d{8}|\d{6,7})$/.test(raw)
+    ) {
       return /^\d{6,7}$/.test(raw) ? raw.padStart(8, "0") : raw;
     }
   }
@@ -178,7 +187,9 @@ function cpvCodes(r: OcdsRelease): string[] {
   const add = (c: OcdsClassification | null | undefined) => {
     if (!c?.id) return;
     if (c.scheme && c.scheme.toUpperCase() !== "CPV") return;
-    const code = String(c.id).replace(/[^0-9]/g, "").slice(0, 8);
+    const code = String(c.id)
+      .replace(/[^0-9]/g, "")
+      .slice(0, 8);
     if (code.length >= 2) out.add(code);
   };
   add(r.tender?.classification);
@@ -195,14 +206,20 @@ function deliveryInfo(r: OcdsRelease): { text: string | null; postcodes: string[
   const texts = new Set<string>();
   const postcodes = new Set<string>();
   for (const it of items) {
-    const addrs = [...(it.deliveryAddresses ?? []), ...(it.deliveryAddress ? [it.deliveryAddress] : [])];
+    const addrs = [
+      ...(it.deliveryAddresses ?? []),
+      ...(it.deliveryAddress ? [it.deliveryAddress] : []),
+    ];
     for (const a of addrs) {
       const t = formatAddress(a);
       if (t) texts.add(t);
       const pc = normalizePostcode(a.postalCode);
       if (pc) postcodes.add(pc);
     }
-    for (const loc of [...(it.deliveryLocations ?? []), ...(it.deliveryLocation ? [it.deliveryLocation] : [])]) {
+    for (const loc of [
+      ...(it.deliveryLocations ?? []),
+      ...(it.deliveryLocation ? [it.deliveryLocation] : []),
+    ]) {
       if (loc.description?.trim()) texts.add(loc.description.trim());
     }
   }
@@ -231,11 +248,14 @@ export function mapRelease(source: RadarSource, r: OcdsRelease): IngestedProject
     (r.awards ?? []).find((a) => a.suppliers?.length);
   if (!award) return null;
   const parties = r.parties ?? [];
-  const byId = (id: string | null | undefined) => (id ? parties.find((p) => p.id === id) : undefined);
+  const byId = (id: string | null | undefined) =>
+    id ? parties.find((p) => p.id === id) : undefined;
 
   const buyerParty = byId(r.buyer?.id) ?? parties.find((p) => p.roles?.includes("buyer"));
   const supplierRef = award.suppliers?.[0];
-  const supplierParty = byId(supplierRef?.id) ?? parties.find((p) => p.roles?.includes("supplier") && p.name === supplierRef?.name);
+  const supplierParty =
+    byId(supplierRef?.id) ??
+    parties.find((p) => p.roles?.includes("supplier") && p.name === supplierRef?.name);
   const contract = (r.contracts ?? []).find((c) => c.awardID === award.id) ?? r.contracts?.[0];
 
   const title = (award.title || r.tender?.title || "").trim();
@@ -284,7 +304,10 @@ export interface RelevanceFilter {
   cpvPrefixes: string[];
 }
 
-export function passesFilter(p: Pick<IngestedProject, "cpv_codes" | "value_gbp">, f: RelevanceFilter): boolean {
+export function passesFilter(
+  p: Pick<IngestedProject, "cpv_codes" | "value_gbp">,
+  f: RelevanceFilter
+): boolean {
   const cpvOk = p.cpv_codes.some((code) => f.cpvPrefixes.some((prefix) => code.startsWith(prefix)));
   const valueOk = p.value_gbp === null || p.value_gbp >= f.minValueGbp;
   return cpvOk && valueOk;
@@ -301,7 +324,10 @@ export interface ExistingKeys {
  * and collapses duplicates within the batch, keeping the latest release per ocid.
  * Same-source rows pass through so updates upsert by source_id.
  */
-export function dedupeProjects(projects: IngestedProject[], existing: ExistingKeys): IngestedProject[] {
+export function dedupeProjects(
+  projects: IngestedProject[],
+  existing: ExistingKeys
+): IngestedProject[] {
   const latestByOcid = new Map<string, IngestedProject>();
   for (const p of projects) {
     const prev = latestByOcid.get(p.ocid);
@@ -311,7 +337,8 @@ export function dedupeProjects(projects: IngestedProject[], existing: ExistingKe
   const out: IngestedProject[] = [];
   for (const p of latestByOcid.values()) {
     const isUpdate = existing.sourceIds.has(p.source_id);
-    if (!isUpdate && (existing.ocids.has(p.ocid) || existing.dedupeKeys.has(p.dedupe_key))) continue;
+    if (!isUpdate && (existing.ocids.has(p.ocid) || existing.dedupeKeys.has(p.dedupe_key)))
+      continue;
     if (seenKeys.has(p.dedupe_key)) continue;
     seenKeys.add(p.dedupe_key);
     out.push(p);
@@ -345,7 +372,8 @@ export function ingestWindow(
   backfillDays?: number | null
 ): { from: Date; to: Date } {
   const day = 24 * 60 * 60 * 1000;
-  if (backfillDays && backfillDays > 0) return { from: new Date(now.getTime() - Math.min(backfillDays, 365) * day), to: now };
+  if (backfillDays && backfillDays > 0)
+    return { from: new Date(now.getTime() - Math.min(backfillDays, 365) * day), to: now };
   if (lastSuccessAt) return { from: new Date(lastSuccessAt.getTime() - 60 * 60 * 1000), to: now };
   return { from: new Date(now.getTime() - 3 * day), to: now };
 }

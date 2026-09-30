@@ -12,6 +12,8 @@ export interface RetryOptions {
   sleep?: Sleep;
   /** Called before every attempt, e.g. a rate limiter. */
   beforeAttempt?: () => Promise<void>;
+  /** Per-attempt timeout; a hung connection counts as a retryable failure. */
+  timeoutMs?: number;
 }
 
 export class HttpError extends Error {
@@ -46,13 +48,15 @@ export async function fetchWithRetry(
   for (let attempt = 0; attempt <= retries; attempt++) {
     await opts.beforeAttempt?.();
     try {
-      const res = await doFetch(url, init);
+      const signal = init.signal ?? AbortSignal.timeout(opts.timeoutMs ?? 30_000);
+      const res = await doFetch(url, { ...init, signal });
       if (!isRetryable(res.status) || attempt === retries) return res;
       const retryAfter = Number(res.headers.get("retry-after"));
       await res.body?.cancel().catch(() => undefined);
-      const delay = Number.isFinite(retryAfter) && retryAfter > 0
-        ? Math.min(retryAfter * 1000, maxDelay)
-        : Math.min(base * 2 ** attempt, maxDelay);
+      const delay =
+        Number.isFinite(retryAfter) && retryAfter > 0
+          ? Math.min(retryAfter * 1000, maxDelay)
+          : Math.min(base * 2 ** attempt, maxDelay);
       await sleep(delay);
     } catch (err) {
       lastError = err;
@@ -63,7 +67,11 @@ export async function fetchWithRetry(
   throw lastError ?? new Error(`fetchWithRetry exhausted for ${url}`);
 }
 
-export async function fetchJson<T>(url: string, init: RequestInit = {}, opts: RetryOptions = {}): Promise<T> {
+export async function fetchJson<T>(
+  url: string,
+  init: RequestInit = {},
+  opts: RetryOptions = {}
+): Promise<T> {
   const res = await fetchWithRetry(url, init, opts);
   const body = await res.text();
   if (!res.ok) throw new HttpError(res.status, url, body);
@@ -71,7 +79,11 @@ export async function fetchJson<T>(url: string, init: RequestInit = {}, opts: Re
 }
 
 /** Serialises calls so consecutive calls are at least `minIntervalMs` apart. */
-export function createRateLimiter(minIntervalMs: number, now: () => number = Date.now, sleep: Sleep = realSleep) {
+export function createRateLimiter(
+  minIntervalMs: number,
+  now: () => number = Date.now,
+  sleep: Sleep = realSleep
+) {
   let next = 0;
   let chain: Promise<void> = Promise.resolve();
   return function throttle(): Promise<void> {

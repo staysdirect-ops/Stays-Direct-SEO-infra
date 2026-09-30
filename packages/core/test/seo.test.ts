@@ -20,7 +20,12 @@ import {
   type TownRow,
 } from "../src/datapack.ts";
 import { DEFAULT_COMPANY_FACTS, factNumbers } from "../src/facts.ts";
-import { checkQuality, extractFactNumbers, findBannedPhrases, statusFromQuality } from "../src/quality.ts";
+import {
+  checkQuality,
+  extractFactNumbers,
+  findBannedPhrases,
+  statusFromQuality,
+} from "../src/quality.ts";
 import { pickInternalLinks } from "../src/publishing.ts";
 import { fixture } from "./helpers.ts";
 
@@ -33,13 +38,27 @@ interface Inputs {
 }
 const inputs = fixture<Inputs>("seo/inputs.json");
 const facts = DEFAULT_COMPANY_FACTS;
-const locationPack = buildLocationDataPack({ town: inputs.town, properties: inputs.properties, projects: inputs.projects, facts });
-const projectPack = buildProjectDataPack({ project: inputs.hinkley, properties: inputs.properties, towns: inputs.towns, facts });
+const locationPack = buildLocationDataPack({
+  town: inputs.town,
+  properties: inputs.properties,
+  projects: inputs.projects,
+  facts,
+});
+const projectPack = buildProjectDataPack({
+  project: inputs.hinkley,
+  properties: inputs.properties,
+  towns: inputs.towns,
+  facts,
+});
 
 describe("location data pack", () => {
   it("includes only bookable properties within 15 miles, nearest first", () => {
     expect(locationPack.properties.count).toBe(3);
-    expect(locationPack.properties.nearest.map((p) => p.town)).toEqual(["Bridgwater", "North Petherton", "Cannington"]);
+    expect(locationPack.properties.nearest.map((p) => p.town)).toEqual([
+      "Bridgwater",
+      "North Petherton",
+      "Cannington",
+    ]);
     expect(locationPack.properties.from_pppn).toBe(29.5);
     expect(locationPack.properties.bedrooms_min).toBe(4);
     expect(locationPack.properties.bedrooms_max).toBe(6);
@@ -56,7 +75,14 @@ describe("location data pack", () => {
   it("computes the crew-of-6 comparison over 4 and 12 weeks", () => {
     const c = locationPack.cost_comparison!;
     expect(c.crew_size).toBe(6);
-    expect(c.periods[0]).toEqual({ weeks: 4, nights: 28, hotel_total: 15960, house_total: 4956, saving: 11004, saving_pct: 69 });
+    expect(c.periods[0]).toEqual({
+      weeks: 4,
+      nights: 28,
+      hotel_total: 15960,
+      house_total: 4956,
+      saving: 11004,
+      saving_pct: 69,
+    });
     expect(c.periods[1]!.hotel_total).toBe(47880);
   });
 
@@ -67,7 +93,12 @@ describe("location data pack", () => {
   });
 
   it("hash is stable and changes when the data changes", () => {
-    const again = buildLocationDataPack({ town: inputs.town, properties: [...inputs.properties].reverse(), projects: inputs.projects, facts });
+    const again = buildLocationDataPack({
+      town: inputs.town,
+      properties: [...inputs.properties].reverse(),
+      projects: inputs.projects,
+      facts,
+    });
     expect(dataPackHash(again)).toBe(dataPackHash(locationPack));
     const cheaper = buildLocationDataPack({
       town: inputs.town,
@@ -79,7 +110,12 @@ describe("location data pack", () => {
   });
 
   it("an occupied property counts once it is free by the requested date", () => {
-    const pack = buildLocationDataPack({ town: inputs.towns[1]!, properties: inputs.properties, projects: [], facts });
+    const pack = buildLocationDataPack({
+      town: inputs.towns[1]!,
+      properties: inputs.properties,
+      projects: [],
+      facts,
+    });
     expect(pack.properties.nearest.some((p) => p.town === "Taunton")).toBe(false);
   });
 });
@@ -91,7 +127,11 @@ describe("project data pack", () => {
       ["Bridgwater", 7.2],
       ["North Petherton", 9.6],
     ]);
-    expect(projectPack.crew_planning[0]).toEqual({ crew_size: 6, houses_needed: 2, bedrooms_per_house: 5 });
+    expect(projectPack.crew_planning[0]).toEqual({
+      crew_size: 6,
+      houses_needed: 2,
+      bedrooms_per_house: 5,
+    });
     expect(projectPack.cost_comparison?.hotel_pppn).toBe(85);
   });
 });
@@ -100,18 +140,24 @@ describe("number verification", () => {
   const allowed = allowedNumbers(locationPack);
 
   it("allows pack numbers, their roundings and company facts", () => {
-    for (const n of [29.5, 15960, 11004, 69, 0.7, 7.9, 24, 6.15, 6.2, 41276, 39]) expect(allowed.has(n)).toBe(true);
+    for (const n of [29.5, 15960, 11004, 69, 0.7, 7.9, 24, 6.15, 6.2, 41276, 39])
+      expect(allowed.has(n)).toBe(true);
     for (const n of factNumbers(facts)) expect(allowed.has(n)).toBe(true);
   });
 
   it("extracts numbers with currency, commas and decimals, ignoring list markers and URLs", () => {
-    const got = extractFactNumbers("1. Call us\n2. Book\n\nFrom £29.50 and £15,960 over 4 weeks. [link](/x/2024) https://a.test/99");
+    const got = extractFactNumbers(
+      "1. Call us\n2. Book\n\nFrom £29.50 and £15,960 over 4 weeks. [link](/x/2024) https://a.test/99"
+    );
     expect(got.map((g) => g.value)).toEqual([29.5, 15960, 4]);
   });
 });
 
 describe("quality checker on generated pages", () => {
-  const draft = validatePageDraft(fixture("ai/claude-location-page.json"), "Contractor Accommodation in Bridgwater");
+  const draft = validatePageDraft(
+    fixture("ai/claude-location-page.json"),
+    "Contractor Accommodation in Bridgwater"
+  );
   const md = pageMarkdown(draft);
 
   it("passes the Bridgwater location page", () => {
@@ -134,7 +180,10 @@ describe("quality checker on generated pages", () => {
   });
 
   it("passes the Hinkley Point C project page", () => {
-    const p = validatePageDraft(fixture("ai/claude-project-page.json"), "Accommodation near Hinkley Point C");
+    const p = validatePageDraft(
+      fixture("ai/claude-project-page.json"),
+      "Accommodation near Hinkley Point C"
+    );
     const q = checkQuality({
       kind: "project",
       title: p.title,
@@ -163,7 +212,10 @@ describe("quality checker on generated pages", () => {
   });
 
   it("blocks review when a number is not in the data pack", () => {
-    const tampered = md.replace("from £29.50 per person per night, bills included", "from £19.99 per person per night, bills included");
+    const tampered = md.replace(
+      "from £29.50 per person per night, bills included",
+      "from £19.99 per person per night, bills included"
+    );
     const q = checkQuality({
       kind: "location",
       title: draft.title,
@@ -196,9 +248,18 @@ describe("quality checker on generated pages", () => {
   });
 
   it("blocks near-copies even when everything else is fine", () => {
-    const base = { kind: "location" as const, title: draft.title, metaDescription: draft.meta_description, bodyMarkdown: md, faqCount: draft.faqs.length, allowedNumbers: allowedNumbers(locationPack) };
+    const base = {
+      kind: "location" as const,
+      title: draft.title,
+      metaDescription: draft.meta_description,
+      bodyMarkdown: md,
+      faqCount: draft.faqs.length,
+      allowedNumbers: allowedNumbers(locationPack),
+    };
     expect(checkQuality({ ...base, maxSimilarity: 0.6 }).score).toBe(75);
-    expect(checkQuality({ ...base, maxSimilarity: 0.95, mostSimilarSlug: "taunton" }).score).toBeLessThan(70);
+    expect(
+      checkQuality({ ...base, maxSimilarity: 0.95, mostSimilarSlug: "taunton" }).score
+    ).toBeLessThan(70);
   });
 
   it("does not flag words that merely contain a banned phrase", () => {
@@ -209,26 +270,42 @@ describe("quality checker on generated pages", () => {
 
 describe("prompts, drafts and topics", () => {
   it("forces the exact H1 and tolerates malformed sections", () => {
-    const d = validatePageDraft({ h1: "Wrong", sections: [{ heading: "Ok", body_markdown: "x" }, { heading: "" }, null], faqs: "nope" }, "Contractor Accommodation in Leeds");
+    const d = validatePageDraft(
+      {
+        h1: "Wrong",
+        sections: [{ heading: "Ok", body_markdown: "x" }, { heading: "" }, null],
+        faqs: "nope",
+      },
+      "Contractor Accommodation in Leeds"
+    );
     expect(d.h1).toBe("Contractor Accommodation in Leeds");
     expect(d.sections).toHaveLength(1);
     expect(d.faqs).toEqual([]);
   });
 
   it("omits the projects section instruction when there are no projects", () => {
-    const empty = buildLocationDataPack({ town: inputs.towns[5]!, properties: [], projects: [], facts });
+    const empty = buildLocationDataPack({
+      town: inputs.towns[5]!,
+      properties: [],
+      projects: [],
+      facts,
+    });
     const p = buildLocationPagePrompt(empty, [{ kind: "quote", href: "/quote", label: "Quote" }]);
     expect(p).not.toContain("Major projects near");
     expect(p).toContain("without any figures");
   });
 
   it("dedupes topic ideas against existing titles and each other", () => {
-    const topics = validateTopics(fixture("ai/claude-topics.json"), ["How to house a construction crew of 6: a practical guide"]);
+    const topics = validateTopics(fixture("ai/claude-topics.json"), [
+      "How to house a construction crew of 6: a practical guide",
+    ]);
     expect(topics.map((t) => t.working_title)).toEqual([
       "Travel and subsistence for site crews: what project managers should know",
       "Van parking when your crew works away: a checklist",
     ]);
-    expect(titleOverlap("contractor-accommodation-leeds", "leeds-contractor-accommodation")).toBe(1);
+    expect(titleOverlap("contractor-accommodation-leeds", "leeds-contractor-accommodation")).toBe(
+      1
+    );
   });
 });
 
@@ -238,14 +315,23 @@ describe("internal links", () => {
       from: inputs.town,
       selfPath: "/contractor-accommodation/bridgwater",
       towns: inputs.towns,
-      projects: [{ slug: "hinkley-point-c", name: "Hinkley Point C", lat: 51.2089, lng: -3.1334 }, { slug: "hs2-euston", name: "HS2 Euston", lat: 51.528, lng: -0.1337 }],
-      blog: [{ slug: "a", title: "A" }, { slug: "b", title: "B" }, { slug: "c", title: "C" }],
+      projects: [
+        { slug: "hinkley-point-c", name: "Hinkley Point C", lat: 51.2089, lng: -3.1334 },
+        { slug: "hs2-euston", name: "HS2 Euston", lat: 51.528, lng: -0.1337 },
+      ],
+      blog: [
+        { slug: "a", title: "A" },
+        { slug: "b", title: "B" },
+        { slug: "c", title: "C" },
+      ],
     });
     const towns = links.filter((l) => l.kind === "town");
     expect(towns).toHaveLength(5);
     expect(towns[0]!.href).toBe("/contractor-accommodation/burnham-on-sea");
     expect(towns.some((l) => l.href.endsWith("/bridgwater"))).toBe(false);
-    expect(links.filter((l) => l.kind === "project").map((l) => l.href)).toEqual(["/contractor-accommodation/projects/hinkley-point-c"]);
+    expect(links.filter((l) => l.kind === "project").map((l) => l.href)).toEqual([
+      "/contractor-accommodation/projects/hinkley-point-c",
+    ]);
     expect(links.filter((l) => l.kind === "blog")).toHaveLength(2);
     expect(links.at(-1)).toEqual({ kind: "quote", href: "/quote", label: "Get a same-day quote" });
   });

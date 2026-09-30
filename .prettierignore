@@ -1,0 +1,8 @@
+node_modules
+.next
+dist
+pnpm-lock.yaml
+supabase/functions/_shared/core
+supabase/functions/deno.lock
+supabase/.temp
+tests/fixtures

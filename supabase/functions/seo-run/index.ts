@@ -1,5 +1,22 @@
-import { ensurePageQueue, flagStalePages, loadPackInputs, nextPagesToGenerate } from "../_shared/seo.ts";
-import { authorize, db, handler, HttpError, invokeFunction, Job, json, loadSettings, must, readBody } from "../_shared/runtime.ts";
+import {
+  ensurePageQueue,
+  flagStalePages,
+  loadPackInputs,
+  nextPagesToGenerate,
+  publishApproved,
+} from "../_shared/seo.ts";
+import {
+  authorize,
+  db,
+  handler,
+  HttpError,
+  invokeFunction,
+  Job,
+  json,
+  loadSettings,
+  must,
+  readBody,
+} from "../_shared/runtime.ts";
 
 // Scheduled entry point. task=pages (daily), blog (Mon/Wed/Fri) or refresh (monthly).
 Deno.serve(
@@ -14,17 +31,32 @@ Deno.serve(
       const created = await ensurePageQueue(settings.seo_pages_per_day, inputs);
       const ids = await nextPagesToGenerate(settings.seo_pages_per_day);
       if (ids.length) await invokeFunction("seo-generate-page", { page_ids: ids });
+      const published = await publishApproved(settings.seo_pages_per_day);
       job.items = ids.length;
-      job.details = { queued_new: created, generating: ids.length };
+      job.details = { queued_new: created, generating: ids.length, published };
     } else if (task === "blog") {
       const perRun = Math.max(1, Math.ceil(settings.blog_posts_per_week / 3));
       const rows = must(
-        await db().from("blog_topics").select("id,status").in("status", ["queued", "idea"]).order("priority", { ascending: false }).order("created_at").limit(50),
+        await db()
+          .from("blog_topics")
+          .select("id,status")
+          .in("status", ["queued", "idea"])
+          .order("priority", { ascending: false })
+          .order("created_at")
+          .limit(50),
         "topics"
       ) as Array<{ id: string; status: string }>;
-      const ids = [...rows.filter((r) => r.status === "queued"), ...rows.filter((r) => r.status === "idea")].slice(0, perRun).map((r) => r.id);
+      const ids = [
+        ...rows.filter((r) => r.status === "queued"),
+        ...rows.filter((r) => r.status === "idea"),
+      ]
+        .slice(0, perRun)
+        .map((r) => r.id);
       if (ids.length) {
-        must(await db().from("blog_topics").update({ status: "queued" }).in("id", ids), "queue topics");
+        must(
+          await db().from("blog_topics").update({ status: "queued" }).in("id", ids),
+          "queue topics"
+        );
         await invokeFunction("seo-generate-blog", { topic_ids: ids });
       }
       job.items = ids.length;

@@ -75,21 +75,44 @@ export function renderMarkdown(md: string): string {
 
 function startsBlock(lines: string[], i: number): boolean {
   const l = lines[i] ?? "";
-  return /^\s{0,3}#{1,4}\s+/.test(l) || /^\s*>/.test(l) || /^\s*[-*+]\s+/.test(l) || /^\s*\d+[.)]\s+/.test(l) || isTableStart(lines, i);
+  return (
+    /^\s{0,3}#{1,4}\s+/.test(l) ||
+    /^\s*>/.test(l) ||
+    /^\s*[-*+]\s+/.test(l) ||
+    /^\s*\d+[.)]\s+/.test(l) ||
+    isTableStart(lines, i)
+  );
 }
 
 function isTableStart(lines: string[], i: number): boolean {
-  return /^\s*\|.*\|\s*$/.test(lines[i] ?? "") && /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(lines[i + 1] ?? "");
+  return (
+    /^\s*\|.*\|\s*$/.test(lines[i] ?? "") &&
+    /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(lines[i + 1] ?? "")
+  );
 }
 
 function splitRow(row: string): string[] {
-  return row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+  return row
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((c) => c.trim());
 }
 
 function renderTable(rows: string[]): string {
   const [head, , ...body] = rows;
-  const th = splitRow(head ?? "").map((c) => `<th scope="col">${inline(c)}</th>`).join("");
-  const trs = body.map((r) => `<tr>${splitRow(r).map((c) => `<td>${inline(c)}</td>`).join("")}</tr>`).join("");
+  const th = splitRow(head ?? "")
+    .map((c) => `<th scope="col">${inline(c)}</th>`)
+    .join("");
+  const trs = body
+    .map(
+      (r) =>
+        `<tr>${splitRow(r)
+          .map((c) => `<td>${inline(c)}</td>`)
+          .join("")}</tr>`
+    )
+    .join("");
   return `<div class="table-wrap"><table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></div>`;
 }
 
@@ -106,15 +129,21 @@ export function safeHref(url: string): string | null {
 function inline(text: string): string {
   const tokens: string[] = [];
   const stash = (html: string) => `\u0000${tokens.push(html) - 1}\u0000`;
-  let s = text.replace(/`([^`]+)`/g, (_, code: string) => stash(`<code>${escapeHtml(code)}</code>`));
+  let s = text.replace(/`([^`]+)`/g, (_, code: string) =>
+    stash(`<code>${escapeHtml(code)}</code>`)
+  );
   s = s.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, (_, label: string, href: string) => {
     const safe = safeHref(href);
     const inner = formatEmphasis(escapeHtml(label));
     if (!safe) return stash(inner);
-    const external = /^https?:/i.test(safe) && !/^https?:\/\/(www\.)?staysdirect\.co\.uk/i.test(safe);
-    return stash(`<a href="${escapeHtml(safe)}"${external ? ' rel="noopener" target="_blank"' : ""}>${inner}</a>`);
+    const external =
+      /^https?:/i.test(safe) && !/^https?:\/\/(www\.)?staysdirect\.co\.uk/i.test(safe);
+    return stash(
+      `<a href="${escapeHtml(safe)}"${external ? ' rel="noopener" target="_blank"' : ""}>${inner}</a>`
+    );
   });
   s = formatEmphasis(escapeHtml(s));
+  // eslint-disable-next-line no-control-regex -- NUL-delimited placeholders cannot occur in escaped text
   return s.replace(/\u0000(\d+)\u0000/g, (_, n: string) => tokens[Number(n)] ?? "");
 }
 

@@ -63,7 +63,12 @@ const FALLBACK_PRICING = { input: 5, output: 25 };
 export const WEB_SEARCH_COST_USD = 0.01;
 export const PERPLEXITY_REQUEST_FEE_USD = 0.005;
 
-export function estimateCostUsd(model: string, inputTokens: number, outputTokens: number, extraUsd = 0): number {
+export function estimateCostUsd(
+  model: string,
+  inputTokens: number,
+  outputTokens: number,
+  extraUsd = 0
+): number {
   const p = MODEL_PRICING[model] ?? FALLBACK_PRICING;
   return (inputTokens * p.input + outputTokens * p.output) / 1_000_000 + extraUsd;
 }
@@ -111,10 +116,18 @@ export interface ClaudeResult<T = unknown> {
   model: string;
 }
 
-const MODELS_WITH_SERVER_FALLBACK = ["claude-opus-5-5", "claude-opus-5", "claude-sonnet-5-5", "claude-fable-5-1"];
+const MODELS_WITH_SERVER_FALLBACK = [
+  "claude-opus-5-5",
+  "claude-opus-5",
+  "claude-sonnet-5-5",
+  "claude-fable-5-1",
+];
 const MAX_PAUSE_RESUMES = 3;
 
-export async function callClaude<T = unknown>(ctx: ClaudeContext, opts: CallClaudeOptions): Promise<ClaudeResult<T>> {
+export async function callClaude<T = unknown>(
+  ctx: ClaudeContext,
+  opts: CallClaudeOptions
+): Promise<ClaudeResult<T>> {
   await assertUnderSpendCap(ctx.usage, ctx.capUsd);
   const model = opts.model ?? ctx.model;
   const messages: BetaMessageParam[] = [{ role: "user", content: opts.user }];
@@ -129,9 +142,12 @@ export async function callClaude<T = unknown>(ctx: ClaudeContext, opts: CallClau
         system: opts.system,
         messages,
       };
-      if (opts.effort && !model.startsWith("claude-haiku")) params.output_config = { effort: opts.effort };
+      if (opts.effort && !model.startsWith("claude-haiku"))
+        params.output_config = { effort: opts.effort };
       if (opts.webSearch) {
-        params.tools = [{ type: "web_search_20260209", name: "web_search", max_uses: opts.webSearch.maxUses }];
+        params.tools = [
+          { type: "web_search_20260209", name: "web_search", max_uses: opts.webSearch.maxUses },
+        ];
       }
       if (MODELS_WITH_SERVER_FALLBACK.includes(model)) {
         params.betas = ["server-side-fallback-2026-07-01"];
@@ -139,7 +155,12 @@ export async function callClaude<T = unknown>(ctx: ClaudeContext, opts: CallClau
       }
       const msg = await ctx.createMessage(params);
       const searches = msg.usage.server_tool_use?.web_search_requests ?? 0;
-      const cost = estimateCostUsd(msg.model || model, msg.usage.input_tokens, msg.usage.output_tokens, searches * WEB_SEARCH_COST_USD);
+      const cost = estimateCostUsd(
+        msg.model || model,
+        msg.usage.input_tokens,
+        msg.usage.output_tokens,
+        searches * WEB_SEARCH_COST_USD
+      );
       costUsd += cost;
       await ctx.usage.record({
         provider: "anthropic",
@@ -149,7 +170,8 @@ export async function callClaude<T = unknown>(ctx: ClaudeContext, opts: CallClau
         output_tokens: msg.usage.output_tokens,
         est_cost_usd: cost,
       });
-      if (msg.stop_reason === "refusal") throw new ClaudeRefusalError(msg.stop_details?.category ?? null);
+      if (msg.stop_reason === "refusal")
+        throw new ClaudeRefusalError(msg.stop_details?.category ?? null);
       if (msg.stop_reason === "pause_turn" && resumes < MAX_PAUSE_RESUMES) {
         resumes++;
         messages.push({ role: "assistant", content: msg.content as BetaContentBlockParam[] });
@@ -168,13 +190,23 @@ export async function callClaude<T = unknown>(ctx: ClaudeContext, opts: CallClau
     } catch (err) {
       if (!(err instanceof JsonParseError)) throw err;
       messages.push({ role: "assistant", content: msg.content as BetaContentBlockParam[] });
-      messages.push({ role: "user", content: "That was not valid JSON. Reply with only the JSON object, no prose or code fences." });
+      messages.push({
+        role: "user",
+        content:
+          "That was not valid JSON. Reply with only the JSON object, no prose or code fences.",
+      });
       msg = await send();
       text = extractText(msg.content);
       data = parseJsonLoose<T>(text);
     }
   }
-  return { text, data, citations: extractCitations(msg.content), costUsd, model: msg.model || model };
+  return {
+    text,
+    data,
+    citations: extractCitations(msg.content),
+    costUsd,
+    model: msg.model || model,
+  };
 }
 
 export function extractText(content: BetaContentBlock[]): string {
@@ -190,11 +222,13 @@ export function extractCitations(content: BetaContentBlock[]): WebCitation[] {
   for (const block of content) {
     if (block.type === "text") {
       for (const c of block.citations ?? []) {
-        if (c.type === "web_search_result_location" && !seen.has(c.url)) seen.set(c.url, { url: c.url, title: c.title });
+        if (c.type === "web_search_result_location" && !seen.has(c.url))
+          seen.set(c.url, { url: c.url, title: c.title });
       }
     } else if (block.type === "web_search_tool_result" && Array.isArray(block.content)) {
       for (const r of block.content) {
-        if (r.type === "web_search_result" && !seen.has(r.url)) seen.set(r.url, { url: r.url, title: r.title });
+        if (r.type === "web_search_result" && !seen.has(r.url))
+          seen.set(r.url, { url: r.url, title: r.title });
       }
     }
   }

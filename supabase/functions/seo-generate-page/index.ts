@@ -1,5 +1,16 @@
 import { generatePage } from "../_shared/seo.ts";
-import { authorize, background, errorMessage, handler, invokeFunction, Job, json, loadSettings, readBody, HttpError } from "../_shared/runtime.ts";
+import {
+  authorize,
+  background,
+  errorMessage,
+  handler,
+  invokeFunction,
+  Job,
+  json,
+  loadSettings,
+  readBody,
+  HttpError,
+} from "../_shared/runtime.ts";
 
 // Generates one page per invocation (Claude calls are slow), then hands the rest of the list to itself.
 async function run(ids: string[]): Promise<void> {

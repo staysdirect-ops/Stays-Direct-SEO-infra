@@ -140,7 +140,11 @@ export function isBookable(p: PropertyRow, byDate?: string): boolean {
   return p.available_from <= byDate;
 }
 
-export function costComparison(hotelPppn: number | null, housePppn: number | null, crew = CREW_SIZE): CostComparison | null {
+export function costComparison(
+  hotelPppn: number | null,
+  housePppn: number | null,
+  crew = CREW_SIZE
+): CostComparison | null {
   if (!hotelPppn || !housePppn || housePppn >= hotelPppn) return null;
   const hotel = round2(hotelPppn);
   const house = round2(housePppn);

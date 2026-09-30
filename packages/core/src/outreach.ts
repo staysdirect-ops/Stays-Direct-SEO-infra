@@ -102,7 +102,10 @@ export function buildOutreachPrompt(input: OutreachInput): string {
 export function validateOutreach(raw: unknown, input: OutreachInput): OutreachDraft {
   const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   const flags: string[] = [];
-  const subject = truncate(asString(o.outreach_subject, 200) ?? `Crew accommodation for ${input.project_title}`, 90);
+  const subject = truncate(
+    asString(o.outreach_subject, 200) ?? `Crew accommodation for ${input.project_title}`,
+    90
+  );
   let body = (asString(o.outreach_body, 4000) ?? "").replace(/\r\n/g, "\n");
   body = body.replace(new RegExp(`\\n*${escapeRegExp(OPT_OUT_LINE)}\\.?\\s*$`), "").trimEnd();
   if (!body.includes(input.facts.phone)) flags.push("draft_missing_phone");
@@ -110,8 +113,15 @@ export function validateOutreach(raw: unknown, input: OutreachInput): OutreachDr
   if (wordCount(body) > 130) flags.push("draft_over_120_words");
   const linkedin = truncate(asString(o.linkedin_message, 1000) ?? "", 300);
   const script = Array.isArray(o.call_script)
-    ? o.call_script.map((s) => asString(s, 300)).filter((s): s is string => !!s).slice(0, 5)
-    : (asString(o.call_script, 2000) ?? "").split(/\n+/).map((s) => s.replace(/^[-*•\d.)\s]+/, "").trim()).filter(Boolean).slice(0, 5);
+    ? o.call_script
+        .map((s) => asString(s, 300))
+        .filter((s): s is string => !!s)
+        .slice(0, 5)
+    : (asString(o.call_script, 2000) ?? "")
+        .split(/\n+/)
+        .map((s) => s.replace(/^[-*•\d.)\s]+/, "").trim())
+        .filter(Boolean)
+        .slice(0, 5);
   if (script.length < 5) flags.push("call_script_incomplete");
   const allowed = allowedOutreachNumbers(input);
   const stray = numbersIn(`${subject} ${body} ${linkedin}`).filter((n) => !allowed.has(n));
@@ -147,10 +157,11 @@ function allowedOutreachNumbers(input: OutreachInput): Set<number> {
     ...numbersIn(`${input.project_title} ${input.site_town ?? ""} ${input.supplier_name ?? ""}`),
   ];
   const out = new Set<number>();
-  for (const n of nums) if (typeof n === "number") {
-    out.add(n);
-    out.add(Math.round(n));
-  }
+  for (const n of nums)
+    if (typeof n === "number") {
+      out.add(n);
+      out.add(Math.round(n));
+    }
   return out;
 }
 
@@ -166,9 +177,10 @@ function escapeRegExp(s: string): string {
 export function templateOutreach(input: OutreachInput): OutreachDraft {
   const f = outreachFacts(input);
   const where = input.site_town ?? "the site";
-  const stock = f.houses_within_radius && f.nearest_miles != null && f.from_pppn != null
-    ? `We have ${f.houses_within_radius} house${f.houses_within_radius === 1 ? "" : "s"} within ${f.radius_miles} miles of ${where}, the nearest ${f.nearest_miles} miles away, from ${formatGbp(f.from_pppn)} per person per night with bills included.`
-    : `We can source whole houses near ${where} for your crew, with bills included.`;
+  const stock =
+    f.houses_within_radius && f.nearest_miles != null && f.from_pppn != null
+      ? `We have ${f.houses_within_radius} house${f.houses_within_radius === 1 ? "" : "s"} within ${f.radius_miles} miles of ${where}, the nearest ${f.nearest_miles} miles away, from ${formatGbp(f.from_pppn)} per person per night with bills included.`
+      : `We can source whole houses near ${where} for your crew, with bills included.`;
   const body = [
     "Hi {first_name},",
     "",
@@ -183,14 +195,21 @@ export function templateOutreach(input: OutreachInput): OutreachDraft {
   return {
     outreach_subject: truncate(`Crew houses near ${where} for ${input.project_title}`, 90),
     outreach_body: body,
-    linkedin_message: truncate(`Congrats on ${input.project_title}. We rent whole houses to contractor crews near ${where}, bills included, same-day quotes. Happy to help if you have people travelling.`, 300),
+    linkedin_message: truncate(
+      `Congrats on ${input.project_title}. We rent whole houses to contractor crews near ${where}, bills included, same-day quotes. Happy to help if you have people travelling.`,
+      300
+    ),
     call_script: [
       `Congratulate them on winning ${input.project_title}.`,
       `Ask when crews mobilise to ${where} and how many will travel.`,
-      f.houses_within_radius ? `Explain we have ${f.houses_within_radius} houses within ${f.radius_miles} miles.` : "Explain we can source houses near the site.",
+      f.houses_within_radius
+        ? `Explain we have ${f.houses_within_radius} houses within ${f.radius_miles} miles.`
+        : "Explain we can source houses near the site.",
       "Bills, Wi-Fi, council tax and cleaning included; weekly or monthly terms.",
       `Offer a same-day quote; confirm email for details.`,
-    ].map((s) => `- ${s}`).join("\n"),
+    ]
+      .map((s) => `- ${s}`)
+      .join("\n"),
     flags: ["draft_from_template"],
   };
 }

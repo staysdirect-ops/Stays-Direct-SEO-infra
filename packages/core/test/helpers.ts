@@ -1,6 +1,9 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import type { BetaMessage, MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/beta/messages/messages";
+import type {
+  BetaMessage,
+  MessageCreateParamsNonStreaming,
+} from "@anthropic-ai/sdk/resources/beta/messages/messages";
 import type { CreateMessage } from "../src/ai.ts";
 
 const FIXTURES = fileURLToPath(new URL("../../../tests/fixtures/", import.meta.url));
@@ -41,7 +44,11 @@ export function fakeClaude(responses: Array<BetaMessage | string | Error>) {
   return { createMessage, calls };
 }
 
-export function jsonResponse(body: unknown, status = 200, headers: Record<string, string> = {}): Response {
+export function jsonResponse(
+  body: unknown,
+  status = 200,
+  headers: Record<string, string> = {}
+): Response {
   return new Response(typeof body === "string" ? body : JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json", ...headers },

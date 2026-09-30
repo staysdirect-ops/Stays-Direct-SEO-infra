@@ -16,8 +16,7 @@ export interface LeadFormValue {
 }
 
 export type LeadFormResult =
-  | { ok: true; spam: boolean; value: LeadFormValue }
-  | { ok: false; errors: string[] };
+  { ok: true; spam: boolean; value: LeadFormValue } | { ok: false; errors: string[] };
 
 export const HONEYPOT_FIELD = "website";
 const EMAIL_RE = /^[^\s@<>()]+@[^\s@<>()]+\.[^\s@<>()]{2,}$/;
@@ -25,12 +24,14 @@ const PHONE_RE = /^\+?[\d\s()-]{7,20}$/;
 
 function str(v: unknown, max: number): string | null {
   if (typeof v !== "string") return null;
+  // eslint-disable-next-line no-control-regex -- stripping control characters is the point
   const t = v.replace(/[\u0000-\u001f\u007f]/g, " ").trim();
   return t ? t.slice(0, max) : null;
 }
 
 export function validateLeadForm(input: unknown): LeadFormResult {
-  if (!input || typeof input !== "object" || Array.isArray(input)) return { ok: false, errors: ["Body must be a JSON object"] };
+  if (!input || typeof input !== "object" || Array.isArray(input))
+    return { ok: false, errors: ["Body must be a JSON object"] };
   const o = input as Record<string, unknown>;
   const errors: string[] = [];
   const spam = typeof o[HONEYPOT_FIELD] === "string" && (o[HONEYPOT_FIELD] as string).trim() !== "";
@@ -44,13 +45,15 @@ export function validateLeadForm(input: unknown): LeadFormResult {
   let workers: number | null = null;
   if (o.est_workers != null && o.est_workers !== "") {
     const n = Number(o.est_workers);
-    if (!Number.isInteger(n) || n < 1 || n > 1000) errors.push("est_workers must be a whole number between 1 and 1000");
+    if (!Number.isInteger(n) || n < 1 || n > 1000)
+      errors.push("est_workers must be a whole number between 1 and 1000");
     else workers = n;
   }
   let start: string | null = null;
   const rawStart = str(o.start_date, 20);
   if (rawStart) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawStart) || Number.isNaN(Date.parse(rawStart))) errors.push("start_date must be YYYY-MM-DD");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawStart) || Number.isNaN(Date.parse(rawStart)))
+      errors.push("start_date must be YYYY-MM-DD");
     else start = rawStart;
   }
   const rawPc = str(o.site_postcode, 12);
@@ -59,8 +62,18 @@ export function validateLeadForm(input: unknown): LeadFormResult {
 
   const landing = str(o.landing_page, 500);
   const utm: Record<string, string> = {};
-  const utmIn = o.utm && typeof o.utm === "object" && !Array.isArray(o.utm) ? (o.utm as Record<string, unknown>) : o;
-  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid"]) {
+  const utmIn =
+    o.utm && typeof o.utm === "object" && !Array.isArray(o.utm)
+      ? (o.utm as Record<string, unknown>)
+      : o;
+  for (const k of [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
+    "gclid",
+  ]) {
     const v = str(utmIn[k], 200);
     if (v) utm[k] = v;
   }
@@ -80,7 +93,11 @@ export function validateLeadForm(input: unknown): LeadFormResult {
       est_workers: workers,
       start_date: start,
       notes: str(o.notes ?? o.message, 2000),
-      landing_page: landing && (landing.startsWith("/") || /^https:\/\/(www\.)?staysdirect\.co\.uk\//.test(landing)) ? landing : null,
+      landing_page:
+        landing &&
+        (landing.startsWith("/") || /^https:\/\/(www\.)?staysdirect\.co\.uk\//.test(landing))
+          ? landing
+          : null,
       utm,
     },
   };

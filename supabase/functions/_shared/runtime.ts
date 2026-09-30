@@ -47,7 +47,10 @@ export function must<T>(res: { data: T; error: { message: string } | null }, wha
 }
 
 export async function loadSettings(): Promise<Settings & { crons_enabled: boolean }> {
-  const row = must(await db().from("settings").select("*").eq("id", 1).single(), "load settings") as Record<string, unknown>;
+  const row = must(
+    await db().from("settings").select("*").eq("id", 1).single(),
+    "load settings"
+  ) as Record<string, unknown>;
   return {
     brand_voice: (row.brand_voice as string) || DEFAULT_BRAND_VOICE,
     company_facts: mergeCompanyFacts(row.company_facts as Settings["company_facts"]),
@@ -94,7 +97,8 @@ export function claudeContext(functionName: string, settings: Settings): ClaudeC
 // ---------------------------------------------------------------------------
 export const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-cron-secret",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
@@ -116,7 +120,9 @@ export async function readBody<T = Record<string, unknown>>(req: Request): Promi
   }
 }
 
-export function handler(fn: (req: Request) => Promise<Response>): (req: Request) => Promise<Response> {
+export function handler(
+  fn: (req: Request) => Promise<Response>
+): (req: Request) => Promise<Response> {
   return async (req) => {
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS_HEADERS });
     try {
@@ -157,7 +163,11 @@ export async function authorize(req: Request, roles: Role[]): Promise<Caller> {
   if (!token) throw new HttpError(401, "Missing credentials");
   const { data, error } = await db().auth.getUser(token);
   if (error || !data.user) throw new HttpError(401, "Invalid session");
-  const { data: au } = await db().from("admin_users").select("role").eq("user_id", data.user.id).maybeSingle();
+  const { data: au } = await db()
+    .from("admin_users")
+    .select("role")
+    .eq("user_id", data.user.id)
+    .maybeSingle();
   const role = au?.role as Role | undefined;
   if (!role || (role !== "admin" && !roles.includes(role))) throw new HttpError(403, "Not allowed");
   return { kind: "user", userId: data.user.id, role };
@@ -178,16 +188,28 @@ export class Job {
   }
 
   static async start(name: string, details: Record<string, unknown> = {}): Promise<Job> {
-    const row = must(await db().from("job_runs").insert({ job_name: name, details }).select("id").single(), "start job") as { id: number };
+    const row = must(
+      await db().from("job_runs").insert({ job_name: name, details }).select("id").single(),
+      "start job"
+    ) as { id: number };
     const job = new Job(row.id, name);
     job.details = details;
     return job;
   }
 
-  async finish(status: "success" | "partial" | "failed" | "skipped", error?: string): Promise<void> {
+  async finish(
+    status: "success" | "partial" | "failed" | "skipped",
+    error?: string
+  ): Promise<void> {
     await db()
       .from("job_runs")
-      .update({ status, finished_at: new Date().toISOString(), items_processed: this.items, error: error ?? null, details: this.details })
+      .update({
+        status,
+        finished_at: new Date().toISOString(),
+        items_processed: this.items,
+        error: error ?? null,
+        details: this.details,
+      })
       .eq("id", this.id);
   }
 }

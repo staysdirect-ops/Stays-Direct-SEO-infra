@@ -1,5 +1,23 @@
-import { buildTopicsPrompt, callClaude, fetchWithRetry, slugify, titleOverlap, TOPICS_SYSTEM, validateTopics } from "../_shared/core/index.ts";
-import { authorize, claudeContext, db, errorMessage, handler, Job, json, loadSettings, must } from "../_shared/runtime.ts";
+import {
+  buildTopicsPrompt,
+  callClaude,
+  fetchWithRetry,
+  slugify,
+  titleOverlap,
+  TOPICS_SYSTEM,
+  validateTopics,
+} from "../_shared/core/index.ts";
+import {
+  authorize,
+  claudeContext,
+  db,
+  errorMessage,
+  handler,
+  Job,
+  json,
+  loadSettings,
+  must,
+} from "../_shared/runtime.ts";
 
 const SITEMAP = "https://staysdirect.co.uk/sitemap-blog.xml";
 
@@ -39,16 +57,22 @@ Deno.serve(
       ]);
       const existing = [
         ...siteTitles,
-        ...((must(topics, "topics") as Array<{ working_title: string }>).map((t) => t.working_title)),
-        ...((must(posts, "posts") as Array<{ title: string }>).map((p) => p.title)),
+        ...(must(topics, "topics") as Array<{ working_title: string }>).map((t) => t.working_title),
+        ...(must(posts, "posts") as Array<{ title: string }>).map((p) => p.title),
       ];
-      const bigProjects = must(big, "big projects") as Array<{ id: string; title: string; site_town: string | null }>;
+      const bigProjects = must(big, "big projects") as Array<{
+        id: string;
+        title: string;
+        site_town: string | null;
+      }>;
 
       const r = await callClaude(claudeContext("seo-suggest-topics", settings), {
         system: TOPICS_SYSTEM,
         user: buildTopicsPrompt({
           existingTitles: existing,
-          bigProjects: bigProjects.map((p) => `${p.title}${p.site_town ? ` (${p.site_town})` : ""}`),
+          bigProjects: bigProjects.map(
+            (p) => `${p.title}${p.site_town ? ` (${p.site_town})` : ""}`
+          ),
           count: 15,
           month: new Date().toLocaleString("en-GB", { month: "long", year: "numeric" }),
         }),
@@ -61,9 +85,18 @@ Deno.serve(
       // Auto-topics from big new Radar projects.
       const taken = [...existing, ...ideas.map((i) => i.working_title)].map(slugify);
       for (const p of bigProjects) {
-        const title = `Housing crews for ${p.title}${p.site_town ? ` near ${p.site_town}` : ""}`.slice(0, 100);
+        const title =
+          `Housing crews for ${p.title}${p.site_town ? ` near ${p.site_town}` : ""}`.slice(0, 100);
         if (taken.some((t) => titleOverlap(t, slugify(title)) > 0.7)) continue;
-        ideas.push({ keyword: `accommodation ${p.site_town ?? p.title}`.toLowerCase(), working_title: title, intent: "commercial", priority: 4, source: "radar", status: "idea", project_id: p.id } as (typeof ideas)[number]);
+        ideas.push({
+          keyword: `accommodation ${p.site_town ?? p.title}`.toLowerCase(),
+          working_title: title,
+          intent: "commercial",
+          priority: 4,
+          source: "radar",
+          status: "idea",
+          project_id: p.id,
+        } as (typeof ideas)[number]);
         taken.push(slugify(title));
       }
       if (ideas.length) must(await db().from("blog_topics").insert(ideas), "insert topics");

@@ -38,7 +38,9 @@ export interface InternalLink {
   kind: "town" | "project" | "blog" | "quote" | "hub";
 }
 
-const SHARED_RULES = (facts: CompanyFacts) => `Facts about ${facts.name} you may state: direct operator (no agency markup); whole houses of ${facts.property_bedrooms_min}-${facts.property_bedrooms_max} bedrooms; ${facts.included.join(", ")} included; priced per person per night (pppn); same-day quotes; 24/7 UK support; weekly and monthly terms; ${facts.credit_terms_days_min}-${facts.credit_terms_days_max} day credit terms for approved accounts; phone ${facts.phone}.
+const SHARED_RULES = (
+  facts: CompanyFacts
+) => `Facts about ${facts.name} you may state: direct operator (no agency markup); whole houses of ${facts.property_bedrooms_min}-${facts.property_bedrooms_max} bedrooms; ${facts.included.join(", ")} included; priced per person per night (pppn); same-day quotes; 24/7 UK support; weekly and monthly terms; ${facts.credit_terms_days_min}-${facts.credit_terms_days_max} day credit terms for approved accounts; phone ${facts.phone}.
 
 Hard rules:
 - British English. Short sentences. Written for site managers, project managers and procurement.
@@ -136,7 +138,11 @@ Return ONLY a JSON object:
 body_markdown: starts with a 2-3 sentence answer-first paragraph, then a "> **Key takeaways**" blockquote with 3-5 "- " bullets, then "## " and "### " sections. 1,200-1,800 words including FAQs. Do not include an H1.`;
 }
 
-export function buildBlogPrompt(topic: { keyword: string; working_title: string; intent: string | null }, links: InternalLink[], facts: Record<string, unknown> = {}): string {
+export function buildBlogPrompt(
+  topic: { keyword: string; working_title: string; intent: string | null },
+  links: InternalLink[],
+  facts: Record<string, unknown> = {}
+): string {
   return `Write a blog post.
 Working title: ${topic.working_title}
 Target keyword: ${topic.keyword}
@@ -151,7 +157,12 @@ export const TOPICS_SYSTEM = `You plan blog content for StaysDirect, a UK operat
 Return ONLY a JSON object: {"topics": [{"keyword": string, "working_title": string, "intent": "informational"|"commercial"|"transactional", "priority": integer 1-5, "source": "ai"}]}
 Rules: practical topics only (cost guides, HMRC travel and subsistence principles, housing a crew of a given size, van parking, working-away checklists, project guides for major UK schemes, seasonal planning). No topic may duplicate or closely overlap an existing title. British English.`;
 
-export function buildTopicsPrompt(args: { existingTitles: string[]; bigProjects: string[]; count: number; month: string }): string {
+export function buildTopicsPrompt(args: {
+  existingTitles: string[];
+  bigProjects: string[];
+  count: number;
+  month: string;
+}): string {
   return `Suggest ${args.count} new blog topics for ${args.month}.
 Existing posts and queued topics (do not duplicate):
 ${args.existingTitles.map((t) => `- ${t}`).join("\n") || "- none"}
@@ -248,7 +259,20 @@ export function validateTopics(raw: unknown, existingTitles: string[]): TopicIde
 
 /** Jaccard overlap of slug words, used to avoid near-duplicate blog topics. */
 export function titleOverlap(a: string, b: string): number {
-  const stop = new Set(["a", "the", "for", "of", "to", "in", "and", "uk", "how", "your", "guide", "what"]);
+  const stop = new Set([
+    "a",
+    "the",
+    "for",
+    "of",
+    "to",
+    "in",
+    "and",
+    "uk",
+    "how",
+    "your",
+    "guide",
+    "what",
+  ]);
   const wa = new Set(a.split("-").filter((w) => w && !stop.has(w)));
   const wb = new Set(b.split("-").filter((w) => w && !stop.has(w)));
   if (!wa.size || !wb.size) return 0;
@@ -261,7 +285,12 @@ export function validateReview(raw: unknown): { score: number; issues: string[] 
   const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   return {
     score: asInt(o.score, 0, 100) ?? 50,
-    issues: Array.isArray(o.issues) ? o.issues.map((i) => asString(i, 300)).filter((i): i is string => !!i).slice(0, 5) : [],
+    issues: Array.isArray(o.issues)
+      ? o.issues
+          .map((i) => asString(i, 300))
+          .filter((i): i is string => !!i)
+          .slice(0, 5)
+      : [],
   };
 }
 
@@ -270,7 +299,9 @@ export function pageMarkdown(d: Pick<PageDraft, "h1" | "intro" | "sections" | "f
   return [
     d.intro,
     ...d.sections.map((s) => `## ${s.heading}\n\n${s.body_markdown}`),
-    d.faqs.length ? `## Frequently asked questions\n\n${d.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join("\n\n")}` : "",
+    d.faqs.length
+      ? `## Frequently asked questions\n\n${d.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join("\n\n")}`
+      : "",
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -279,7 +310,9 @@ export function pageMarkdown(d: Pick<PageDraft, "h1" | "intro" | "sections" | "f
 export function blogMarkdown(d: Pick<BlogDraft, "body_markdown" | "faqs">): string {
   return [
     d.body_markdown,
-    d.faqs.length ? `## Frequently asked questions\n\n${d.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join("\n\n")}` : "",
+    d.faqs.length
+      ? `## Frequently asked questions\n\n${d.faqs.map((f) => `### ${f.question}\n\n${f.answer}`).join("\n\n")}`
+      : "",
   ]
     .filter(Boolean)
     .join("\n\n");

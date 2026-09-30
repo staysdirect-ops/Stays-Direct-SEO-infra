@@ -1,5 +1,16 @@
 import { generateBlog } from "../_shared/seo.ts";
-import { authorize, background, errorMessage, handler, HttpError, invokeFunction, Job, json, loadSettings, readBody } from "../_shared/runtime.ts";
+import {
+  authorize,
+  background,
+  errorMessage,
+  handler,
+  HttpError,
+  invokeFunction,
+  Job,
+  json,
+  loadSettings,
+  readBody,
+} from "../_shared/runtime.ts";
 
 async function run(ids: string[]): Promise<void> {
   const [id, ...rest] = ids;

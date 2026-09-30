@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Pure TypeScript shared by edge functions (Deno), the admin app and tests. No Node-only APIs.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0"

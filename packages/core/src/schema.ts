@@ -43,7 +43,12 @@ function faqPage(url: string, faqs: Faq[]) {
 function breadcrumbs(items: Array<{ name: string; url: string }>) {
   return {
     "@type": "BreadcrumbList",
-    itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: it.url })),
+    itemListElement: items.map((it, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: it.name,
+      item: it.url,
+    })),
   };
 }
 
@@ -72,10 +77,16 @@ export function locationSchema(args: {
         areaServed: {
           "@type": "City",
           name: args.townName,
-          ...(args.county ? { containedInPlace: { "@type": "AdministrativeArea", name: args.county } } : {}),
+          ...(args.county
+            ? { containedInPlace: { "@type": "AdministrativeArea", name: args.county } }
+            : {}),
         },
         ...(args.fromPppn ? { priceRange: `From £${args.fromPppn} per person per night` } : {}),
-        amenityFeature: args.facts.included.map((name) => ({ "@type": "LocationFeatureSpecification", name, value: true })),
+        amenityFeature: args.facts.included.map((name) => ({
+          "@type": "LocationFeatureSpecification",
+          name,
+          value: true,
+        })),
       },
       faqPage(url, args.faqs),
       breadcrumbs([
@@ -108,7 +119,9 @@ export function projectSchema(args: {
         description: args.description,
         telephone: args.facts.phone,
         parentOrganization: { "@id": `${SITE_URL}/#organization` },
-        areaServed: args.nearestTown ? { "@type": "City", name: args.nearestTown } : { "@type": "Country", name: "United Kingdom" },
+        areaServed: args.nearestTown
+          ? { "@type": "City", name: args.nearestTown }
+          : { "@type": "Country", name: "United Kingdom" },
       },
       faqPage(url, args.faqs),
       breadcrumbs([
@@ -158,5 +171,8 @@ export function blogSchema(args: {
 
 /** JSON for a <script type="application/ld+json"> block; neutralises "</script>" breakouts. */
 export function jsonLdScript(schema: unknown): string {
-  return JSON.stringify(schema).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026");
+  return JSON.stringify(schema)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
 }

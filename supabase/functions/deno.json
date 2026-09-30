@@ -7,5 +7,12 @@
     "@supabase/supabase-js": "npm:@supabase/supabase-js@2.117.2",
     "@anthropic-ai/sdk": "npm:@anthropic-ai/sdk@0.129.0",
     "@anthropic-ai/sdk/": "npm:/@anthropic-ai/sdk@0.129.0/"
+  },
+  "lint": {
+    "exclude": ["_shared/core/"]
+  },
+  "fmt": {
+    "exclude": ["_shared/core/"],
+    "lineWidth": 140
   }
 }

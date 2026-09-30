@@ -76,7 +76,8 @@ export function scoreOpportunity(input: ScoreInput): ScoreResult {
   };
   let score = Object.values(breakdown).reduce((a, b) => a + b, 0);
   const flags: string[] = [];
-  const hasStock = input.nearestPropertyMiles != null && input.nearestPropertyMiles <= input.matchRadiusMiles;
+  const hasStock =
+    input.nearestPropertyMiles != null && input.nearestPropertyMiles <= input.matchRadiusMiles;
   if (!hasStock) {
     flags.push("sourcing_opportunity");
     score = Math.min(score, NO_STOCK_SCORE_CAP);

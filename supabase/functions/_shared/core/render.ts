@@ -88,7 +88,12 @@ function breadcrumbHtml(page: RenderablePage): string {
 export function renderPageMain(page: RenderablePage, facts: CompanyFacts): string {
   const sections = page.body_markdown
     ? renderMarkdown(page.body_markdown)
-    : page.sections.map((s) => `<section><h2>${escapeHtml(s.heading)}</h2>\n${renderMarkdown(s.body_markdown)}</section>`).join("\n");
+    : page.sections
+        .map(
+          (s) =>
+            `<section><h2>${escapeHtml(s.heading)}</h2>\n${renderMarkdown(s.body_markdown)}</section>`
+        )
+        .join("\n");
   const faqs = page.faqs.length
     ? `<section class="faq"><h2>Frequently asked questions</h2>${page.faqs
         .map((f) => `<h3>${escapeHtml(f.question)}</h3>${renderMarkdown(f.answer)}`)
@@ -197,8 +202,12 @@ export interface HubItem {
 
 /** /contractor-accommodation hub: links to every live location and project guide. */
 export function renderHubHtml(items: HubItem[], facts: CompanyFacts): string {
-  const locations = items.filter((i) => i.kind === "location").sort((a, b) => (a.name ?? a.title).localeCompare(b.name ?? b.title));
-  const projects = items.filter((i) => i.kind === "project").sort((a, b) => (a.name ?? a.title).localeCompare(b.name ?? b.title));
+  const locations = items
+    .filter((i) => i.kind === "location")
+    .sort((a, b) => (a.name ?? a.title).localeCompare(b.name ?? b.title));
+  const projects = items
+    .filter((i) => i.kind === "project")
+    .sort((a, b) => (a.name ?? a.title).localeCompare(b.name ?? b.title));
   const list = (xs: HubItem[], label: (i: HubItem) => string) =>
     `<ul class="hub-list">${xs.map((i) => `<li><a href="${escapeHtml(canonicalUrl(i.kind, i.slug).replace(SITE_URL, ""))}">${escapeHtml(label(i))}</a></li>`).join("")}</ul>`;
   const page: RenderablePage = {
@@ -216,16 +225,34 @@ export function renderHubHtml(items: HubItem[], facts: CompanyFacts): string {
       "@type": "CollectionPage",
       name: "Contractor Accommodation Across the UK",
       url: `${SITE_URL}${HUB_PATH}`,
-      publisher: { "@type": "Organization", name: facts.name, url: SITE_URL, telephone: facts.phone },
+      publisher: {
+        "@type": "Organization",
+        name: facts.name,
+        url: SITE_URL,
+        telephone: facts.phone,
+      },
     },
   };
   const body = [
-    locations.length ? `<section><h2>Locations</h2>${list(locations, (i) => `Contractor accommodation in ${i.name ?? i.title}`)}</section>` : "",
-    projects.length ? `<section><h2>Major projects</h2>${list(projects, (i) => `Accommodation near ${i.name ?? i.title}`)}</section>` : "",
+    locations.length
+      ? `<section><h2>Locations</h2>${list(locations, (i) => `Contractor accommodation in ${i.name ?? i.title}`)}</section>`
+      : "",
+    projects.length
+      ? `<section><h2>Major projects</h2>${list(projects, (i) => `Accommodation near ${i.name ?? i.title}`)}</section>`
+      : "",
   ].join("\n");
   return renderPageHtml(page, facts)
-    .replace(`<link rel="canonical" href="${SITE_URL}${HUB_PATH}/">`, `<link rel="canonical" href="${SITE_URL}${HUB_PATH}">`)
-    .replace(`<meta property="og:url" content="${SITE_URL}${HUB_PATH}/">`, `<meta property="og:url" content="${SITE_URL}${HUB_PATH}">`)
-    .replace(/<nav class="crumbs"[\s\S]*?<\/nav>/, `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span aria-current="page">Contractor accommodation</span></nav>`)
+    .replace(
+      `<link rel="canonical" href="${SITE_URL}${HUB_PATH}/">`,
+      `<link rel="canonical" href="${SITE_URL}${HUB_PATH}">`
+    )
+    .replace(
+      `<meta property="og:url" content="${SITE_URL}${HUB_PATH}/">`,
+      `<meta property="og:url" content="${SITE_URL}${HUB_PATH}">`
+    )
+    .replace(
+      /<nav class="crumbs"[\s\S]*?<\/nav>/,
+      `<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <span aria-current="page">Contractor accommodation</span></nav>`
+    )
     .replace("</article>", `${body}\n</article>`);
 }

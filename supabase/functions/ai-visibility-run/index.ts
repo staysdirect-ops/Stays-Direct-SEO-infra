@@ -47,18 +47,39 @@ function enginesAvailable(): Engine[] {
 async function ask(engine: Engine, prompt: string, settings: Settings): Promise<EngineAnswer> {
   if (engine === "claude") {
     const ctx = claudeContext("ai-visibility-run", settings);
-    const r = await callClaude(ctx, { system: VISIBILITY_SYSTEM, user: prompt, maxTokens: 4000, effort: "low", webSearch: { maxUses: 3 } });
-    return { text: r.text, citedUrls: r.citations.map((c) => c.url), model: r.model, usage: { provider: "anthropic", model: r.model, input_tokens: 0, output_tokens: 0, est_cost_usd: 0 } };
+    const r = await callClaude(ctx, {
+      system: VISIBILITY_SYSTEM,
+      user: prompt,
+      maxTokens: 4000,
+      effort: "low",
+      webSearch: { maxUses: 3 },
+    });
+    return {
+      text: r.text,
+      citedUrls: r.citations.map((c) => c.url),
+      model: r.model,
+      usage: {
+        provider: "anthropic",
+        model: r.model,
+        input_tokens: 0,
+        output_tokens: 0,
+        est_cost_usd: 0,
+      },
+    };
   }
   await assertUnderSpendCap(usageStore, settings.daily_ai_spend_cap_usd);
-  const answer = engine === "chatgpt"
-    ? await askOpenAi(env("OPENAI_API_KEY")!, settings.openai_model, prompt)
-    : await askPerplexity(env("PERPLEXITY_API_KEY")!, settings.perplexity_model, prompt);
+  const answer =
+    engine === "chatgpt"
+      ? await askOpenAi(env("OPENAI_API_KEY")!, settings.openai_model, prompt)
+      : await askPerplexity(env("PERPLEXITY_API_KEY")!, settings.perplexity_model, prompt);
   await usageStore.record({ ...answer.usage, function_name: "ai-visibility-run" });
   return answer;
 }
 
-async function sentiment(text: string, settings: Settings): Promise<"positive" | "neutral" | "negative" | null> {
+async function sentiment(
+  text: string,
+  settings: Settings
+): Promise<"positive" | "neutral" | "negative" | null> {
   try {
     const r = await callClaude(claudeContext("ai-visibility-sentiment", settings), {
       system: SENTIMENT_SYSTEM,
@@ -75,12 +96,18 @@ async function sentiment(text: string, settings: Settings): Promise<"positive" |
 
 async function run(body: Body, settings: Settings): Promise<Record<string, unknown>> {
   const engines = enginesAvailable();
-  let q = db().from("ai_prompts").select("id,prompt_text").eq("is_active", true).order("created_at").order("id");
+  let q = db()
+    .from("ai_prompts")
+    .select("id,prompt_text")
+    .eq("is_active", true)
+    .order("created_at")
+    .order("id");
   if (body.prompt_ids?.length) q = q.in("id", body.prompt_ids);
   const prompts = must(await q, "load prompts") as Array<{ id: string; prompt_text: string }>;
   const work = prompts.flatMap((p) => engines.map((engine) => ({ prompt: p, engine })));
 
-  const parent = body.run_id ?? (await Job.start("ai-visibility-run", { prompts: prompts.length, engines })).id;
+  const parent =
+    body.run_id ?? (await Job.start("ai-visibility-run", { prompts: prompts.length, engines })).id;
   const step = await Job.start("ai-visibility-batch", { run_id: parent, offset: body.offset ?? 0 });
   const outOfTime = deadline(100_000);
   let i = body.offset ?? 0;
@@ -89,11 +116,27 @@ async function run(body: Body, settings: Settings): Promise<Record<string, unkno
   for (; i < work.length; i++) {
     if (outOfTime()) break;
     const { prompt, engine } = work[i]!;
-    const row: Record<string, unknown> = { run_id: parent, prompt_id: prompt.id, engine, model: engine };
+    const row: Record<string, unknown> = {
+      run_id: parent,
+      prompt_id: prompt.id,
+      engine,
+      model: engine,
+    };
     try {
       const a = await ask(engine, prompt.prompt_text, settings);
-      const m = detectMentions(a.text, a.citedUrls, settings.tracked_brand_names, settings.competitor_names);
-      Object.assign(row, { model: a.model, response_text: a.text, cited_urls: a.citedUrls, ...m, sentiment: m.brand_mentioned ? await sentiment(a.text, settings) : null });
+      const m = detectMentions(
+        a.text,
+        a.citedUrls,
+        settings.tracked_brand_names,
+        settings.competitor_names
+      );
+      Object.assign(row, {
+        model: a.model,
+        response_text: a.text,
+        cited_urls: a.citedUrls,
+        ...m,
+        sentiment: m.brand_mentioned ? await sentiment(a.text, settings) : null,
+      });
     } catch (e) {
       if (e instanceof SpendCapExceededError) {
         stopped = "spend_cap";
@@ -106,15 +149,30 @@ async function run(body: Body, settings: Settings): Promise<Record<string, unkno
   }
   step.items = done;
   step.details = { ...step.details, next_offset: i, total: work.length, stopped };
-  await step.finish(stopped ? "partial" : "success", stopped ? "Daily AI spend cap reached" : undefined);
+  await step.finish(
+    stopped ? "partial" : "success",
+    stopped ? "Daily AI spend cap reached" : undefined
+  );
 
   if (!stopped && i < work.length) {
-    await invokeFunction("ai-visibility-run", { run_id: parent, offset: i, prompt_ids: body.prompt_ids });
+    await invokeFunction("ai-visibility-run", {
+      run_id: parent,
+      offset: i,
+      prompt_ids: body.prompt_ids,
+    });
   } else {
-    const { count } = await db().from("ai_visibility_checks").select("id", { count: "exact", head: true }).eq("run_id", parent);
+    const { count } = await db()
+      .from("ai_visibility_checks")
+      .select("id", { count: "exact", head: true })
+      .eq("run_id", parent);
     await db()
       .from("job_runs")
-      .update({ status: stopped ? "partial" : "success", finished_at: new Date().toISOString(), items_processed: count ?? 0, error: stopped ? "Daily AI spend cap reached" : null })
+      .update({
+        status: stopped ? "partial" : "success",
+        finished_at: new Date().toISOString(),
+        items_processed: count ?? 0,
+        error: stopped ? "Daily AI spend cap reached" : null,
+      })
       .eq("id", parent);
   }
   return { run_id: parent, processed: done, next_offset: i, total: work.length, stopped };
