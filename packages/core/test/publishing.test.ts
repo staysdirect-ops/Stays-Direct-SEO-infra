@@ -124,3 +124,22 @@ describe("sitemap and llms.txt", () => {
     expect(txt).toContain("- [Contractor Accommodation in Leeds](https://staysdirect.co.uk/contractor-accommodation/leeds)");
   });
 });
+
+describe("hub page and snapshots", () => {
+  it("links every live location and project with a clean canonical", async () => {
+    const { renderHubHtml, toRenderable } = await import("../src/render.ts");
+    const html = renderHubHtml(
+      [
+        { kind: "location", slug: "leeds", title: "Contractor Accommodation in Leeds", name: "Leeds" },
+        { kind: "location", slug: "bridgwater", title: "x", name: "Bridgwater" },
+        { kind: "project", slug: "projects/hinkley-point-c", title: "y", name: "Hinkley Point C" },
+      ],
+      facts
+    );
+    expect(html).toContain('<link rel="canonical" href="https://staysdirect.co.uk/contractor-accommodation">');
+    expect(html.indexOf("/contractor-accommodation/bridgwater")).toBeLessThan(html.indexOf("/contractor-accommodation/leeds"));
+    expect(html).toContain('href="/contractor-accommodation/projects/hinkley-point-c">Accommodation near Hinkley Point C</a>');
+    const snap = toRenderable("blog", { slug: "s", title: "T", meta_description: "d", body_markdown: "Hello", intro: "ignored" });
+    expect(snap).toMatchObject({ kind: "blog", h1: "T", intro: null, body_markdown: "Hello", sections: [] });
+  });
+});

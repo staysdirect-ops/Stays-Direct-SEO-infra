@@ -50,6 +50,12 @@ do $$
 begin
   if (select lat from public.properties where id = '10000000-0000-0000-0000-000000000001') <> 51.1497 then raise exception 'generated lat column wrong'; end if;
   if (select geocode_status from public.properties where id = '10000000-0000-0000-0000-000000000001') <> 'manual' then raise exception 'rows with coordinates should be manual'; end if;
+  update public.properties set location = extensions.st_setsrid(extensions.st_makepoint(-1.55, 53.8), 4326)::extensions.geography, geocode_status = 'ok'
+    where id = '10000000-0000-0000-0000-000000000006';
+  if (select geocode_status from public.properties where id = '10000000-0000-0000-0000-000000000006') <> 'ok' then raise exception 'geocoder status overwritten'; end if;
+  update public.properties set location = extensions.st_setsrid(extensions.st_makepoint(-1.56, 53.8), 4326)::extensions.geography
+    where id = '10000000-0000-0000-0000-000000000006';
+  if (select geocode_status from public.properties where id = '10000000-0000-0000-0000-000000000006') <> 'manual' then raise exception 'manual move not detected'; end if;
   if not exists (select 1 from net.requests where url = 'https://proj.supabase.co/functions/v1/geocode' and body ->> 'id' = '10000000-0000-0000-0000-000000000006' and headers ->> 'x-cron-secret' = 'test-secret') then
     raise exception 'geocode call not queued for new property';
   end if;
@@ -116,7 +122,8 @@ insert into public.seo_pages (page_type, town_id, slug, status, search_text)
 select 'location', id, 'bradford', 'draft', 'Contractor accommodation in Bradford with 3 houses near the city centre, bills included, van parking.' from public.towns where slug = 'bradford';
 do $$ declare s real;
 begin
-  select similarity into s from public.seo_similar_pages('Contractor accommodation in Leeds with 3 houses near the city centre, bills included, van parking.', null, 20) where slug = 'bradford';
+  select similarity into s from public.seo_similar_pages('Contractor accommodation in Leeds with 3 houses near the city centre, bills included, van parking.', null, 20, 'page') where slug = 'bradford';
+  if exists (select 1 from public.seo_similar_pages('Contractor accommodation in Leeds', null, 20, 'blog')) then raise exception 'blog similarity should not include pages'; end if;
   if s is null or s < 0.5 then raise exception 'expected high similarity, got %', s; end if;
   if (select count(*) from public.published_content where kind = 'location') <> 1 then raise exception 'published_content should list 1 location'; end if;
   if (select title from public.published_content where slug = 'leeds') <> 'Contractor Accommodation in Leeds' then raise exception 'published_content title should come from snapshot'; end if;

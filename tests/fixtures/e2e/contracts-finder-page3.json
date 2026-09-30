@@ -1,0 +1,32 @@
+{
+  "releases": [
+    {
+      "ocid": "ocds-b5fd17-e2e00000-hinkley-marine-0001",
+      "id": "ocds-b5fd17-e2e00000-hinkley-marine-0001-award-1",
+      "date": "2026-09-22T19:00:00Z",
+      "tag": ["award"],
+      "buyer": { "id": "GB-NNBG", "name": "NNB Generation Company (HPC) Limited" },
+      "parties": [
+        { "id": "GB-NNBG", "name": "NNB Generation Company (HPC) Limited", "roles": ["buyer"], "address": { "locality": "Bridgwater", "postalCode": "TA6 4YS" } },
+        { "id": "GB-COH-06789012", "name": "Bylor JV", "roles": ["supplier"] }
+      ],
+      "tender": {
+        "title": "Hinkley Point C Marine Works Support Package",
+        "description": "Marine and foreshore works support at Hinkley Point C, near Stogursey, Somerset (TA5 1UD), including temporary jetty maintenance and cofferdam works.",
+        "value": { "amount": 24000000, "currency": "GBP" },
+        "items": [{ "classification": { "scheme": "CPV", "id": "45240000", "description": "Construction work for water projects" }, "deliveryAddresses": [{ "locality": "Stogursey", "postalCode": "TA5 1UD" }] }]
+      },
+      "awards": [
+        {
+          "id": "HPC-MW-1",
+          "status": "active",
+          "date": "2026-09-20",
+          "value": { "amount": 24000000, "currency": "GBP" },
+          "suppliers": [{ "id": "GB-COH-06789012", "name": "Bylor JV" }],
+          "contractPeriod": { "startDate": "2026-10-01", "endDate": "2028-06-30" }
+        }
+      ]
+    }
+  ],
+  "links": {}
+}

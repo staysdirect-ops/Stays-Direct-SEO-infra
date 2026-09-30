@@ -195,6 +195,12 @@ describe("quality checker on generated pages", () => {
     expect(q.score).toBeLessThan(70);
   });
 
+  it("blocks near-copies even when everything else is fine", () => {
+    const base = { kind: "location" as const, title: draft.title, metaDescription: draft.meta_description, bodyMarkdown: md, faqCount: draft.faqs.length, allowedNumbers: allowedNumbers(locationPack) };
+    expect(checkQuality({ ...base, maxSimilarity: 0.6 }).score).toBe(75);
+    expect(checkQuality({ ...base, maxSimilarity: 0.95, mostSimilarSlug: "taunton" }).score).toBeLessThan(70);
+  });
+
   it("does not flag words that merely contain a banned phrase", () => {
     expect(findBannedPhrases("The unlocking mechanism")).toEqual([]);
     expect(findBannedPhrases("Unlock savings")).toEqual(["unlock"]);

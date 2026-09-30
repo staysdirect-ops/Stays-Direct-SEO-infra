@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { findCompany } from "../src/companies-house.ts";
 import { extractPostcodes, geocode, haversineMiles, normalizePostcode, outcodeOf } from "../src/geo.ts";
 import { createRateLimiter, fetchWithRetry } from "../src/http.ts";
 import { fixture, jsonResponse, noSleep } from "./helpers.ts";
@@ -96,5 +97,30 @@ describe("fetchWithRetry", () => {
     });
     await Promise.all([throttle(), throttle(), throttle()]);
     expect(waits).toEqual([1000, 1000]);
+  });
+});
+
+describe("Companies House lookup", () => {
+  it("returns the single active exact match, using basic auth", async () => {
+    const fetchImpl = vi.fn(async (_url: string, _init?: RequestInit) =>
+      jsonResponse({
+        items: [
+          { company_number: "01234567", title: "KIER HIGHWAYS LIMITED", company_status: "active", address_snippet: "Salford M50 3XP" },
+          { company_number: "07654321", title: "KIER HIGHWAYS SERVICES LIMITED", company_status: "active" },
+          { company_number: "00000001", title: "KIER HIGHWAYS LTD", company_status: "dissolved" },
+        ],
+      })
+    );
+    const r = await findCompany("key", "Kier Highways Ltd", fetchImpl);
+    expect(r).toEqual({ company_number: "01234567", title: "KIER HIGHWAYS LIMITED", address: "Salford M50 3XP", status: "active" });
+    expect((fetchImpl.mock.calls[0]![1]!.headers as Record<string, string>).authorization).toBe(`Basic ${btoa("key:")}`);
+  });
+
+  it("returns null when the name is ambiguous or missing", async () => {
+    const fetchImpl = vi.fn(async () =>
+      jsonResponse({ items: [{ company_number: "1", title: "ACME LTD", company_status: "active" }, { company_number: "2", title: "ACME LIMITED", company_status: "active" }] })
+    );
+    expect(await findCompany("key", "Acme", fetchImpl)).toBeNull();
+    expect(await findCompany("key", "   ", fetchImpl)).toBeNull();
   });
 });

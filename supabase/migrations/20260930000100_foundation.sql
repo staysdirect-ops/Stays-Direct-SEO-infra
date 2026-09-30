@@ -225,7 +225,10 @@ begin
   if tg_op = 'INSERT' and new.location is not null then
     new.geocode_status := 'manual';
   elsif tg_op = 'UPDATE' and new.location is distinct from old.location then
-    new.geocode_status := 'manual';
+    -- The geocoder sets its own status alongside the location; anything else is a manual edit.
+    if new.geocode_status is not distinct from old.geocode_status then
+      new.geocode_status := 'manual';
+    end if;
   elsif tg_op = 'INSERT' or new.postcode is distinct from old.postcode or new.town is distinct from old.town then
     new.geocode_status := 'pending';
     perform private.call_function('geocode', jsonb_build_object('table', 'properties', 'id', new.id));
@@ -242,7 +245,7 @@ set search_path = ''
 as $$
 begin
   if new.location is not null then
-    if tg_op = 'INSERT' or new.location is distinct from old.location then
+    if tg_op = 'INSERT' or (new.location is distinct from old.location and new.geocode_status is not distinct from old.geocode_status) then
       new.geocode_status := 'manual';
     end if;
   elsif tg_op = 'INSERT' or new.name is distinct from old.name then

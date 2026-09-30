@@ -107,8 +107,8 @@ create policy blog_posts_select on public.blog_posts for select to authenticated
 create policy blog_posts_write on public.blog_posts for all to authenticated
   using (public.has_role(array['editor'])) with check (public.has_role(array['editor']));
 
--- The 20 most similar pages by trigram similarity, for the duplicate-content check.
-create or replace function public.seo_similar_pages(p_text text, p_exclude_id uuid default null, p_limit integer default 20)
+-- The 20 most similar pieces of the same kind (pages vs pages, posts vs posts) by trigram similarity.
+create or replace function public.seo_similar_pages(p_text text, p_exclude_id uuid default null, p_limit integer default 20, p_kind text default 'page')
 returns table (id uuid, slug text, kind text, similarity real)
 language sql
 stable
@@ -118,17 +118,17 @@ as $$
   select * from (
     select s.id, s.slug, s.page_type as kind, similarity(s.search_text, p_text) as similarity
     from public.seo_pages s
-    where s.search_text is not null and s.id is distinct from p_exclude_id
+    where p_kind = 'page' and s.search_text is not null and s.id is distinct from p_exclude_id
     union all
     select b.id, b.slug, 'blog', similarity(b.search_text, p_text)
     from public.blog_posts b
-    where b.search_text is not null and b.id is distinct from p_exclude_id
+    where p_kind = 'blog' and b.search_text is not null and b.id is distinct from p_exclude_id
   ) x
   order by similarity desc
   limit p_limit;
 $$;
-revoke execute on function public.seo_similar_pages(text, uuid, integer) from public, anon;
-grant execute on function public.seo_similar_pages(text, uuid, integer) to authenticated, service_role;
+revoke execute on function public.seo_similar_pages(text, uuid, integer, text) from public, anon;
+grant execute on function public.seo_similar_pages(text, uuid, integer, text) to authenticated, service_role;
 
 -- Live content index used by public-content, public-sitemap and public-llms-txt.
 create view public.published_content with (security_invoker = true) as
