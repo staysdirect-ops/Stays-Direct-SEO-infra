@@ -1,0 +1,34 @@
+name: Live API samples
+
+# Fetches real responses from Contracts Finder, Find a Tender, postcodes.io and the StaysDirect
+# blog sitemap, and commits them to tests/fixtures/live/ with a mapping report. Run by hand
+# (Actions → Live API samples → Run workflow) or when this workflow or its script changes.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/live-samples.yml
+      - scripts/fetch-live-samples.ts
+
+permissions:
+  contents: write
+
+jobs:
+  samples:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch samples and build report
+        run: node --experimental-strip-types --no-warnings scripts/fetch-live-samples.ts
+      - name: Commit samples
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/fixtures/live
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Update live API samples [skip ci]"
+          git push
