@@ -50,7 +50,6 @@ All five phases are built, tested and pushed to `main`, and CI is green on GitHu
 4. **Webhook delivery is best-effort** (pg_net, one attempt). The leads app should also poll `updated_at` (see LEADS_CONTRACT).
 5. **Admin UI has no automated browser tests in CI.** It was exercised by hand with Playwright (login, all 13 pages as admin, lead editing and save, project drawer and map, approve + publish, CSV import incl. duplicate skip, editor blocked from leads, phone layout with no horizontal overflow).
 6. **Blog URL assumption:** engine posts are served at `/blog/{slug}`, matching the existing blog sitemap. If the site uses another path, change `publicPath` in `packages/core/src/schema.ts`.
-7. Property photos are stored (`properties.photos`) but not editable in the admin yet.
 
 ## Next steps (for a person)
 

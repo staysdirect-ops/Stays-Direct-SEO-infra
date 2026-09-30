@@ -11,7 +11,7 @@ export default async function PropertiesPage() {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id,name,address,town,postcode,bedrooms,max_guests,parking_spaces,van_parking,pppn_from,available_from,status,notes,geocode_status,lat,lng,updated_at"
+      "id,name,address,town,postcode,bedrooms,max_guests,parking_spaces,van_parking,pppn_from,available_from,status,notes,geocode_status,lat,lng,photos,updated_at"
     )
     .order("town")
     .order("name");

@@ -195,6 +195,11 @@ do $$ begin
     raise exception 'editor wrote properties';
   exception when insufficient_privilege then null;
   end;
+  begin
+    insert into storage.objects (bucket_id, name) values ('property-photos', 'x/editor.jpg');
+    raise exception 'editor uploaded a property photo';
+  exception when insufficient_privilege then null;
+  end;
 end $$;
 reset role;
 
@@ -206,5 +211,35 @@ do $$ begin
   if (select seo_pages_per_day from public.settings) <> 6 then raise exception 'admin should update settings'; end if;
 end $$;
 reset role;
+
+-- Property photos: sales can upload, anon can't, and the photos column keeps its shape.
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b');
+set role authenticated;
+do $$ begin
+  insert into storage.objects (bucket_id, name) values ('property-photos', 'p1/a.jpg');
+  begin
+    insert into storage.objects (bucket_id, name) values ('other-bucket', 'p1/a.jpg');
+    raise exception 'sales wrote outside the photos bucket';
+  exception when insufficient_privilege or foreign_key_violation then null;
+  end;
+end $$;
+reset role;
+set role anon;
+do $$ begin
+  begin
+    insert into storage.objects (bucket_id, name) values ('property-photos', 'p1/anon.jpg');
+    raise exception 'anon uploaded a property photo';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+do $$ begin
+  if not (select public from storage.buckets where id = 'property-photos') then raise exception 'photos bucket should be public'; end if;
+  begin
+    update public.properties set photos = '[{"url": "https://x"}]' where id = (select id from public.properties limit 1);
+    if found then raise exception 'photos without a path were accepted'; end if;
+  exception when check_violation then null;
+  end;
+end $$;
 
 \echo 'All database assertions passed.'

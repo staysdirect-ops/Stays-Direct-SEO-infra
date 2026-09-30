@@ -6,6 +6,7 @@ import { fail, ok, type ActionResult } from "@/lib/actions";
 import { requireRole } from "@/lib/auth";
 import { invokeFunction } from "@/lib/functions";
 import { createClient } from "@/lib/supabase/server";
+import { PHOTO_BUCKET, type Photo } from "./photo-types";
 
 export interface PropertyInput {
   name: string;
@@ -118,6 +119,25 @@ export async function saveProperty(id: string | null, input: PropertyInput): Pro
   }
 }
 
+/** Saves the ordered photo list. Files are uploaded from the browser under the user's session. */
+export async function setPropertyPhotos(id: string, photos: Photo[]): Promise<ActionResult> {
+  try {
+    await requireRole(["sales"]);
+    const base = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${PHOTO_BUCKET}/`;
+    const clean = photos.map((p) => ({ path: String(p.path), url: String(p.url) }));
+    if (clean.length > 20) return fail("At most 20 photos per property.");
+    for (const p of clean)
+      if (!p.path.startsWith(`${id}/`) || p.url !== base + p.path) return fail("Invalid photo.");
+    const supabase = await createClient();
+    const { error } = await supabase.from("properties").update({ photos: clean }).eq("id", id);
+    if (error) throw error;
+    revalidatePath("/properties");
+    return ok();
+  } catch (e) {
+    return fail(e);
+  }
+}
+
 export async function setPropertyStatus(id: string, status: string): Promise<ActionResult> {
   try {
     await requireRole(["sales"]);
@@ -135,8 +155,11 @@ export async function deleteProperty(id: string): Promise<ActionResult> {
   try {
     await requireRole(["sales"]);
     const supabase = await createClient();
+    const { data: row } = await supabase.from("properties").select("photos").eq("id", id).single();
     const { error } = await supabase.from("properties").delete().eq("id", id);
     if (error) throw error;
+    const paths = ((row?.photos ?? []) as Photo[]).map((p) => p.path);
+    if (paths.length) await supabase.storage.from(PHOTO_BUCKET).remove(paths);
     revalidatePath("/properties");
     return ok("Deleted.");
   } catch (e) {

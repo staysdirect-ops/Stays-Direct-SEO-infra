@@ -21,12 +21,15 @@ import {
   setPropertyStatus,
   type PropertyInput,
 } from "./actions";
+import type { Photo } from "./photo-types";
+import { PropertyPhotos } from "./photos";
 
 export interface Property extends PropertyInput {
   id: string;
   geocode_status: string;
   lat: number | null;
   lng: number | null;
+  photos: Photo[];
   updated_at: string;
 }
 
@@ -242,15 +245,32 @@ export function PropertiesView({ properties }: { properties: Property[] }) {
               {properties.map((p) => (
                 <TR key={p.id}>
                   <TD>
-                    <button
-                      className="text-left font-medium text-navy hover:underline"
-                      onClick={() => setEditing({ id: p.id, data: { ...p } })}
-                    >
-                      {p.name}
-                    </button>
-                    <p className="text-xs text-slate-500">
-                      {p.town} · {p.postcode}
-                    </p>
+                    <div className="flex items-start gap-3">
+                      {p.photos?.[0] ? (
+                        <img
+                          src={p.photos[0].url}
+                          alt=""
+                          loading="lazy"
+                          className="hidden size-10 shrink-0 rounded object-cover sm:block"
+                        />
+                      ) : (
+                        <div className="hidden size-10 shrink-0 rounded bg-slate-100 sm:block" />
+                      )}
+                      <div>
+                        <button
+                          className="text-left font-medium text-navy hover:underline"
+                          onClick={() => setEditing({ id: p.id, data: { ...p } })}
+                        >
+                          {p.name}
+                        </button>
+                        <p className="text-xs text-slate-500">
+                          {p.town} · {p.postcode}
+                          {p.photos?.length
+                            ? ` · ${p.photos.length} photo${p.photos.length === 1 ? "" : "s"}`
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
                   </TD>
                   <TD className="hidden sm:table-cell">
                     {p.bedrooms} <span className="text-slate-500">/ sleeps {p.max_guests}</span>
@@ -313,6 +333,7 @@ export function PropertiesView({ properties }: { properties: Property[] }) {
             key={editing.id ?? "new"}
             id={editing.id}
             initial={editing.data}
+            photos={editing.id ? (properties.find((p) => p.id === editing.id)?.photos ?? []) : null}
             onDone={() => (setEditing(null), router.refresh())}
           />
         ) : null}
@@ -324,10 +345,12 @@ export function PropertiesView({ properties }: { properties: Property[] }) {
 function PropertyForm({
   id,
   initial,
+  photos,
   onDone,
 }: {
   id: string | null;
   initial: PropertyInput;
+  photos: Photo[] | null;
   onDone: () => void;
 }) {
   const [f, setF] = useState<PropertyInput>(initial);
@@ -406,6 +429,11 @@ function PropertyForm({
         />{" "}
         Van parking
       </label>
+      {id && photos ? (
+        <PropertyPhotos id={id} initial={photos} />
+      ) : (
+        <p className="text-xs text-slate-500">Save the property first, then add photos.</p>
+      )}
       <Field label="Notes">
         <Textarea rows={3} value={f.notes ?? ""} onChange={(e) => set("notes", e.target.value)} />
       </Field>

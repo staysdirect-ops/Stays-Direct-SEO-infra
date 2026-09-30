@@ -52,4 +52,24 @@ returns bigint language sql as $$
   insert into net.requests (url, headers, body) values (url, headers, body) returning id
 $$;
 
+-- Storage stand-in: just the tables policies are written against.
+create schema if not exists storage;
+create table storage.buckets (
+  id text primary key,
+  name text not null,
+  public boolean default false,
+  file_size_limit bigint,
+  allowed_mime_types text[]
+);
+create table storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text references storage.buckets (id),
+  name text,
+  owner uuid default auth.uid(),
+  metadata jsonb
+);
+alter table storage.objects enable row level security;
+grant usage on schema storage to anon, authenticated, service_role;
+grant all on storage.objects, storage.buckets to anon, authenticated, service_role;
+
 create publication supabase_realtime;
